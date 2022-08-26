@@ -6,6 +6,7 @@ SLIDE_PDF_FILES  := $(subst Rmd,pdf,$(SLIDE_RMD_FILES))
 
 build: $(SLIDE_HTML_FILES)
 	hugo
+	rm -rf docs/slides/prev/
 
 all: html pdf build
 
