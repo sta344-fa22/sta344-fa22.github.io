@@ -1,0 +1,398 @@
+---
+title: "Lecture 1" 
+subtitle: "Spatio-temporal data & Linear Models"
+author: "Colin Rundel"
+date: "1/16/2018"
+fontsize: 11pt
+output: 
+  beamer_presentation:
+    theme: metropolis
+    highlight: pygments
+    fig_height: 6
+    fig_caption: FALSE
+    latex_engine: xelatex
+    keep_tex: true
+    includes:
+      in_header: ../settings.tex
+---
+
+```{r config, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width=7,
+  fig.height=5,
+  out.width="\\textwidth",
+  fig.align="center",
+  echo=TRUE,
+  warning=FALSE
+)
+
+library(sf)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(glue)
+
+theme_set(theme_bw())
+```
+
+
+# (Bayesian) Linear Models
+
+## Linear Models {.t}
+
+Pretty much everything we a going to see in this course will fall under the umbrella of either linear or generalized linear models. 
+
+In previous classes most of your time has likely been spent with the simple iid case,
+
+$$Y_i = \beta_0 + \beta_1 \, x_{i1} + \cdots + \beta_p \, x_{ip} + \epsilon_i $$
+$$ \epsilon_i \sim N(0, \sigma^2) $$
+
+these models can also be expressed simply as,
+
+$$ Y_i \overset{iid}{\sim} N(\beta_0 + \beta_1 \, x_{i1} + \cdots + \beta_p \, x_{ip},~ \sigma^2) $$
+
+## Linear model - matrix notation {.t}
+
+We can also express using matrix notation as follows,
+
+$$
+\begin{aligned}
+\underset{n \times 1}{\symbf{Y}} = \underset{n \times p}{\symbf{X}} \, \underset{p \times 1}{\symbf{\beta}} + \underset{n \times 1}{\symbf{\epsilon}} \\
+\underset{n \times 1}{\symbf{\epsilon}} \sim N(\underset{n \times 1}{\symbf{0}}, \; \sigma^2 \underset{n \times n}{\mathbb{1}_n})
+\end{aligned}
+$$
+
+or alternative as,
+
+$$ 
+\underset{n \times 1}{\symbf{Y}} \sim N\left(\underset{n \times p}{\symbf{X}} \, \underset{p \times 1}{\symbf{\beta}},~  \sigma^2 \underset{n \times n}{\mathbb{1}_n}\right)
+$$
+
+
+## Multivariate Normal Distribution - Review {.t}
+
+For an $n$-dimension multivate normal distribution with covariance $\symbf{\Sigma}$ (positive semidefinite) can be written as
+
+$$
+\underset{n \times 1}{\symbf{Y}} \sim N(\underset{n \times 1}{\symbf{\mu}}, \; \underset{n \times n}{\symbf{\Sigma}}) \text{ where } \{\symbf{\Sigma}\}_{ij} = \rho_{ij} \sigma_i \sigma_j
+$$
+
+$$
+\begin{pmatrix}
+Y_1\\ Y_2\\ \vdots\\ Y_n
+\end{pmatrix}
+\sim N\left(
+\begin{pmatrix}
+\mu_1\\ \mu_2\\ \vdots\\ \mu_n
+\end{pmatrix}, \,
+\begin{pmatrix}
+\rho_{11}\sigma_1\sigma_1 & \rho_{12}\sigma_1\sigma_2 & \cdots & \rho_{1n}\sigma_1\sigma_n \\
+\rho_{21}\sigma_2\sigma_1 & \rho_{22}\sigma_2\sigma_2 & \cdots & \rho_{2n}\sigma_2\sigma_n\\
+\vdots & \vdots & \ddots & \vdots \\
+\rho_{n1}\sigma_n\sigma_1 & \rho_{n2}\sigma_n\sigma_2 & \cdots & \rho_{nn}\sigma_n\sigma_n \\
+\end{pmatrix}
+\right)
+$$
+
+
+## Multivariate Normal Distribution - Density {.t}
+
+For the $n$ dimensional multivate normal given on the last slide, its density is given by
+
+$$
+(2\pi)^{-n/2} \; \det(\symbf{\Sigma})^{-1/2} \; \exp{\left(-\frac{1}{2} \underset{1 \times n}{(\symbf{Y}-\symbf{\mu})'} \underset{n \times n}{\symbf{\Sigma}^{-1}} \underset{n \times 1}{(\symbf{Y}-\symbf{\mu})}\right)} 
+$$
+
+and its log density is given by
+
+$$
+-\frac{n}{2} \log 2\pi - \frac{1}{2} \log \det(\symbf{\Sigma}) - \frac{1}{2} \underset{1 \times n}{(\symbf{Y}-\symbf{\mu})'} \underset{n \times n}{\symbf{\Sigma}^{-1}} \underset{n \times 1}{(\symbf{Y}-\symbf{\mu})}
+$$
+
+
+## Maximum Likelihood - $\symbf{\beta}$ (iid)
+
+
+## Maximum Likelihood - $\sigma^2$ (iid)
+
+
+## Bayesian Model {.t}
+
+Likelihood:
+
+$$
+\symbf{Y} \,|\, \symbf{\beta}, \, \sigma^2 \sim N(\symbf{X}\symbf{\beta},\, \sigma^2 \, {\mathbb{1}_n})
+$$
+
+. . .
+
+Priors:
+$$
+\beta_i \sim N(0, \sigma^2_\beta)
+\text{  or  } 
+\symbf{\beta} \sim N(\symbf{0}, \sigma^2_\beta \, {\mathbb{1}_p})
+$$
+
+$$
+\sigma^2 \sim \text{Inv-Gamma}(a,\,b)
+$$
+
+## Deriving the posterior {.t}
+
+\footnotesize
+
+$$ 
+\begin{aligned}
+\left[ \symbf{\beta}, \sigma^2 \,|\, \symbf{Y}, \symbf{X} \right] 
+  &= \frac{[\symbf{Y} \,|\, \symbf{X}, \symbf{\beta}, \sigma^2]}{[\symbf{Y} \,|\, \symbf{X}]} [\symbf{\beta}, \sigma^2] \\
+  &\propto [\symbf{Y} \,|\, \symbf{X}, \symbf{\beta}, \sigma^2] [\symbf{\beta},\,\sigma^2] \\
+  &\propto [\symbf{Y} \,|\, \symbf{X}, \symbf{\beta}, \sigma^2] [\symbf{\beta}\,|\,\sigma^2] [\sigma^2]
+\end{aligned}
+$$
+
+. . . 
+
+where, 
+
+$$ 
+f(\symbf{Y} \,|\, \symbf{X}, \symbf{\beta}, \sigma^2) = 
+\left(2\pi \sigma^2\right)^{-n/2} \exp\left( -\frac{1}{2\sigma^2} (\symbf{Y}-\symbf{X}\symbf{\beta})'(\symbf{Y}-\symbf{X}\symbf{\beta}) \right) 
+$$
+
+. . .
+
+$$ 
+f(\symbf{\beta}\,|\, \sigma^2_\beta) = (2\pi \sigma^2_\beta)^{-p/2} \exp\left( -\frac{1}{2\sigma^2_\beta} \symbf{\beta}'\symbf{\beta} \right) 
+$$
+
+. . .
+
+$$
+f(\sigma^2 \,|\, a,\, b) = \frac{b^a}{\Gamma(a)} (\sigma^2)^{-a-1} \exp\left( -\frac{b}{\sigma^2} \right) 
+$$
+
+
+## Deriving the Gibbs sampler ($\sigma^2$ step) {.t}
+
+\scriptsize
+$$
+\begin{aligned}
+\left[ \symbf{\beta}, \sigma^2 \,|\, \symbf{Y}, \symbf{X}  \right]  \propto
+  &\left(2\pi \sigma^2\right)^{-n/2} \exp\left( -\frac{1}{2\sigma^2} (\symbf{Y}-\symbf{X}\symbf{\beta})'(\symbf{Y}-\symbf{X}\symbf{\beta}) \right) \\
+  &(2\pi \sigma^2_\beta)^{-p/2} \exp\left( -\frac{1}{2\sigma^2_\beta} \symbf{\beta}'\symbf{\beta} \right) \\
+  &\frac{b^a}{\Gamma(a)} (\sigma^2)^{-a-1} \exp\left( -\frac{b}{\sigma^2} \right) 
+\end{aligned}
+$$
+
+## {.plain}
+
+
+## Deriving the Gibbs sampler ($\symbf{\beta}$ step) {.t}
+
+\scriptsize
+$$
+\begin{aligned}
+\left[ \symbf{\beta}, \sigma^2 \,|\, \symbf{Y}, \symbf{X}  \right]  \propto
+  &\left(2\pi \sigma^2\right)^{-n/2} \exp\left( -\frac{1}{2\sigma^2} (\symbf{Y}-\symbf{X}\symbf{\beta})'(\symbf{Y}-\symbf{X}\symbf{\beta}) \right) \\
+  &(2\pi \sigma^2_\beta)^{-p/2} \exp\left( -\frac{1}{2\sigma^2_\beta} \symbf{\beta}'\symbf{\beta} \right) \\
+  &\frac{b^a}{\Gamma(a)} (\sigma^2)^{-a-1} \exp\left( -\frac{b}{\sigma^2} \right) 
+\end{aligned}
+$$
+
+## {.plain}
+
+
+# A Quick Example
+
+## Some Fake Data {.t}
+
+Lets generate some simulated data where the underlying model is known and see how various regression procedures function.
+
+$$ \beta_0 = 0.7, \quad \beta_1 = 1.5, \quad \beta_2 = -2.2, \quad \beta_3 = 0.1 $$
+$$ n=100, \quad \epsilon_i \sim N(0,1) $$
+
+
+## Generating the data {.t}
+
+```{r echo=TRUE}
+set.seed(01162018)
+n = 100
+beta = c(0.7,1.5,-2.2,0.1)
+eps = rnorm(n)
+
+d = data_frame(
+  X1 = rt(n,df=5),
+  X2 = rt(n,df=5),
+  X3 = rt(n,df=5)
+) %>%
+  mutate(Y = beta[1] + beta[2]*X1 + beta[3]*X2 + beta[4]*X3 + eps)
+```
+
+## Model Matrix {.t}
+
+```{r echo=TRUE}
+X = model.matrix(~X1+X2+X3, d) 
+tbl_df(X)
+```
+
+## Pairs plot {.t}
+
+```{r echo=TRUE, out.width="0.8\\textwidth"}
+GGally::ggpairs(d, progress = FALSE)
+```
+
+
+## Least squares fit {.t}
+
+Let $\hat{\symbf{Y}}$ be our estimate for $\symbf{Y}$ based on our estimate of $\symbf{\beta}$,
+$$ \hat{\symbf{Y}} = \hat{\beta}_0 + \hat{\beta}_1 \, \symbf{X}_{1} + \hat{\beta}_2 \, \symbf{X}_{2} + \hat{\beta}_3 \, \symbf{X}_{3} = \symbf{X}\, \hat{\symbf{\beta}} $$
+
+. . .
+
+The least squares estimate, $\hat{\symbf{\beta}}_{ls}$, is given by
+$$ \underset{\symbf{\beta}}{\argmin} \sum_{i=1}^n \left( Y_i - \symbf{X}_{i\cdot} \symbf{\beta} \right)^2 $$
+
+. . .
+
+Previously we derived,
+$$ \hat{\symbf{\beta}}_{ls} = (\symbf{X}' \symbf{X})^{-1} \symbf{X}' \, \symbf{Y} $$
+
+## Frequentist Fit {.t}
+
+```{r echo=TRUE}
+l = lm(Y ~ X1 + X2 + X3, data=d)
+l$coefficients
+
+(beta_hat = solve(t(X) %*% X, t(X)) %*% d$Y)
+```
+
+
+## Bayesian model specification (JAGS) {.t}
+
+```{r echo=TRUE}
+model = 
+"model{
+  # Likelihood
+  for(i in 1:length(Y)){
+    Y[i] ~ dnorm(mu[i], tau)
+    mu[i] = beta[1] + beta[2]*X1[i] + beta[3]*X2[i] + beta[4]*X3[i]
+  }
+
+  # Prior for beta
+  for(j in 1:4){
+    beta[j] ~ dnorm(0,1/100)
+  }
+
+  # Prior for sigma / tau2
+  tau ~ dgamma(1, 1)
+  sigma2 = 1/tau
+}"
+```
+
+## Compiling {.t}
+
+\scriptsize
+```{r echo=TRUE, message=FALSE}
+m = rjags::jags.model(
+  textConnection(model), 
+  data = d, n.chains = 2
+)
+```
+
+## Sampling {.t}
+
+```{r echp=TRUE}
+# Burnin 
+update(m, n.iter=1000, progress.bar="none")
+
+# Draw samples
+samp = rjags::coda.samples(
+  m, variable.names=c("beta","sigma2"), 
+  n.iter=5000, progress.bar="none"
+)
+```
+
+
+## Results {.t}
+
+```{r echo=TRUE}
+str(samp)
+```
+
+## CODA & mcmc objects {.t}
+
+```{r echo=TRUE}
+head(samp[[1]])
+```
+
+## CODA & mcmc objects - plotting {.t}
+
+```{r echo=TRUE}
+plot(samp)
+```
+
+## Tidy Bayes {.t}
+
+```{r}
+df = samp %>%
+  tidybayes::gather_draws(beta[i], sigma2) %>%
+  mutate(param = ifelse(is.na(i), .variable, paste0(.variable,"[",i,"]")))
+
+df
+```
+
+## Tidy Bayes + ggplot - Traceplot {.t}
+
+\scriptsize
+```{r fig.height=4}
+ggplot(df, aes(x=.iteration, y=.value, color=as.character(.chain))) +
+  geom_line(alpha=0.5) +
+  facet_wrap(~param, scale="free_y") +
+  labs(color="Chain")
+```
+
+## Tidy Bayes + ggplot - Density plot {.t}
+
+\scriptsize
+```{r fig.height=4}
+ggplot(df, aes(x=.value, fill=as.character(.chain))) +
+  geom_density(alpha=0.5) +
+  facet_wrap(~param, scale="free_x") +
+  labs(fill="Chain")
+```
+
+## Comparing Approaches
+
+\scriptsize
+
+```{r}
+pt_est = df %>% 
+  filter(.chain == 1) %>%
+  group_by(param) %>% 
+  summarize(post_mean = mean(.value)) %>%
+  ungroup() %>%
+  mutate(
+    truth = c(0.7, 1.5, -2.2, 0.1, 1),
+    ols   = c(l$coefficients, var(l$residuals))
+  ) %>%
+  select(param, truth, ols, post_mean)
+
+pt_est
+```
+
+## Comparing Approaches - code {.t}
+
+```{r dens-plot, eval=FALSE}
+ggplot(df, aes(x=.value, fill=as.character(.chain))) +
+  geom_density(alpha=0.5) +
+  facet_wrap(~param, scale="free_x") +
+  geom_vline(
+    data = tidyr::gather(pt_est, pt_est, value, -param), 
+    aes(xintercept = value, color=pt_est)
+  ) +
+  labs(fill="Chain")
+```
+## Comparing Approaches - plot {.t}
+
+```{r ref.label="dens-plot", echo=FALSE}
+```

@@ -1,0 +1,502 @@
+---
+title: "Lecture 10" 
+subtitle: "Seasonal Arima"
+date: "10/05/2018"
+fontsize: 11pt
+output: 
+  beamer_presentation:
+    theme: metropolis
+    highlight: pygments
+    fig_caption: false
+    keep_tex: true
+    latex_engine: xelatex
+    includes:
+      in_header: ../settings.tex
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+
+set.seed(20180222)
+```
+
+```{r config, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width=7,
+  fig.height=4.5,
+  out.width="\\textwidth",
+  fig.align="center",
+  echo=TRUE,
+  warning=FALSE
+)
+
+ggplot2::theme_set(ggplot2::theme_bw())
+
+source("../util.R")
+```
+
+---
+class: middle
+count: false
+
+# Seasonal Models
+
+---
+
+## Australian Wine Sales Example (Lecture 6)
+
+Australian total wine sales by wine makers in bottles <= 1 litre. Jan 1980 – Aug 1994.
+
+```{r echo=FALSE}
+data(wineind, package = "forecast")
+forecast::ggtsdisplay(wineind, points = FALSE)
+```
+
+---
+
+## Differencing
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(diff(wineind), points = FALSE)
+```
+
+---
+
+## Seasonal Arima {.t}
+
+We can extend the existing Arima model to handle these higher order lags (without having to include all of the intervening lags).
+
+\vspace{3mm}
+
+Seasonal $\text{ARIMA}\,(p,d,q) \times (P,D,Q)_s$:
+$$ \Phi_P(L^s) \, \phi_p(L) \, \Delta_s^D \, \Delta^d \, y_t = \delta + \Theta_Q(L^s) \, \theta_q(L) \, w_t$$
+\pause where
+$$
+\begin{aligned}
+\phi_p(L) &= 1-\phi_1 L - \phi_2 L^2 - \ldots - \phi_p L^p\\
+\theta_q(L) &= 1+\theta_1 L + \theta_2 L^2 + \ldots + \theta_p L^q \\
+\Delta^d &= (1-L)^d\\
+\\
+\Phi_P(L^s) &= 1-\Phi_1 L^s - \Phi_2 L^{2s} - \ldots - \Phi_P L^{Ps} \\
+\Theta_Q(L^s) &= 1+\Theta_1 L + \Theta_2 L^{2s} + \ldots + \theta_p L^{Qs} \\
+\Delta_s^D &= (1-L^s)^D\\
+\end{aligned}
+$$
+
+---
+
+## Seasonal Arima for \texttt{wineind} - AR
+
+Lets consider an $\text{ARIMA}(0,0,0) \times (1,0,0)_{12}$:
+$$
+\begin{aligned}
+(1-\Phi_1 L^{12}) \, y_t = \delta + w_t \\
+y_t = \Phi_1 y_{t-12} + \delta + w_t
+\end{aligned}
+$$
+\vspace{2mm}
+
+```{r}
+(m1.1 = forecast::Arima(wineind, seasonal=list(order=c(1,0,0), period=12)))
+```
+
+---
+
+## Fitted model
+
+```{r echo=FALSE, fig.height=4}
+cbPalette = c("#000000", "#ff3333", "#92c5de")
+
+model = "Model 1.1 - Arima (0,0,0) x (1,0,0)[12]"
+rmse = (wineind-m1.1$fitted)^2 %>% mean() %>% sqrt() %>% round(2) %>% paste0("      [RMSE: ", . ,"]")
+
+m1.1 %>%
+  {data_frame(
+    wineind = wineind %>% strip_attrs(),
+    model   = .$fitted %>% strip_attrs(),
+    time    = time(.$fitted) %>% strip_attrs()
+  )} %>% 
+  tidyr::gather(var, sales, -time) %>%
+  mutate(var = forcats::as_factor(var)) %>%
+  ggplot(aes(x=time, y=sales, color=var)) + 
+    geom_line(alpha=0.75, size=0.8) +
+    scale_colour_manual(values=cbPalette, name="") +
+    labs(title=paste(model, rmse))
+```
+
+---
+
+## Seasonal Arima for \texttt{wineind} - Diff {.t}
+
+Lets consider an $\text{ARIMA}(0,0,0) \times (0,1,0)_{12}$:
+$$
+\begin{aligned}
+(1 - L^{12}) \, y_t = \delta + w_t \\
+y_t = y_{t-12} + \delta + w_t
+\end{aligned}
+$$
+\vspace{2mm}
+
+```{r}
+(m1.2 = forecast::Arima(wineind, seasonal=list(order=c(0,1,0), period=12)))
+```
+
+
+---
+
+## Fitted model
+
+```{r echo=FALSE, fig.height=4}
+cbPalette = c("#000000", "#ff3333", "#92c5de")
+
+model = "Model 1.2 - Arima (0,0,0) x (0,1,0)[12]"
+rmse = (wineind-m1.2$fitted)^2 %>% mean() %>% sqrt() %>% round(2) %>% paste0("      [RMSE: ", . ,"]")
+
+m1.2 %>%
+  {data_frame(
+    wineind = wineind %>% strip_attrs(),
+    model   = .$fitted %>% strip_attrs(),
+    time    = time(.$fitted) %>% strip_attrs()
+  )} %>% 
+  tidyr::gather(var, sales, -time) %>%
+  mutate(var = forcats::as_factor(var)) %>%
+  ggplot(aes(x=time, y=sales, color=var)) + 
+    geom_line(alpha=0.75, size=0.8) +
+    scale_colour_manual(values=cbPalette, name="") +
+    labs(title=paste(model, rmse))
+```
+
+---
+
+## Residuals - Model 1.1
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(m1.1$residuals)
+```
+
+
+---
+
+## Residuals - Model 1.2
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(m1.2$residuals)
+```
+
+
+---
+
+## Model 2
+
+$\text{ARIMA}(0,0,0) \times (0,1,1)_{12}$:
+$$
+\begin{aligned}
+(1-L^{12}) y_t = \delta + (1+\Theta_1 L^{12})  w_t \\
+y_t-y_{t-12} = \delta + w_t + \Theta_1 w_{t-12} \\
+y_t = \delta + y_{t-12} + w_t + \Theta_1 w_{t-12}
+\end{aligned}
+$$
+
+
+```{r}
+(m2 = forecast::Arima(wineind, order=c(0,0,0), 
+                      seasonal=list(order=c(0,1,1), period=12)))
+```
+
+---
+
+## Fitted model
+
+```{r echo=FALSE, fig.height=4}
+model = "Model 2 - forecast::Arima (0,0,0) x (0,1,1)[12]"
+rmse = (wineind-m2$fitted)^2 %>% mean() %>% sqrt() %>% round(2) %>% paste0("      [RMSE: ", . ,"]")
+
+m2 %>%
+  {data_frame(
+    wineind = wineind %>% strip_attrs(),
+    model   = .$fitted %>% strip_attrs(),
+    time    = time(.$fitted) %>% strip_attrs()
+  )} %>% 
+  tidyr::gather(var, sales, -time) %>%
+  mutate(var = forcats::as_factor(var)) %>%
+  ggplot(aes(x=time, y=sales, color=var)) + 
+    geom_line(alpha=0.75, size=0.8) +
+    scale_colour_manual(values=cbPalette, name="") +
+    labs(title=paste(model, rmse))
+```
+
+---
+
+## Residuals
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(m2$residuals)
+```
+
+
+---
+
+## Model 3
+
+$\text{ARIMA}(3,0,0) \times (0,1,1)_{12}$
+$$
+\begin{aligned}
+(1-\phi_1 L - \phi_2 L^2 - \phi_3 L^3) \, (1-L^{12}) y_t = \delta + (1 + \Theta_1 L)w_t \\
+(1-\phi_1 L - \phi_2 L^2 - \phi_3 L^3) \, (y_t-y_{t-12}) = \delta + w_t + w_{t-12} \\
+y_t = \delta + \sum_{i=1}^3 \phi_i y_{t-1}  + y_{t-12}  - \sum_{i=1}^3 \phi_i y_{t-12-i} + w_t + w_{t-12}
+\end{aligned}
+$$
+
+
+```{r}
+(m3 = forecast::Arima(wineind, order=c(3,0,0), 
+                      seasonal=list(order=c(0,1,1), period=12)))
+```
+
+---
+
+## Fitted model
+
+```{r echo=FALSE, fig.height=4}
+model = "Model 3 - forecast::Arima (3,0,0) x (0,1,1)[12]"
+rmse = (wineind-m3$fitted)^2 %>% mean() %>% sqrt() %>% round(2) %>% paste0("      [RMSE: ", . ,"]")
+
+m3 %>%
+  {data_frame(
+    wineind = wineind %>% strip_attrs(),
+    model   = .$fitted %>% strip_attrs(),
+    time    = time(.$fitted) %>% strip_attrs()
+  )} %>% 
+  tidyr::gather(var, sales, -time) %>%
+  mutate(var = forcats::as_factor(var)) %>%
+  ggplot(aes(x=time, y=sales, color=var)) + 
+    geom_line(alpha=0.75, size=0.8) +
+    scale_colour_manual(values=cbPalette, name="") +
+    labs(title=paste(model, rmse))
+```
+
+---
+
+## Model - Residuals
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(m3$residuals)
+```
+
+---
+class: middle
+count: false
+
+# Federal Reserve Board Production Index
+
+---
+
+## \texttt{prodn} from the \texttt{astsa} package
+
+Monthly Federal Reserve Board Production Index (1948-1978)
+
+```{r}
+data(prodn, package="astsa"); forecast::ggtsdisplay(prodn, points = FALSE)
+```
+
+---
+
+## Differencing
+
+Based on the ACF it seems like standard differencing may be required
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(diff(prodn))
+```
+
+---
+
+## Differencing + Seasonal Differencing
+
+Additional seasonal differencing also seems warranted
+
+```{r}
+(fr_m1 = forecast::Arima(prodn, order = c(0,1,0), 
+            seasonal = list(order=c(0,0,0), period=12)))
+```
+
+```{r}
+(fr_m2 = forecast::Arima(prodn, order = c(0,1,0), 
+            seasonal = list(order=c(0,1,0), period=12)))
+```
+
+
+---
+
+## Residuals
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(fr_m2$residuals, points=FALSE, lag.max=36)
+```
+
+---
+
+## Adding Seasonal MA
+
+\scriptoutput
+
+```{r}
+(fr_m3.1 = forecast::Arima(prodn, order = c(0,1,0), 
+            seasonal = list(order=c(0,1,1), period=12)))
+```
+
+```{r}
+(fr_m3.2 = forecast::Arima(prodn, order = c(0,1,0), 
+            seasonal = list(order=c(0,1,2), period=12)))
+```
+
+---
+
+## Adding Seasonal MA (cont.) {.t}
+
+\scriptoutput 
+
+```{r}
+(fr_m3.3 = forecast::Arima(prodn, order = c(0,1,0), 
+            seasonal = list(order=c(0,1,3), period=12)))
+```
+
+
+---
+
+## Residuals - Model 3.3
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(fr_m3.3$residuals, points=FALSE, lag.max = 36)
+```
+
+
+---
+
+## Adding AR
+
+\scriptoutput
+
+```{r}
+(fr_m4.1 = forecast::Arima(prodn, order = c(1,1,0), 
+            seasonal = list(order=c(0,1,3), period=12)))
+```
+
+```{r}
+(fr_m4.2 = forecast::Arima(prodn, order = c(2,1,0), 
+            seasonal = list(order=c(0,1,3), period=12)))
+```
+
+---
+
+## Residuals - Model 4.1
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(fr_m4.1$residuals, points=FALSE, lag.max = 36)
+```
+
+---
+
+## Residuals - Model 4.2
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(fr_m4.2$residuals, points=FALSE, lag.max = 36)
+```
+
+---
+
+## Model Fit
+
+```{r echo=FALSE, fig.height=4}
+model = "Model 4.1 - forecast::Arima (1,1,0) x (0,1,3)[12]"
+rmse = (prodn-fr_m4.1$fitted)^2 %>% mean() %>% sqrt() %>% round(3) %>% paste0("      [RMSE: ", . ,"]")
+
+fr_m4.1 %>%
+  {data_frame(
+    prodn = prodn %>% strip_attrs(),
+    model = .$fitted %>% strip_attrs(),
+    time  = time(.$fitted) %>% strip_attrs()
+  )} %>% 
+  tidyr::gather(var, sales, -time) %>%
+  mutate(var = forcats::as_factor(var)) %>%
+  ggplot(aes(x=time, y=sales, color=var)) + 
+    geom_line(alpha=0.75, size=0.8) +
+    scale_colour_manual(values=cbPalette, name="") +
+    labs(title=paste(model, rmse))
+```
+
+---
+
+## Model Forecast
+
+```{r}
+forecast::forecast(fr_m4.1) %>% plot()
+```
+
+---
+
+## Model Forecast (cont.)
+
+```{r}
+forecast::forecast(fr_m4.1) %>% plot(xlim=c(1975,1982))
+```
+
+---
+
+## Model Forecast (cont.)
+
+```{r}
+forecast::forecast(fr_m4.1, 120) %>% plot()
+```
+
+---
+
+## Model Forecast (cont.)
+
+```{r}
+forecast::forecast(fr_m4.1, 120) %>% plot(xlim=c(1975,1990))
+```
+
+---
+
+## Exercise - Cortecosteroid Drug Sales
+
+Monthly cortecosteroid drug sales in Australia from 1992 to 2008.
+
+```{r fig.height=4}
+data(h02, package="fpp")
+forecast::ggtsdisplay(h02,points=FALSE)
+```
+
+---
+
+# Forecasting
+
+---
+
+## Forecasting ARMA {.t}
+
+Forecasts for stationary models necessarily revert to mean 
+
+  * Remember, $E(y_t) \ne \delta$ but rather $\delta / (1 - \sum_{i=1}^p \phi_i)$.
+  
+  * Differenced models revert to trend (usually a line)
+    
+  * Why? AR gradually damp out, MA terms disappear
+
+\vspace{5mm}
+  
+Like any other model, accuracy decreases as we extrapolate and the prediction interval expands rapidly
+
+---
+
+## One step ahead forecasting {.t}
+
+Take a fitted ARMA(1,1) process where we know $\delta$, $\phi$, and $\theta$ then
+
+---
+
+## ARIMA(3,1,1) example
+

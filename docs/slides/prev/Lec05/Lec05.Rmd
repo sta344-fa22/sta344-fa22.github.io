@@ -1,0 +1,676 @@
+---
+title: "Lecture 5" 
+subtitle: "Random Effects Models"
+date: "9/19/2018"
+fontsize: 11pt
+output: 
+  beamer_presentation:
+    theme: metropolis
+    highlight: pygments
+    fig_caption: false
+    latex_engine: xelatex
+    includes:
+      in_header: ../settings.tex
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r config, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width=7,
+  fig.height=4.5,
+  out.width="\\textwidth",
+  fig.align="center",
+  echo=TRUE,
+  warning=FALSE
+)
+
+ggplot2::theme_set(ggplot2::theme_bw())
+```
+
+
+# Random Effects Models
+
+## Sleep Study Data {.t}
+
+\small
+The average reaction time per day for subjects in a sleep deprivation study. On day 0 the subjects had their normal amount of sleep . Starting that night they were restricted to 3 hours of sleep per night. The observations represent the average reaction time on a series of tests given each day to each subject.
+
+
+```{r message=FALSE}
+sleep = lme4::sleepstudy %>% tbl_df()
+
+sleep
+```
+
+## EDA
+
+```{r echo=FALSE}
+ggplot(sleep, aes(x=Days, y=Reaction, color=Subject)) +
+  geom_point()
+```
+
+## EDA (small multiples)
+
+```{r echo=FALSE}
+ggplot(sleep, aes(x=Days, y=Reaction)) +
+  geom_point() +
+  facet_wrap(~Subject)
+```
+
+## Bayesian Linear Model {.t}
+
+```{r}
+sleep_lm = "model{
+  # Likelihood
+  for(i in 1:length(y)){
+    y[i] ~ dnorm(mu[i], tau)
+    mu[i] = beta[1] + beta[2]*x[i]
+
+    y_pred[i] ~ dnorm(mu[i],tau)
+  }
+
+  # Prior for beta
+  beta[1] ~ dnorm(0,1/10000)
+  beta[2] ~ dnorm(0,1/10000)
+
+  # Prior for sigma / tau
+  sigma ~ dunif(0, 100) 
+  tau = 1/(sigma*sigma)
+}"
+```
+
+```{r echo=FALSE, include=FALSE}
+nburn=1000; niter=5000
+
+m = rjags::jags.model(
+  textConnection(sleep_lm), 
+  data = list(x = sleep$Days, y = sleep$Reaction), 
+  quiet = TRUE, n.chains = 2
+) 
+
+update(m, n.iter=nburn, progress.bar="none")
+
+sleep_lm_samp = rjags::coda.samples(
+  m, variable.names=c("beta", "sigma", "mu", "y_pred"), 
+  n.iter=niter, progress.bar="none"
+)
+```
+
+## MCMC Diagnostics
+
+```{r echo=FALSE}
+sleep_lm_samp %>%
+  window(thin=10) %>%
+  tidybayes::gather_samples(beta[i], sigma) %>%
+  ungroup() %>%
+  mutate(term = ifelse(is.na(i), term, paste0(term,"[",i,"]"))) %>%
+  ggplot(aes(x=.iteration, y=estimate, color=as.factor(.chain))) +
+  geom_line(alpha=0.5) +
+  facet_grid(term~., scale="free_y") +
+  labs(color="chain", x="iteration")
+```
+
+## Model fit
+
+```{r echo=FALSE, message=FALSE}
+sleep_lm_pred = sleep_lm_samp[1] %>%
+  tidybayes::spread_samples(mu[i], y_pred[i]) %>%
+  ungroup() %>%
+  left_join(
+    mutate(sleep, i = 1:n())
+  ) %>%
+  mutate(resid = Reaction - mu)
+```
+
+```{r echo=FALSE}
+ggplot(sleep, aes(x=Days, y=Reaction)) +
+  tidybayes::stat_lineribbon(data=sleep_lm_pred, aes(y=y_pred), alpha=0.5) +
+  geom_point(data=sleep) +
+  facet_wrap(~Subject)
+```
+
+## Residuals
+
+```{r echo=FALSE}
+sleep_lm_pred %>% 
+  group_by(Days, Subject) %>%
+  tidybayes::mean_hdi(resid) %>%
+  ggplot(aes(x=Days, y=resid, color=Subject)) +
+    geom_hline(yintercept=0, color="grey") + 
+    geom_point() +
+    guides(color=FALSE)
+```
+
+
+## Residuals by subject
+
+```{r echo=FALSE}
+sleep_lm_pred %>% 
+  group_by(Days, Subject) %>%
+  tidybayes::mean_hdi(resid) %>%
+  ggplot(aes(x=Days, y=resid, color=Subject)) +
+    geom_hline(yintercept=0, color="grey") + 
+    geom_point() +
+    facet_wrap(~Subject) +
+    guides(color=FALSE)
+```
+
+
+# Random Intercept Model
+
+## Coding {.t}
+
+```{r}
+sleep = sleep %>% 
+  mutate(Subject_index = as.integer(Subject))
+
+sleep[c(1:2,11:12,21:22,31:32),]
+```
+
+## Random Intercept Model {.t}
+
+Let $i$ represent each observation and $j(i)$ be subject in oberservation $i$ then
+
+$$ y_i = \alpha_{j(i)}+ \beta \times \text{Day}_i + \epsilon_i $$
+
+$$
+\begin{aligned}
+\alpha_j &\sim \mathcal{N}(\beta_\alpha,~\sigma^2_\alpha)  \\
+\epsilon_i &\sim \mathcal{N}(0,~\sigma^2) \\
+\\
+\beta_{\alpha} &\sim \mathcal{N}(0, 10^4)\\
+\beta &\sim \mathcal{N}(0, 10^4)\\
+\sigma, \sigma_\alpha &\sim \text{Unif}(0,10^2)
+\end{aligned}
+$$
+
+
+
+## Random Intercept Model - JAGS
+
+\footnoteoutput
+
+```{r}
+sleep_ri = "model{
+  for(i in 1:length(Reaction)) {
+    Reaction[i] ~ dnorm(mu[i],tau)
+    mu[i] = alpha[Subject_index[i]] + beta*Days[i]
+
+    y_pred[i] ~ dnorm(mu[i],tau)
+  }
+
+  for(j in 1:18) {
+    alpha[j] ~ dnorm(beta_alpha, tau_alpha)
+  }
+  
+  beta_alpha ~ dnorm(0,1/10000)
+  sigma_alpha ~ dunif(0, 100) 
+  tau_alpha = 1/(sigma_alpha*sigma_alpha)
+
+  
+  beta ~ dnorm(0,1/10000)
+  sigma ~ dunif(0, 100) 
+  tau = 1/(sigma*sigma)
+}"
+```
+
+```{r echo=FALSE, include=FALSE, message=FALSE}
+nburn=1000; niter=5000
+
+m = rjags::jags.model(
+  textConnection(sleep_ri), 
+  data = sleep, quiet = TRUE,
+  n.chains = 2
+) 
+
+update(m, n.iter=nburn, progress.bar="none")
+
+sleep_ri_samp = rjags::coda.samples(
+  m, n.iter=niter, progress.bar="none",
+  variable.names=c(
+    "y_pred", "mu",
+    "beta", "sigma", 
+    "alpha", "beta_alpha"," sigma_alpha")
+)
+```
+
+
+## MCMC Diagnostics
+
+```{r echo=FALSE}
+sleep_ri_samp %>%
+  window(thin=10) %>%
+  tidybayes::gather_samples(beta, sigma, beta_alpha, sigma_alpha) %>%
+  ungroup() %>%
+  ggplot(aes(x=.iteration, y=estimate, color=as.factor(.chain))) +
+    geom_line(alpha=0.5) +
+    facet_grid(term~., scale="free_y") +
+    labs(color="chain", x="iteration")
+```
+
+
+
+## Model fit
+
+```{r echo=FALSE, message=FALSE}
+sleep_ri_pred = sleep_ri_samp[1] %>%
+  tidybayes::spread_samples(y_pred[i], mu[i]) %>%
+  ungroup() %>%
+  left_join(
+    mutate(sleep, i = 1:n())
+  ) %>%
+  mutate(resid = Reaction - mu)
+```
+
+```{r echo=FALSE}
+ggplot(sleep, aes(x=Days, y=Reaction)) +
+  tidybayes::stat_lineribbon(data=sleep_ri_pred, aes(y=y_pred), alpha=0.5) +
+  geom_point(data=sleep) +
+  facet_wrap(~Subject)
+```
+
+## Model fit - lines
+```{r echo=FALSE}
+sleep_ri_pred %>%
+  group_by(Days, Subject) %>%
+  tidybayes::mean_hdi(mu) %>%
+  ungroup() %>%
+  ggplot(aes(x=Days, y=mu, color=Subject)) +
+    geom_line() +
+    guides(color=FALSE) +
+    labs(y="Reaction")
+```
+
+## Random Effects
+
+```{r echo=FALSE}
+sleep_ri_samp[1] %>%
+  tidybayes::gather_samples(alpha[j]) %>%
+  ungroup() %>%
+  ggplot(aes(x=j, group=j, y=estimate)) +
+    geom_boxplot()
+```
+
+## Residuals
+
+```{r echo=FALSE}
+sleep_ri_pred %>% 
+  group_by(Days, Subject) %>%
+  tidybayes::mean_hdi(resid) %>%
+  ggplot(aes(x=Days, y=resid, color=Subject)) +
+    geom_hline(yintercept=0, color="grey") + 
+    geom_point() +
+    guides(color=FALSE)
+```
+
+
+## Residuals by subject
+
+```{r echo=FALSE}
+sleep_ri_pred %>% 
+  group_by(Days, Subject) %>%
+  tidybayes::mean_hdi(resid) %>%
+  ggplot(aes(x=Days, y=resid, color=Subject)) +
+    geom_hline(yintercept=0, color="grey") + 
+    geom_point() +
+    facet_wrap(~Subject) +
+    guides(color=FALSE)
+```
+
+## Why not a fixed effect for Subject?
+
+\small
+
+We are not going to bother with the Bayesian model here to avoid the headache of dummy coding and the resulting $\beta$s.
+
+. . .
+
+\tinyoutput
+
+```{r}
+l = lm(Reaction ~ Days + Subject - 1, data=sleep)
+summary(l)
+```
+
+## Comparing Model fit
+
+```{r echo=FALSE}
+bind_rows(
+  sleep_ri_pred %>%
+    group_by(Days, Subject) %>%
+    tidybayes::mean_hdi(mu) %>%
+    ungroup() %>% 
+    select(Days, Subject, pred = mu) %>%
+    mutate(model="Random Intercept"),
+  sleep %>%
+    modelr::add_predictions(l) %>%
+    select(-Subject_index, Reaction) %>%
+    mutate(model="Fixed Effect")
+) %>%
+  ggplot(aes(x=Days, y=pred, color=model)) +
+  geom_point(data=sleep, aes(y=Reaction), color="black") +  
+  geom_line() +
+    facet_wrap(~Subject) + 
+      labs(y="Reaction")
+```
+
+## Random effects vs fixed effects
+
+```{r echo=FALSE}
+fix_eff = data_frame(
+  estimate = coefficients(l)[-1],
+  term = paste0("alpha[",1:18,"]") %>%
+    forcats::as_factor()
+)
+
+sleep_ri_samp[1] %>%
+  tidybayes::gather_samples(alpha[i]) %>%
+  ungroup() %>%
+  mutate(term = paste0(term,"[",i,"]") %>% forcats::as_factor()) %>%
+  ggplot(aes(x=term, y=estimate)) +
+    geom_boxplot() +
+    geom_point(data=fix_eff, color="red") +
+    geom_hline(yintercept = mean(sleep_ri_samp[[1]][,"beta_alpha"]), color="blue")
+```
+
+
+
+## Random Intercept Model (strong prior for $\sigma_\alpha$)
+
+\footnoteoutput
+
+```{r}
+sleep_ri2 = "model{
+  for(i in 1:length(Reaction)) {
+    Reaction[i] ~ dnorm(mu[i],tau)
+    mu[i] = alpha[Subject_index[i]] + beta*Days[i]
+
+    y_pred[i] ~ dnorm(mu[i],tau)
+  }
+
+  for(j in 1:18) {
+    alpha[j] ~ dnorm(beta_alpha, tau_alpha)
+  }
+  
+  beta_alpha ~ dnorm(0,1/10000)
+  sigma_alpha ~ dunif(0, 10) 
+  tau_alpha = 1/(sigma_alpha*sigma_alpha)
+
+  
+  beta ~ dnorm(0,1/10000)
+  sigma ~ dunif(0, 100) 
+  tau = 1/(sigma*sigma)
+}"
+```
+
+```{r echo=FALSE, include=FALSE}
+nburn=1000; niter=5000
+
+m = rjags::jags.model(
+  textConnection(sleep_ri2), 
+  data = sleep, quiet = TRUE,
+  n.chains = 1
+) 
+
+update(m, n.iter=nburn, progress.bar="none")
+
+sleep_ri2_samp = rjags::coda.samples(
+  m, n.iter=niter, progress.bar="none",
+  variable.names=c(
+    "y_pred", "mu",
+    "beta", "sigma", 
+    "alpha", "beta_alpha"," sigma_alpha")
+)
+```
+
+```{r echo=FALSE, message=FALSE}
+sleep_ri2_pred = sleep_ri2_samp[1] %>%
+  tidybayes::spread_samples(y_pred[i], mu[i]) %>%
+  ungroup() %>%
+  left_join(
+    mutate(sleep, i = 1:n())
+  ) %>%
+  mutate(resid = Reaction - mu)
+```
+
+## Comparing Model fit
+
+```{r echo=FALSE}
+bind_rows(
+  sleep_ri_pred %>%
+    group_by(Days, Subject) %>%
+    tidybayes::mean_hdi(mu) %>%
+    ungroup() %>% 
+    select(Days, Subject, pred = mu) %>%
+    mutate(model="Random Intercept (weak)"),
+  sleep %>%
+    modelr::add_predictions(l) %>%
+    select(-Subject_index, Reaction) %>%
+    mutate(model="Fixed Effect"),
+  sleep_ri2_pred %>%
+    group_by(Days, Subject) %>%
+    tidybayes::mean_hdi(mu) %>%
+    ungroup() %>% 
+    select(Days, Subject, pred = mu) %>%
+    mutate(model="Random Intercept (strong")
+) %>%
+  ggplot(aes(x=Days, y=pred, color=model)) +
+  geom_point(data=sleep, aes(y=Reaction), color="black") +  
+  geom_line() +
+    facet_wrap(~Subject) + 
+      labs(y="Reaction")
+```
+
+
+## Prior Effect on $\alpha$
+
+```{r echo=FALSE}
+
+bind_rows(
+  data_frame(
+    estimate = coefficients(l)[-1],
+    term = paste0("alpha[",1:18,"]") %>%
+      forcats::as_factor(),
+    model = "Fixed Effect"
+  ),
+
+  sleep_ri_samp[1] %>%
+    tidybayes::gather_samples(alpha[i]) %>%
+    ungroup() %>%
+    mutate(term = paste0(term,"[",i,"]") %>% forcats::as_factor()) %>%
+    select(term, estimate) %>%
+    mutate(model = "Random Effect (weak)"),
+
+  sleep_ri2_samp[1] %>%
+    tidybayes::gather_samples(alpha[i]) %>%
+    ungroup() %>%
+    mutate(term = paste0(term,"[",i,"]") %>% forcats::as_factor()) %>%
+    select(term, estimate) %>%
+    mutate(model = "Random Effect (strong)")
+) %>% 
+  mutate(model = forcats::as_factor(model)) %>%
+  ggplot(aes(x=term, y=estimate, color=model)) +
+  geom_hline(yintercept = mean(sleep_ri_samp[[1]][,"beta_alpha"]), color="#00BA38") + 
+    geom_hline(yintercept = mean(sleep_ri2_samp[[1]][,"beta_alpha"]), color="#619CFF") + 
+    geom_boxplot()
+```
+
+
+## Some Distribution Theory
+
+
+
+# Random intercept and slope model
+
+## Model
+
+Let $i$ represent each observation and $j(i)$ be the subject in oberservation $i$ then
+
+$$ Y_i = \alpha_{j(i)} + \beta_{j(i)} \times \text{Days} + \epsilon_i $$
+
+$$
+\begin{aligned}
+\alpha_j &\sim \mathcal{N}(\beta_0,~\sigma^2_\alpha)  \\
+\beta_j &\sim \mathcal{N}(\beta_1,~\sigma^2_\beta) \\
+\epsilon_i &\sim \mathcal{N}(0,~\sigma^2) \\
+\\
+\beta_\alpha, \beta_\beta &\sim \mathcal{N}(0, 10000)\\
+\sigma, \sigma_\alpha, \sigma_\beta &\sim \text{Unif}(0,100)
+\end{aligned}
+$$
+
+## Model - JAGS
+
+\footnoteoutput
+
+```{r}
+sleep_ris = "model{
+  for(i in 1:length(Reaction)) {
+    Reaction[i] ~ dnorm(mu[i],tau)
+    mu[i] = alpha[Subject_index[i]] + beta[Subject_index[i]] * Days[i]
+    y_pred[i] ~ dnorm(mu[i], tau)
+  }
+
+  sigma ~ dunif(0, 100) 
+  tau = 1/(sigma*sigma)
+
+  for(j in 1:18) {
+    alpha[j] ~ dnorm(beta_alpha, tau_alpha)
+    beta[j]  ~ dnorm(beta_beta, tau_beta)
+  }
+
+  beta_alpha ~ dnorm(0,1/10000)
+  beta_beta ~ dnorm(0,1/10000)  
+
+  sigma_alpha ~ dunif(0, 100) 
+  tau_alpha = 1/(sigma_alpha*sigma_alpha)
+
+  sigma_beta ~ dunif(0, 100) 
+  tau_beta = 1/(sigma_beta*sigma_beta)
+}"
+```
+
+```{r echo=FALSE, include=FALSE}
+nburn=1000; niter=5000
+
+m = rjags::jags.model(
+  textConnection(sleep_ris), 
+  data = sleep, quiet = TRUE,
+  n.chains = 2
+) 
+
+update(m, n.iter=nburn, progress.bar="none")
+
+sleep_ris_samp = rjags::coda.samples(
+  m, variable.names=c("alpha", "beta", 
+                      "beta_alpha", "beta_beta", 
+                      "sigma", "sigma_alpha", "sigma_beta", 
+                      "y_pred", "mu"), 
+  n.iter=niter, progress.bar="none"
+)
+```
+
+
+## MCMC Diagnostics
+
+```{r echo=FALSE}
+sleep_ris_samp %>%
+  window(thin=10) %>%
+  tidybayes::gather_samples(sigma, beta_alpha, sigma_alpha, beta_beta, sigma_beta) %>%
+  ungroup() %>%
+  ggplot(aes(x=.iteration, y=estimate, color=as.factor(.chain))) +
+    geom_line(alpha=0.5) +
+    facet_grid(term~., scale="free_y") +
+    labs(color="chain", x="iteration")
+```
+
+## MCMC Diagnostics - $\alpha$
+
+```{r echo=FALSE}
+sleep_ris_samp %>%
+  window(thin=10) %>%
+  tidybayes::gather_samples(alpha[i]) %>%
+  ungroup() %>%
+  mutate(term = paste0(term,"[",i,"]")) %>%
+  ggplot(aes(x=.iteration, y=estimate, color=forcats::as_factor(as.character(.chain)))) +
+    geom_line(alpha=0.5) +
+    facet_wrap(~term) +
+    labs(color="chain", x="iteration")
+```
+
+## MCMC Diagnostics - $\beta$
+
+```{r echo=FALSE}
+sleep_ris_samp %>%
+  window(thin=10) %>%
+  tidybayes::gather_samples(beta[i]) %>%
+  ungroup() %>%
+  mutate(term = paste0(term,"[",i,"]")) %>%
+  ggplot(aes(x=.iteration, y=estimate, color=forcats::as_factor(as.character(.chain)))) +
+    geom_line(alpha=0.5) +
+    facet_wrap(~term) +
+    labs(color="chain", x="iteration")
+```
+
+
+## Model fit
+
+```{r echo=FALSE, message=FALSE}
+sleep_ris_pred = sleep_ri_samp[1] %>%
+  tidybayes::spread_samples(y_pred[i], mu[i]) %>%
+  ungroup() %>%
+  left_join(
+    mutate(sleep, i = 1:n())
+  ) %>%
+  mutate(resid = Reaction - mu)
+```
+
+```{r echo=FALSE}
+ggplot(sleep, aes(x=Days, y=Reaction)) +
+  tidybayes::stat_lineribbon(data=sleep_ris_pred, aes(y=y_pred), alpha=0.5) +
+  geom_point(data=sleep) +
+  facet_wrap(~Subject)
+```
+
+## Model fit - lines
+```{r echo=FALSE}
+sleep_ris_pred %>%
+  group_by(Days, Subject) %>%
+  tidybayes::mean_hdi(mu) %>%
+  ungroup() %>%
+  ggplot(aes(x=Days, y=mu, color=Subject)) +
+    geom_line() +
+    guides(color=FALSE) +
+    labs(y="Reaction")
+```
+
+## Random Effects
+
+```{r echo=FALSE}
+sleep_ris_samp[1] %>%
+  tidybayes::gather_samples(alpha[i],beta[i]) %>%
+  ungroup() %>%
+  mutate(full_term = paste0(term,"[",i,"]") %>% forcats::as_factor()) %>%
+  ggplot(aes(group=i, x=i, y=estimate)) +
+    geom_boxplot() +
+    facet_grid(term~., scale="free_y")
+```
+
+
+## Residuals by subject
+
+```{r echo=FALSE}
+sleep_ris_pred %>% 
+  group_by(Days, Subject) %>%
+  tidybayes::mean_hdi(resid) %>%
+  ggplot(aes(x=Days, y=resid, color=Subject)) +
+    geom_hline(yintercept=0, color="grey") + 
+    geom_point() +
+    facet_wrap(~Subject) +
+    guides(color=FALSE)
+```
