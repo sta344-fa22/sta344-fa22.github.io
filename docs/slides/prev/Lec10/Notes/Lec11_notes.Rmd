@@ -1,0 +1,93 @@
+---
+title: "Lec 11 - Notes"
+output: html_document
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(
+  eval = FALSE
+)
+```
+
+
+## Setup
+
+```{r results='hide'}
+data(h02, package="fpp")
+forecast::ggtsdisplay(h02,points=FALSE)
+```
+
+# Seasonal ARIMA
+
+## Model 1
+
+```{r}
+(m1.1 = forecast::Arima(h02, order=c(0,0,0), seasonal = list(order=c(0,1,0), period=12)))
+(m1.2 = forecast::Arima(h02, order=c(0,0,0), seasonal = list(order=c(1,0,0), period=12)))
+```
+
+```{r}
+forecast::ggtsdisplay(m1.1$residuals)
+forecast::ggtsdisplay(m1.2$residuals)
+```
+
+## Model 2
+
+```{r}
+(m2.1 = forecast::Arima(h02, order=c(0,0,0), seasonal = list(order=c(0,1,1), period=12)))
+(m2.2 = forecast::Arima(h02, order=c(0,0,0), seasonal = list(order=c(1,1,0), period=12)))
+```
+
+```{r}
+forecast::ggtsdisplay(m2.1$residuals)
+forecast::ggtsdisplay(m2.2$residuals)
+```
+
+## Model 3
+
+```{r error=TRUE}
+(m3.0 = forecast::Arima(h02, order=c(3,0,0), seasonal = list(order=c(0,1,0), period=12)))$aicc
+(m3.1 = forecast::Arima(h02, order=c(3,0,0), seasonal = list(order=c(1,1,0), period=12)))$aicc
+(m3.2 = forecast::Arima(h02, order=c(3,0,0), seasonal = list(order=c(0,1,1), period=12)))$aicc
+```
+
+
+```{r}
+forecast::ggtsdisplay(m3.2$residuals)
+```
+
+# Dealing with Heteroskedasticity
+
+## log Model 1
+
+```{r}
+(m1.1 = forecast::Arima(log(h02), order=c(0,0,0), seasonal = list(order=c(0,1,0), period=12)))
+(m1.2 = forecast::Arima(log(h02), order=c(0,0,0), seasonal = list(order=c(1,0,0), period=12)))
+```
+
+```{r}
+forecast::ggtsdisplay(m1.2$residuals)
+```
+
+## log Model 2
+
+```{r}
+(m2.1 = forecast::Arima(log(h02), order=c(0,0,0), seasonal = list(order=c(1,1,0), period=12)))
+(m2.2 = forecast::Arima(log(h02), order=c(0,0,0), seasonal = list(order=c(0,1,1), period=12)))
+```
+
+```{r}
+forecast::ggtsdisplay(m2.1$residuals)
+```
+
+## log Model 3
+
+```{r error=TRUE}
+(m3.0 = forecast::Arima(log(h02), order=c(3,0,0), seasonal = list(order=c(1,1,0), period=12)))
+(m3.1 = forecast::Arima(log(h02), order=c(3,0,0), seasonal = list(order=c(1,1,0), period=12)))
+(m3.2 = forecast::Arima(log(h02), order=c(3,0,0), seasonal = list(order=c(0,1,1), period=12)))
+```
+
+```{r}
+forecast::ggtsdisplay(m3.2$residuals)
+```

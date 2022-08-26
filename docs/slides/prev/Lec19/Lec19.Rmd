@@ -1,0 +1,909 @@
+---
+title: "Lecture 19" 
+subtitle: "Spatial GLM + Point Reference Spatial Data"
+author: "Colin Rundel"
+date: "11/09/2017"
+fontsize: 11pt
+output: 
+  beamer_presentation:
+    theme: metropolis
+    highlight: pygments
+    fig_caption: false
+    latex_engine: xelatex
+    keep_tex: true
+    includes:
+      in_header: ../settings.tex
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(sf)
+library(rstan)
+
+set.seed(20180329)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width=7,
+  fig.height=4.5,
+  out.width="\\textwidth",
+  fig.align="center",
+  echo=TRUE,
+  warning=FALSE
+)
+
+ggplot2::theme_set(ggplot2::theme_bw())
+
+rstan::rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+
+source("../util.R")
+```
+
+
+# Spatial GLM Models
+
+## Scottish Lip Cancer Data
+
+```{r echo=FALSE}
+load("../data/scottish_lip_cancer.Rdata")
+
+lip_cancer %>% 
+  tidyr::gather(var, value, Observed:Expected) %>%
+  ggplot() +
+    geom_sf(aes(fill=value), color=NA) +
+    facet_wrap(~forcats::as_factor(var))
+```
+
+##
+
+```{r echo=FALSE}
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=Observed/Expected), color=NA) + 
+    labs(title="Obs/Exp",fill="")
+) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=pcaff), color=NA) +
+    labs(title="% Agg Fish Forest",fill="")
+)
+```
+
+## Neighborhood / weight matrix
+
+\vspace{-4mm}
+
+```{r echo=FALSE, fig.height=6, fig.width=4, out.width="0.5\\textwidth", fig.align="center"}
+W = st_distance(lip_cancer) %>% strip_class() < 1e-6
+
+listw = spdep::mat2listw(W)
+
+plot(st_geometry(lip_cancer), asp=1) 
+plot(listw, coords = st_coordinates(st_centroid(lip_cancer)), add=TRUE, col="blue", pch=16)
+```
+
+
+## Moran's I
+
+\scriptoutput
+
+```{r}
+spdep::moran.test(lip_cancer$Observed, listw)
+
+spdep::moran.test(lip_cancer$Observed / lip_cancer$Expected, listw)
+```
+
+## GLM
+
+\scriptoutput
+
+```{r}
+l = glm(Observed ~ offset(log(Expected)) + pcaff, 
+        family="poisson", data=lip_cancer)
+
+summary(l)
+```
+
+## GLM Fit
+
+```{r echo=FALSE} 
+lip_cancer = lip_cancer %>%
+  mutate(
+    glm_pred = predict(l, type="response"),
+    glm_resid = Observed - glm_pred
+  )
+
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=Observed), color=NA) + 
+    labs(title="Observed Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=glm_pred), color=NA) + 
+    labs(title="GLM Predicted Cases",fill=""))
+```
+
+## GLM Fit 
+
+```{r echo=FALSE}
+ggplot(lip_cancer) +
+  geom_abline(intercept=0, slope=1, color="grey") +
+  geom_point(aes(x=Observed, y=glm_pred)) 
+```
+
+## GLM Residuals
+
+
+```{r echo=FALSE} 
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=glm_pred), color=NA) + 
+    labs(title="GLM Predicted Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=glm_resid), color=NA) +
+    labs(title="GLM Residuals",fill=""))
+```
+
+## Model Results
+
+```{r}
+#RMSE
+lip_cancer$glm_resid %>% .^2 %>% mean() %>% sqrt()
+
+#Moran's I
+spdep::moran.test(lip_cancer$glm_resid, listw)
+```
+
+## A hierachical model for lip cancer {.t}
+
+We have observed counts of lip cancer for 56 districts in Scotland. Let $y_i$ represent the number of lip cancer for district $i$.
+
+$$\begin{aligned}
+y_i &\sim \text{Poisson}(\lambda_i) \\
+\\
+\log(\lambda_i) &= \log(E_i) + x_i \beta + \omega_i \\
+\\
+\symbf{\omega} &\sim \mathcal{N}(\symbf{0},~\sigma^2(\symbf{D}-\phi\,\symbf{W})^{-1})
+\end{aligned}$$
+
+where $E_i$ is the expected counts for each region (and serves as an offet).
+
+
+## Data prep & CAR model
+
+\scriptoutput
+
+```{r}
+D = diag(rowSums(W))
+X = model.matrix(~scale(lip_cancer$pcaff))
+log_offset = log(lip_cancer$Expected)
+y = lip_cancer$Observed
+```
+
+```{r}
+car_model = "model{
+  for(i in 1:length(y)) {
+    y[i] ~ dpois(lambda[i])
+    y_pred[i] ~ dpois(lambda[i])
+    log(lambda[i]) = log_offset[i] + X[i,] %*% beta + omega[i]
+  }
+
+  for(i in 1:2) {
+    beta[i] ~ dnorm(0,1)
+  }
+
+  omega ~ dmnorm(rep(0,length(y)), tau * (D - phi*W))
+  sigma2 = 1/tau
+  tau ~ dgamma(2, 2)
+  phi ~ dunif(0,0.99)
+}"
+```
+
+## CAR Results
+
+```{r echo=FALSE}
+if (!file.exists("car_model.Rdata")) {
+  m = rjags::jags.model(
+    textConnection(car_model), 
+    data = list(
+      D = D,
+      y = y,
+      X = X,
+      W = W,
+      log_offset = log_offset
+    ),
+    n.adapt=25000
+  )
+
+  update(m, n.iter=25000)#, progress.bar="none")
+  
+  car_coda = rjags::coda.samples(
+    m, variable.names=c("sigma2","tau", "beta", "omega", "phi", "y_pred"),
+    n.iter=50000, thin=50
+  )
+  save(car_coda, m, file="car_model.Rdata")
+} else {
+  load("car_model.Rdata")
+}
+
+beta_params = tidybayes::gather_samples(car_coda,beta[i]) %>%
+  ungroup() %>%
+  mutate(term = paste0(term,"[",i,"]"))
+
+ar_params = tidybayes::gather_samples(car_coda,sigma2,phi)
+
+omega = tidybayes::gather_samples(car_coda,omega[i])
+y_pred = tidybayes::gather_samples(car_coda,y_pred[i])
+```
+
+```{r echo=FALSE}
+ggplot(beta_params, aes(x=.iteration, y=estimate, color=term)) +
+  geom_line() +
+  facet_grid(term~., scales="free_y") +
+  guides(color=FALSE)
+```
+
+##
+
+```{r echo=FALSE}
+ggplot(ar_params, aes(x=.iteration, y=estimate, color=term)) +
+  geom_line() +
+  facet_grid(term~., scales="free_y") +
+  guides(color=FALSE)
+```
+
+## CAR Predictions
+
+```{r echo=FALSE}
+lip_cancer = lip_cancer %>% 
+  mutate(
+    car_pred = y_pred %>% summarize(pred = mean(estimate)) %>% pull(pred), 
+    car_resid = Observed - car_pred
+  )
+
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=Observed), color=NA) + 
+    labs(title="Observed Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=car_pred), color=NA) + 
+    labs(title="Predicted Cases",fill=""))
+```
+
+## CAR Predictions
+
+```{r echo=FALSE}
+ggplot(lip_cancer) +
+  geom_abline(intercept=0, slope=1, color="grey") +
+  geom_point(aes(x=Observed, y=car_pred))
+```
+
+## CAR Residuals
+
+```{r echo=FALSE}
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=car_pred), color=NA) + 
+    labs(title="Predicted Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=car_resid), color=NA) +
+    labs(title="Residuals",fill=""))
+```
+
+
+## CAR Results {.t}
+
+```{r}
+#RMSE
+lip_cancer$car_resid %>% .^2 %>% mean() %>% sqrt()
+
+#Moran's I
+spdep::moran.test(lip_cancer$car_resid, listw)
+```
+
+## Intrinsic Autoregressive Model
+
+```{r}
+iar_model = "model{
+  for(i in 1:length(y)) {
+    y[i] ~ dpois(lambda[i])
+    y_pred[i] ~ dpois(lambda[i])
+    log(lambda[i]) = log_offset[i] + X[i,] %*% beta + omega[i]
+  }
+
+  for(i in 1:2) {
+    beta[i] ~ dnorm(0,1)
+  }
+
+  omega_free ~ dmnorm(rep(0,length(y)), tau * (D - W))
+  omega = omega_free - mean(omega_free)
+  sigma2 = 1/tau
+  tau ~ dgamma(2, 2)
+}"
+```
+
+## Model Parameters
+
+```{r echo=FALSE}
+if (!file.exists("iar_model.Rdata")) {
+  m = rjags::jags.model(
+    textConnection(iar_model), 
+    data = list(
+      D = D,
+      y = y,
+      X = X,
+      W = W,
+      log_offset = log_offset
+    ),
+    n.adapt=50000
+  )
+
+  update(m, n.iter=50000)#, progress.bar="none")
+  
+  iar_coda = rjags::coda.samples(
+    m, variable.names=c("sigma2", "beta", "omega", "y_pred"),
+    n.iter=50000, thin=50
+  )
+  save(iar_coda, m, file="iar_model.Rdata")
+} else {
+  load("iar_model.Rdata")
+}
+
+params = tidybayes::gather_samples(iar_coda, beta[i], sigma2) %>%
+  ungroup() %>%
+  mutate(term = fixterm(term, i))
+
+omega = tidybayes::gather_samples(iar_coda,omega[i])
+y_pred = tidybayes::gather_samples(iar_coda,y_pred[i])
+```
+
+```{r echo=FALSE}
+ggplot(params, aes(x=.iteration, y=estimate, color=term)) +
+  geom_line() +
+  facet_grid(term~., scales="free_y") +
+  guides(color=FALSE)
+```
+
+## Predictions
+
+```{r echo=FALSE}
+lip_cancer = lip_cancer %>% 
+  mutate(
+    iar_pred = y_pred %>% summarise(pred = mean(estimate)) %>% pull(pred), 
+    iar_resid = Observed - iar_pred
+  )
+
+
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=Observed), color=NA) + 
+    labs(title="Observed Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=iar_pred), color=NA) + 
+    labs(title="Predicted Cases",fill=""))
+```
+
+## Residuals
+
+```{r echo=FALSE}
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=iar_pred), color=NA) + 
+    labs(title="Predicted Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=iar_resid), color=NA) +
+    labs(title="Residuals",fill=""))
+```
+
+## IAR Results {.t}
+
+```{r}
+#RMSE
+lip_cancer$iar_resid %>% .^2 %>% mean() %>% sqrt()
+
+#Moran's I
+spdep::moran.test(lip_cancer$iar_resid, listw)
+```
+
+
+## Intrinsic Autoregressive Model - Reparameterized
+
+```{r}
+iar_model2 = "model{
+  for(i in 1:length(y)) {
+    y[i] ~ dpois(lambda[i])
+    y_pred[i] ~ dpois(lambda[i])
+    log(lambda[i]) = log_offset[i] + X[i,] %*% beta + sigma * omega[i]
+  }
+
+  for(i in 1:2) {
+    beta[i] ~ dnorm(0,1)
+  }
+
+  omega_free ~ dmnorm(rep(0,length(y)), (D - W))
+  omega = omega_free - mean(omega_free)
+  sigma2 = 1/tau
+  sigma = sqrt(sigma2)
+  tau ~ dgamma(2, 2)
+}"
+```
+
+
+## IAR(2) Parameters
+
+```{r echo=FALSE}
+if (!file.exists("iar_model2.Rdata")) {
+  m = rjags::jags.model(
+    textConnection(iar_model2), 
+    data = list(
+      D = D,
+      y = y,
+      X = X,
+      W = W,
+      log_offset = log_offset
+    ),
+    n.adapt=50000
+  )
+
+  update(m, n.iter=100000)#, progress.bar="none")
+  
+  iar_coda = rjags::coda.samples(
+    m, variable.names=c("sigma2", "beta", "omega", "y_pred"),
+    n.iter=100000, thin=100
+  )
+  save(iar_coda, m, file="iar_model2.Rdata")
+} else {
+  load("iar_model2.Rdata")
+}
+
+params = tidybayes::gather_samples(iar_coda, beta[i], sigma2) %>%
+  ungroup() %>%
+  mutate(term = fixterm(term, i))
+
+omega = tidybayes::gather_samples(iar_coda,omega[i])
+y_pred = tidybayes::gather_samples(iar_coda,y_pred[i])
+```
+
+```{r echo=FALSE}
+ggplot(params, aes(x=.iteration, y=estimate, color=term)) +
+  geom_line() +
+  facet_grid(term~., scales="free_y") +
+  guides(color=FALSE)
+```
+
+
+## Predictions
+
+```{r echo=FALSE}
+lip_cancer = lip_cancer %>% 
+  mutate(
+    iar2_pred = y_pred %>% summarise(pred = mean(estimate)) %>% pull(pred), 
+    iar2_resid = Observed - iar2_pred
+  )
+
+
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=Observed), color=NA) + 
+    labs(title="Observed Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=iar_pred), color=NA) + 
+    labs(title="Predicted Cases",fill=""))
+```
+
+## Predictions (cont.)
+
+```{r echo=FALSE}
+ggplot(lip_cancer) +
+    geom_abline(intercept=0, slope=1, color="grey") +
+    geom_point(aes(x=Observed, y=iar_pred))
+```
+
+## Residuals
+
+```{r echo=FALSE}
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=iar_pred), color=NA) + 
+    labs(title="Predicted Cases",fill="")) +
+( ggplot(lip_cancer) +
+    geom_sf(aes(fill=iar_resid), color=NA) +
+    labs(title="Residuals",fill=""))
+```
+
+## IAR(2) Results {.t}
+
+```{r}
+#RMSE
+lip_cancer$iar2_resid %>% .^2 %>% mean() %>% sqrt()
+
+#Moran's I
+spdep::moran.test(lip_cancer$iar2_resid, listw)
+```
+
+## Overall Results
+
+```{r echo=FALSE}
+lip_cancer %>%
+  as_data_frame() %>%
+  select(ends_with("resid")) %>% 
+  tidyr::gather(model, resid) %>%
+  mutate(model = stringr::str_replace(model, "_resid","") %>% forcats::as_factor()) %>%
+  group_by(model) %>%
+  summarize(
+    rmse = resid^2 %>% mean() %>% sqrt(),
+    moran = spdep::moran.test(resid, listw)$estimate[1]
+  ) %>%
+  knitr::kable(digits = 4)
+```
+
+
+
+# Point Referenced Data
+
+## Example - PM2.5 from CSN
+
+The Chemical Speciation Network are a series of air quality monitors run by EPA (221 locations in 2007). We'll look at a subset of the data from Nov 11th, 2007 (n=191) for just PM2.5. 
+
+```{r echo=FALSE, fig.height=3.5}
+load("../data/epa/csn.Rdata")
+
+csn = csn %>% 
+  select(site:date, pm25) %>% 
+  na.omit() %>% 
+  filter(date == lubridate::ymd("2007-11-14")) %>% 
+  filter(longitude > -140) %>% # Remove Hawaii Location
+  tbl_df()
+
+us = map_data("state")
+
+csn_plot = ggplot() +
+  geom_map(data=us, map=us, aes(x=long, y=lat, map_id=region), color="grey", fill=NA) +
+  geom_point(data=csn, aes(x=longitude, y=latitude, color=pm25), alpha=1, size=3) +
+  scale_color_viridis_c()
+
+csn_plot
+```
+
+##
+
+```{r}
+csn
+```
+
+## Aside - Splines
+
+\begin{center}
+\includegraphics[width=0.49\textwidth]{figs/spline1.png}
+$~$
+\includegraphics[width=0.49\textwidth]{figs/spline2.png}
+\end{center}
+
+## Splines in 1d - Smoothing Splines {.t}
+
+These are a mathematical analogue to the drafting splines represented using a penalized regression model.
+
+. . .
+
+We want to find a function $f(x)$ that best fits our observed data $\symbf{y} = y_1, \ldots, y_n$ while being as *smooth* as possible.
+
+$$ \underset{f(x)}{\arg\min} ~ \sum_{i=1}^n\left(y_i - f(x_i)\right)^2 + \lambda \int_{-\infty}^\infty f''(x)^2 ~ dx $$
+
+
+Interestingly, this minimization problem has an exact solution which is given by a mixture of weighted natural cubic splines (cubic splines that are linear in the tails) with knots at the observed data locations ($x$s).
+
+
+## Splines in 2d - Thin Plate Splines
+
+Now imagine we have observed data of the form $(x_i, y_i, z_i)$ where we wish to predict $z_i$ given $x_i$ and $y_i$ for all $i$. We can naturally extend the smoothing spline model in two dimensions,
+
+$$ \underset{f(x,y)}{\arg\min} ~~ \sum_{i=1}^n (z_i-f(x_i,y_i))^2 + \lambda  \int_{-\infty}^\infty  \int_{-\infty}^\infty \left(\frac{\partial^2 f}{\partial x^2} + 2 \frac{\partial^2 f}{\partial x \, \partial y} + \frac{\partial^2 f}{\partial y^2} \right) dx\, dy$$
+
+The solution to this equation has a natural representation using a weighted sum of *radial basis functions* with knots at the observed data locations
+ 
+$$ f(x,y) = \sum_{i=1}^n w_i ~ d(x_i,y_i)^2 \log d(x_i,y_i).  $$
+
+## Fitting a TPS {.t}
+
+\scriptoutput
+\vspace{-7.5mm}
+
+```{r eval=FALSE}
+coords = select(csn, long=longitude, lat=latitude) %>% as.matrix()
+tps = fields::Tps(x = coords, Y=csn$pm25)
+
+
+data(wrld_simpl, package = "maptools")
+
+r = raster::raster(nrows=200, ncol=400,
+           xmn = min(csn$longitude)*1.05, xmx = max(csn$longitude)*0.95,
+           ymn = min(csn$latitude )*0.95, ymx = max(csn$latitude )*1.05)
+
+usa = raster::rasterize(wrld_simpl[wrld_simpl$NAME == "United States",], r)
+
+cells = which(!is.na(usa[]))
+pred_coords = raster::xyFromCell(r, cells)
+
+pm25_pred = r
+pm25_pred[cells] = predict(tps, pred_coords)
+
+pm25_pred_df = as(pm25_pred, "SpatialPixelsDataFrame") %>% 
+  as.data.frame() %>%
+  select(long=x, lat=y, pm25 = layer)
+```
+
+##
+
+```{r echo=FALSE, fig.height=6, out.height="\\textheight"}
+data(wrld_simpl, package = "maptools")
+
+
+r = raster::raster(nrows=200, ncol=400,
+           xmn = min(csn$longitude)*1.05, xmx = max(csn$longitude)*0.95,
+           ymn = min(csn$latitude )*0.95, ymx = max(csn$latitude )*1.05)
+
+usa = raster::rasterize(wrld_simpl[wrld_simpl$NAME == "United States",], r)
+
+cells = which(!is.na(usa[]))
+pred_coords = raster::xyFromCell(r, cells)
+
+coords = select(csn, long=longitude, lat=latitude) %>% as.matrix()
+tps = fields::Tps(x = coords, Y=csn$pm25)
+
+pm25_pred = r
+pm25_pred[cells] = predict(tps, pred_coords)
+
+pm25_pred_df = as(pm25_pred, "SpatialPixelsDataFrame") %>% 
+  as.data.frame() %>%
+  select(long=x, lat=y, pm25 = layer)
+
+
+csn_plot / 
+ggplot(mapping = aes(x=long, y=lat)) +
+  geom_tile(data=pm25_pred_df, aes(fill=pm25))+
+  scale_fill_viridis_c() +
+  geom_point(data=as.data.frame(coords))
+```
+
+
+
+# Gaussin Process Models / Kriging
+
+## Variogram
+
+\scriptoutput
+
+```{r message=FALSE, fig.height=4}
+coords = csn %>% select(latitude, longitude) %>% as.matrix()
+d = fields::rdist(coords)
+
+geoR::variog(coords = coords, data = csn$pm25, messages = FALSE, 
+       uvec = seq(0, max(d)/2, length.out=50)) %>% plot()
+```
+
+
+##
+
+```{r fig.height=4}
+geoR::variog(coords = coords, data = csn$pm25, messages = FALSE,
+       uvec = seq(0, max(d)/4, length.out=50)) %>% plot()
+```
+
+
+## Isotropy / Anisotropy
+
+\scriptoutput
+
+```{r message=FALSE}
+v4 = geoR::variog4(coords = coords, data = csn$pm25, messages = FALSE,
+             uvec = seq(0, max(d)/4, length.out = 50))
+plot(v4)
+```
+
+## GP Spatial Model
+
+\small
+
+If we assume that our data is *stationary* and *isotropic* then we can use a Gaussian Process model to fit the data. We will assume an exponential covariance structure. 
+
+$$ \symbf{y} \sim \mathcal{N}(\symbf{\mu},~\Sigma) $$
+$$ \{\Sigma\}_{ij} = \sigma^2 \exp(- r \, \lVert s_i - s_j\lVert) + \sigma^2_n \, 1_{i=j} $$
+
+. . .
+
+we can also view this as a spatial random effects model where
+
+$$ y(\symbf{s}) = \mu(\symbf{s}) + w(\symbf{s}) + \epsilon(\symbf{s}) $$
+$$ w(\symbf{s}) \sim \mathcal{N}(0,\Sigma') $$
+$$ \epsilon(s_i) \sim \mathcal{N}(0,\sigma^2_n) $$
+$$ \{\Sigma'\}_{ij} = \sigma^2 \exp(- r \, \lVert s_i - s_j\lVert) $$
+
+## Fitting with `spBayes` {.t}
+
+```{r message=FALSE}
+n = nrow(csn)
+n_samp = 20000
+coords = select(csn, longitude, latitude) %>% as.matrix()
+max_range = max(dist(coords)) / 4
+
+
+starting = list(phi = 3/3, sigma.sq = 33, tau.sq = 17)
+tuning = list("phi"=0.1, "sigma.sq"=0.1, "tau.sq"=0.1)
+priors = list(
+  beta.Norm = list(0, 1000), 
+  phi.Unif = c(3/max_range, 3/(0.5)), 
+  sigma.sq.IG = c(2, 2), 
+  tau.sq.IG = c(2, 2)
+)
+```
+
+## {.t}
+
+\tinyoutput
+
+```{r}
+m = spBayes::spLM(pm25 ~ 1, data = csn, coords = coords, starting = starting, priors = priors, 
+         cov.model = "exponential", n.samples = n_samp, tuning = tuning,
+         n.report = n_samp/2)
+```
+
+## {.t}
+
+\scriptoutput
+
+```{r}
+m = spBayes::spRecover(m, start=n_samp/2+1, thin = (n_samp/2)/1000)
+```
+
+## Parameter values
+
+```{r}
+theta = m$p.theta.recover.samples %>%
+  tidybayes::gather_samples(sigma.sq, tau.sq, phi)
+```
+
+```{r echo=FALSE}
+theta%>%
+  ggplot(aes(x=.iteration, y=estimate, color=term)) +
+    geom_line() +
+    facet_grid(term~., scales = "free_y") +
+    guides(color=FALSE)
+```
+
+##
+
+```{r}
+m$p.beta.recover.samples %>%
+  tidybayes::gather_samples(`(Intercept)`) %>%
+  ggplot(aes(x=.iteration, y=estimate, color=term)) +
+    geom_line() +
+    facet_grid(term~., scales = "free_y") +
+    guides(color=FALSE)
+```
+
+## Predictions
+
+\tinyoutput
+
+```{r echo=FALSE}
+data(wrld_simpl, package = "maptools")
+
+r = raster::raster(nrows=30, ncol=60,
+           xmn = min(csn$longitude)*1.05, xmx = max(csn$longitude)*0.95,
+           ymn = min(csn$latitude )*0.95, ymx = max(csn$latitude )*1.05)
+
+usa = raster::rasterize(wrld_simpl[wrld_simpl$NAME == "United States",], r)
+
+cells = which(!is.na(usa[]))
+pred_coords = raster::xyFromCell(r, cells)
+```
+
+```{r}
+m_pred = spBayes::spPredict(m, pred_coords, pred.covars = matrix(1, nrow=nrow(pred_coords)), 
+                   start=n_samp/2+1, thin=(n_samp/2)/1000)
+m_pred_summary = post_summary(t(m_pred$p.y.predictive.samples))
+```
+
+## 
+
+```{r echo=FALSE, fig.height=6}
+splm_pm25_pred = r
+splm_pm25_pred[cells] = m_pred_summary$post_mean
+
+splm_pm25_pred_df = as(splm_pm25_pred, "SpatialPixelsDataFrame") %>% 
+  as.data.frame() %>%
+  select(long=x, lat=y, pm25 = layer)
+
+csn_plot / 
+ggplot(mapping = aes(x=long, y=lat)) +
+  geom_tile(data=splm_pm25_pred_df, aes(fill=pm25))+
+  scale_fill_viridis_c() +
+  geom_point(data=as.data.frame(coords) %>% rename(long=longitude, lat=latitude))
+```
+
+
+
+## JAGs Model
+
+```{r}
+gplm = "model{
+  for(i in 1:length(y)){
+    y[i] ~ dnorm(beta + w[i], tau)
+    mu_w[i] = 0
+  }
+ 
+  for(i in 1:length(y)){
+    for(j in 1:length(y)){
+      Sigma_w[i,j] = sigma2_w * exp(-phi * d[i,j])
+    }
+  }
+  w ~ dmnorm(mu_w, inverse(Sigma_w))
+
+  beta ~ dnorm(0, 1/1000)
+  sigma2_w ~ dgamma(2, 2)
+  sigma2 ~ dgamma(2, 2)
+  tau = 1/sigma2
+  phi ~ dunif(3/14, 3/0.5)
+}"
+```
+
+##
+
+```{r echo=FALSE}
+if (!file.exists("gplm.Rdata")) {
+  m = jags.model(
+    textConnection(gplm), 
+    data = list(
+      d = as.matrix(dist(coords)),
+      y = csn$pm25
+    ),
+    n.adapt=5000
+  )
+
+  update(m, n.iter=5000)#, progress.bar="none")
+  
+  gplm_coda = coda.samples(
+    m, variable.names=c("sigma2", "sigma2_w", "phi", "beta"),
+    n.iter=5000, thin=5
+  )
+  save(gplm_coda, file="gplm.Rdata")
+} else {
+  load("gplm.Rdata")
+}
+gplm_coda %>%
+  tidybayes::gather_draws(beta,phi,sigma2,sigma2_w) %>% 
+  filter(.iteration %% 5  == 0) %>%
+  ggplot(aes(x=.iteration, y=.value, color=.variable)) +
+    geom_line() +
+    facet_wrap(~.variable, scale="free_y")
+
+```
+
+## Comparing Model Parameters
+
+```{r echo=FALSE}
+fix_spbayes = function(m) {
+  samps = cbind(m$p.theta.recover.samples, m$p.beta.recover.samples)
+  colnames(samps) = c("sigma2", "sigma2_w", "phi", "beta")
+  
+  samps = coda::mcmc(samps)
+  attr(samps, "mcpar") = attr(m$p.theta.recover.samples, "mcpar")
+  
+  samps
+}
+
+d = rbind(
+  cbind(model="JAGS", get_coda_parameter(gplm_coda,"beta|phi|sigma") %>% post_summary()),
+  cbind(model="spBayes", fix_spbayes(m) %>% post_summary())
+) %>%
+  mutate(
+    model = forcats::as_factor(model),
+    offset = as.integer(model)
+  )
+  
+
+
+ggplot(d, aes(y=offset, x=post_mean, color=model)) +
+  geom_point(size=2) +
+  geom_errorbarh(aes(xmin=post_lower, xmax=post_upper), height=0, size=1) +
+  facet_wrap(~param, scales="free_x") +
+  theme(axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank()) +
+  ylim(-1,6)
+```
+
+
+

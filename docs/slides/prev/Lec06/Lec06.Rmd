@@ -1,0 +1,379 @@
+---
+title: "Lecture 6" 
+subtitle: "Discrete Time Series"
+date: "9/21/2018"
+fontsize: 11pt
+output: 
+  beamer_presentation:
+    theme: metropolis
+    highlight: pygments
+    fig_caption: false
+    latex_engine: xelatex
+    includes:
+      in_header: ../settings.tex
+---
+  
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(forecast)
+```
+
+```{r config, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  fig.width=7,
+  fig.height=4.5,
+  out.width="\\textwidth",
+  fig.align="center",
+  echo=TRUE,
+  warning=FALSE
+)
+
+ggplot2::theme_set(ggplot2::theme_bw())
+```
+
+# Discrete Time Series
+
+## Stationary Processes {.t}
+
+A stocastic process (i.e. a time series) is considered to be *strictly stationary* if the properties of the process are not changed by a shift in origin. 
+
+. . .
+
+In the time series context this means that the joint distribution of $\{y_{t_1}, \ldots, y_{t_n}\}$ must be identical to the distribution of $\{y_{t_1+k}, \ldots, y_{t_n+k}\}$ for any value of $n$ and $k$.
+
+
+
+## Weak Stationary {.t}
+
+Strict stationary is unnecessarily strong / restrictive for many applications, so instead we often opt for *weak stationary* which requires the following,
+
+1. The process has finite variance 
+$$E(y_t^2) < \infty \text{ for all $t$}$$
+
+2. The mean of the process is constant 
+$$E(y_t) = \mu \text{ for all $t$}$$
+
+3. The second moment only depends on the lag 
+$$Cov(y_t,y_s) = Cov(y_{t+k},y_{s+k}) \text{ for all $t,s,k$}$$
+
+. . . 
+
+When we say stationary in class we will almost always mean *weakly stationary*.
+
+
+## Autocorrelation {.t}
+
+For a stationary time series, where $E(y_t)=\mu$ and $\text{Var}(y_t)=\sigma^2$ for all $t$, we define the autocorrelation at lag $k$ as
+
+$$
+\begin{aligned}
+\rho_k &= Cor(y_t, \, y_{t+k}) \\
+       &= \frac{Cov(y_t, y_{t+k})}{\sqrt{Var(y_t)Var(y_{t+k})}} \\
+       &= \frac{E\left( (y_t-\mu)(y_{t+k}-\mu) \right)}{\sigma^2}
+\end{aligned}
+$$
+
+. . .
+
+this is also sometimes written in terms of the autocovariance function ($\gamma_k$) as
+$$
+\begin{aligned}
+\gamma_k &= \gamma(t,t+k) = Cov(y_t, y_{t+k}) \\
+\rho_k &= \frac{\gamma(t,t+k)}{\sqrt{\gamma(t,t) \gamma(t+k,t+k)}} = \frac{\gamma(k)}{\gamma(0)}
+\end{aligned}
+$$
+
+## Covariance Structure
+
+Based on our definition of a (weakly) stationary process, it implies a covariance of the following structure,
+
+\footnotesize
+
+$$
+\symbf{\Sigma} = \left(
+\begin{matrix}
+\gamma(0)   & \gamma(1)   & \gamma(2)   & \gamma(3)   & \cdots & \gamma(n-1) &\gamma(n)   \\
+\gamma(1)   & \gamma(0)   & \gamma(1)   & \gamma(2)   & \cdots & \gamma(n-2) &\gamma(n-1) \\
+\gamma(2)   & \gamma(1)   & \gamma(0)   & \gamma(1)   & \cdots & \gamma(n-3) &\gamma(n-2) \\
+\gamma(3)   & \gamma(2)   & \gamma(1)   & \gamma(0)   & \cdots & \gamma(n-4) &\gamma(n-3) \\
+\vdots      & \vdots      & \vdots      & \vdots      & \ddots & \vdots      & \vdots     \\
+\gamma(n-1) & \gamma(n-2) & \gamma(n-3) & \gamma(n-4) & \cdots & \gamma(0)   & \gamma(1)  \\
+\gamma(n)   & \gamma(n-1) & \gamma(n-2) & \gamma(n-3) & \cdots & \gamma(1)   & \gamma(0)  \\
+\end{matrix}
+\right)
+$$
+
+
+
+where $P_{t,k}(y)$ is the project of $y$ onto the space spanned by $y_{t+1},\ldots,y_{t+k-1}$.
+
+
+## Example - Random walk {.t}
+
+Let $y_t = y_{t-1} + w_t$ with $y_0=0$ and $w_t \sim \mathcal{N}(0,1)$.
+
+```{r echo=FALSE}
+rw = data_frame(
+  t = 1:1000,
+  y = cumsum(c(0, rnorm(999)))
+)
+
+ggplot(rw, aes(x=t, y=y)) + geom_line() + labs(title="Random walk")
+```
+
+## ACF + PACF
+
+```{r echo=FALSE, fig.height=5}
+forecast::ggtsdisplay(rw$y, lag.max = 50)
+```
+
+## Stationary? {.t}
+
+Is $y_t$ stationary?
+
+
+
+
+
+## Partial Autocorrelation - pACF
+
+Given these type of patterns in the autocorrelation we often want to examine the relationship between $y_t$ and $y_{t+k}$ with the (linear) dependence of $y_t$ on $y_{t+1}$ through $y_{t+k-1}$ removed. 
+
+This is done through the calculation of a partial autocorrelation ($\alpha(k)$), which is defined as follows:
+
+$$
+\begin{aligned}
+\alpha(0) &= 1 \\
+\alpha(1) &= \rho(1) = Cor(y_t,y_{t+1})\\
+&~~\vdots \\
+\alpha(k) &= Cor(y_t - P_{t,k}(y_t),~ y_{t+k} - P_{t,k}(y_{t+k}))
+\end{aligned}
+$$
+
+## Example - Random walk with drift {.t}
+
+Let $y_t = \delta + y_{t-1} + w_t$ with $y_0=0$ and $w_t \sim \mathcal{N}(0,1)$.
+
+```{r echo=FALSE}
+rwt = data_frame(
+  t = 1:1000,
+  y = cumsum(c(0, 0.1+rnorm(999)))
+) 
+
+ggplot(rwt, aes(x=t, y=y)) + geom_line() + labs(title="Random walk with trend")
+```
+
+
+## ACF + PACF
+
+```{r echo=FALSE, fig.height=5}
+forecast::ggtsdisplay(rwt$y, lag.max = 50)
+```
+
+## Stationary? {.t}
+
+Is $y_t$ stationary?
+
+
+
+## Example - Moving Average
+
+Let $w_t \sim \mathcal{N}(0,1)$ and $y_t = w_{t-1}+w_t$.
+
+```{r echo=FALSE, warning=FALSE}
+ma = data_frame(
+  t = 1:100,
+  w = rnorm(100)
+) %>%
+  mutate(
+    y = (c(NA,w[-100]) + w)
+  )
+
+ggplot(ma, aes(x=t, y=y)) + geom_line() + labs(title="Moving Average")
+```
+
+## ACF + PACF
+
+```{r echo=FALSE, fig.height=4}
+forecast::ggtsdisplay(ma$y, lag.max = 50, na.action = na.omit)
+```
+
+## Stationary? {.t}
+
+Is $y_t$ stationary?
+
+
+## Autoregressive
+
+Let $w_t \sim \mathcal{N}(0,1)$ and $y_t = y_{t-1} - 0.9 y_{t-2} + w_t$ with $y_t = 0$ for $t < 1$.
+
+```{r echo=FALSE, warning=FALSE}
+ar = data_frame(
+  t = 1:500,
+  w = rnorm(500),
+  y = NA
+)
+      
+for(i in seq_along(ar$w))
+{
+  if (i == 1)
+    ar$y[i] = ar$w[i]
+  else if (i==2)
+    ar$y[i] = ar$y[i-1] + ar$w[i]
+  else
+    ar$y[i] = ar$y[i-1] -0.9*ar$y[i-2] + ar$w[i]
+}
+  
+ggplot(ar, aes(x=t, y=y)) + geom_line() + labs(title="Autoregressive")
+```
+
+## ACF + PACF
+
+```{r echo=FALSE, fig.height=4}
+forecast::ggtsdisplay(ar$y, lag.max = 50, na.action = na.omit)
+```
+
+## Example - Australian Wine Sales
+
+Australian total wine sales by wine makers in bottles <= 1 litre. Jan 1980 – Aug 1994.
+
+```{r}
+aus_wine = readRDS("../data/aus_wine.rds")
+aus_wine
+```
+
+## Time series
+
+```{r echo=FALSE}
+ggplot(aus_wine, aes(x=date, y=sales)) + 
+  geom_line() + 
+  geom_point()
+```
+
+## Basic Model Fit
+
+```{r echo=FALSE}
+l  = lm(sales ~ date, data=aus_wine)
+l2 = lm(sales ~ date + I(date^2), data=aus_wine)
+
+d = aus_wine %>%
+  modelr::add_predictions(l, var="linear") %>%
+  modelr::add_predictions(l2, var="quadratic")
+
+d %>%
+  select(-sales) %>%
+  tidyr::gather(model, sales, -date) %>%
+  ggplot(aes(x=date, y=sales, color=model)) + 
+    geom_line(data=d, color="black") + 
+    geom_point(data=d, color="black") +
+    geom_line(size=1.5, alpha=0.75)
+```
+
+## Residuals
+
+```{r echo=FALSE}
+d = aus_wine %>%
+  modelr::add_residuals(l, var="lin_resid") %>%
+  modelr::add_residuals(l2, var="quad_resid")
+
+d %>%
+tidyr::gather(type, residual, -(date:sales)) %>%
+ggplot(aes(x=date, y=residual, color=type)) + 
+  geom_point() +
+  geom_line() +
+  facet_wrap(~type, nrow=2)
+```
+
+
+
+
+## Autocorrelation Plot
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(d$quad_resid, lag.max = 36)
+```
+
+##
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+d_lags = bind_cols(
+  d,
+  purrr::map_dfc(0:12, ~ list(lag = lag(d$quad_resid, n=.x))) %>% select(-lag)
+) %>% 
+  tidyr::gather(lag, lag_value, -(date:quad_resid)) %>%
+  mutate(lag = forcats::as_factor(lag))
+
+ggplot(d_lags, aes(x=lag_value, y=quad_resid)) +
+  geom_point() +
+  facet_wrap(~lag, ncol=4) +
+  geom_smooth(method="lm", color='red', se = FALSE, alpha=0.1)
+```
+
+
+
+
+## Auto regressive errors
+
+```{r echo=FALSE}
+d_ar = mutate(d, lag_12 = lag(quad_resid, 12))
+l_ar = lm(quad_resid ~ lag_12, data=d_ar)
+summary(l_ar)
+```
+
+## Residual residuals
+
+```{r echo=FALSE, warning=FALSE}
+d_ar = d_ar %>%
+  modelr::add_residuals(l_ar)
+
+d_ar %>%
+  ggplot(aes(x=date, y=resid)) +
+  geom_point() + 
+  geom_line()
+```
+
+## Residual residuals - acf
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(l_ar$residuals, lag.max = 36)
+```
+
+##
+
+```{r echo=FALSE, warning=FALSE, fig.height=5.5}
+bind_cols(
+  d_ar %>%
+    modelr::add_residuals(l_ar) %>%
+    select(-lag_12, -lin_resid, -quad_resid),
+  purrr::map_dfc(0:12, ~ list(lag = lag(d_ar$resid, n=.x))) %>% select(-lag)
+) %>%
+  tidyr::gather(lag, lag_value, -(date:resid)) %>%
+  mutate(lag = forcats::as_factor(lag)) %>%
+  ggplot(aes(x=lag_value, y=resid)) +
+    geom_point() +
+    facet_wrap(~lag, ncol=4) +
+    geom_smooth(method="lm", color='red', se = FALSE, alpha=0.1)
+```
+
+## Writing down the model? {.t}
+
+So, is our EDA suggesting that we fit the following model?
+
+$$ \text{sales}(t) = \beta_0 + \beta_1 \, t + \beta_2 \, t^2 + \beta_3 \, \text{sales}(t-12) + \epsilon_t $$
+
+. . .
+
+the model we actually fit is,
+
+$$ \text{sales}(t) = \beta_0 + \beta_1 \, t + \beta_2 \, t^2 + w_t $$
+where
+
+$$ w_t = \delta \, w_{t-12} + \epsilon_t $$
+
+
+
+
+
+
