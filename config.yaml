@@ -39,7 +39,7 @@ params:
     - about
   contact:
     - name: Dr. Colin Rundel
-      office:
+      office: 204 Old Chemistry
       email: colin.rundel@duke.edu
       hours: TBD
   assignments:
