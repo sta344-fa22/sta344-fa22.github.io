@@ -4,3 +4,4 @@ docs/
 .Rproj.user
 .Rhistory
 static/slides/prev/*
+.hugo_build.lock
