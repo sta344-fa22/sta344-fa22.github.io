@@ -2,7 +2,12 @@ baseurl: "/"
 title: "Introduction to Spatio-Temporal Models"
 author: "Colin Rundel"
 copyright: "&copy; 2022. All rights reserved."
-ignoreFiles: ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+ignoreFiles: 
+  - "\\.Rmd$"
+  - "\\.Rmarkdown$"
+  - "_files$"
+  - "_cache$"
+  - "prev/.*"
 publishDir: "docs"
 
 menu:
