@@ -1,5 +1,5 @@
 ---
-title: "Welcome"
+title: "Introduction & Syllabus"
 subtitle: "Lecture 01"
 author: "Dr. Colin Rundel"
 footer: "Sta 344 - Fall 2022"
@@ -8,9 +8,9 @@ format:
     theme: slides.scss
     transition: fade
     slide-number: true
-    chalkboard: true
+    chalkboard: 
+      theme: whiteboard
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -214,7 +214,7 @@ If working locally you should make sure that your environment meets the followin
 
 ## Time Series Data - Discrete
     
-```{r message=FALSE}
+```{r sandp, message=FALSE}
 x = quantmod::getSymbols("^GSPC", src = "yahoo", from = as.Date("2021-01-01"), auto.assign = FALSE)
 
 plot(x[,"GSPC.Open"], main='S&P 500 Open (^GSPC)', type='b', pch=16, col="black")
@@ -222,7 +222,7 @@ plot(x[,"GSPC.Open"], main='S&P 500 Open (^GSPC)', type='b', pch=16, col="black"
 
 ## Time Series Data - Continuous
   
-```{r}
+```{r pm25}
 load("data/frn_example.Rdata")
 
 pm25 = pm25 |>
@@ -241,7 +241,7 @@ ggplot(pm25, aes(x=date, y=pm25)) +
 
 ## Spatial Data - Areal
     
-```{r out.width="0.8\\textwidth"}
+```{r nc_sids, out.width="80%"}
 nc = sf::st_read(system.file("shape/nc.shp", package="sf"), quiet = TRUE) |>
   select(starts_with("SID")) |>
   gather(var, value, -geometry)
@@ -255,7 +255,7 @@ ggplot(nc, aes(fill=value)) +
 
 ## Spatial Data - Point referenced
     
-```{r}
+```{r meuse}
 data(meuse, package = "sp")
 m = sf::st_as_sf(meuse, coords=c("x","y")) |> 
   select(2:4) |>
@@ -278,19 +278,19 @@ ggplot(m, aes(color=value)) +
 ```
 ## Spatial-temporal Data - Continuous (time)
 
-```{r out.width="0.9\\textwidth"}
+```{r epa_time, out.width="90%"}
 knitr::include_graphics("imgs/Lec01/epa/fig_joint_biv.png")
 ```
 
 ## Spatial-temporal Data - Continuous (space)
 
-```{r out.width="0.9\\textwidth"}
+```{r epa_space, out.width="90%"}
 knitr::include_graphics("imgs/Lec01/epa/fig_pred_joint.png")
 ```
 
 ## Point Pattern Data - Time
    
-```{r}
+```{r oldfaithful}
 old_faithful = MASS::geyser |> 
   mutate(time = cumsum(waiting)+cumsum(lag(duration,default=0))) |> 
   select(time, duration) |> 
@@ -302,14 +302,14 @@ plot(old_faithful, type='p', main="Old Faithful Eruption Duration", pch=16)
 
 ## Point Pattern Data - Space
     
-```{r out.width="0.8\\textwidth"}
+```{r fires, out.width="80%"}
 knitr::include_graphics("imgs/Lec01/fires.png")
 ```
 
 
 ## Point Pattern Data - Space + Time
         
-```{r out.width="0.8\\textwidth"}
+```{r earthquakes, out.width="80%"}
 knitr::include_graphics("imgs/Lec01/earthquakes.png")
 ```
 
