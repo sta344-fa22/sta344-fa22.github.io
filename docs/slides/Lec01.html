@@ -7,7 +7,7 @@
 <link href="Lec01_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec01_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec01_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.0.36">
+  <meta name="generator" content="quarto-1.1.167">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>Introduction &amp; Syllabus</title>
@@ -19,10 +19,15 @@
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
   </style>
   <link rel="stylesheet" href="Lec01_files/libs/revealjs/dist/theme/quarto.css" id="theme">
   <link href="Lec01_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -337,7 +342,7 @@
 <ul>
 <li>Dr.&nbsp;Colin Rundel
 <ul>
-<li><a href="mailto:colin.rundel@duke.edu">colin.rundel@duke.edu</a> <em>or</em> <a href="mailto:rundel@gmail.com">rundel@gmail.com</a></li>
+<li><a href="mailto:colin.rundel@duke.edu">colin.rundel@duke.edu</a> / <a href="mailto:cr173@duke.edu">cr173@duke.edu</a> / <a href="mailto:rundel@gmail.com">rundel@gmail.com</a></li>
 </ul></li>
 </ul>
 <h3 id="ta">TA</h3>
@@ -348,15 +353,15 @@
 <section id="course-websites" class="slide level2">
 <h2>Course website(s)</h2>
 <ul>
-<li>GitHub pages - https://sta344-fa22.github.io
+<li>GitHub pages - <a href="https://sta344-fa22.github.io">sta344-fa22.github.io</a>
 <ul>
 <li>HTML, PDF, and qmds of Slides</li>
 <li>Lecture screencasts (youtube)</li>
 <li>Suggested Readings</li>
 </ul></li>
-<li>Sakai - https://sakai.duke.edu
+<li>Sakai - <a href="https://sakai.duke.edu/portal/site/ce7276bc-e677-46ce-a1e6-9c3f98d6d465">sakai.duke.edu</a>
 <ul>
-<li>Link to GitHub page</li>
+<li>Links to GitHub page</li>
 <li>Announcements</li>
 <li>Gradebook</li>
 </ul></li>
@@ -381,15 +386,18 @@
 <ul>
 <li><p>Attendance is expected</p></li>
 <li><p>Opportunity to work on course assignments with TA support</p></li>
-<li><p>Labs will begin in Week 2 (September 6th)</p>
-<ul>
-<li>no lab Week 1</li>
-</ul></li>
+<li><p>Q&amp;A + Worked examples</p></li>
+<li><p>Labs will begin in Week 2 (September 6th)</p></li>
 </ul>
 </section>
 <section id="announcements" class="slide level2">
 <h2>Announcements</h2>
-<p>Will be posted on Sakai (Announcements tool) and sent via email, be sure to check both regularly.</p>
+<p>Will be posted on Sakai (Announcements tool)</p>
+<ul>
+<li><p>Will also be sent via email</p></li>
+<li><p>Recent announcements available on overview page</p></li>
+<li><p>Check Sakai or email regularly</p></li>
+</ul>
 </section>
 <section id="grading" class="slide level2">
 <h2>Grading</h2>
@@ -440,16 +448,17 @@
 <li><p>i.e.&nbsp;you should not directly share complete answers / code with others.</p></li>
 </ul>
 </section>
-<section id="sharing-reusing-code-policy" class="slide level2">
-<h2>Sharing / reusing code policy</h2>
+<section id="sharing-reusing-code-or-solutions-policy" class="slide level2">
+<h2>Sharing / reusing code or solutions policy</h2>
 <ul>
-<li><p>We are aware that a huge amount of code is available on the web, and many tasks may have solutions posted.</p></li>
+<li><p>We are aware that a huge amount of code available on the web, and many tasks may have solutions posted.</p></li>
 <li><p>Unless explicitly stated otherwise, this course’s policy is that you may make use of any online resources (e.g.&nbsp;Google, StackOverflow, etc.) but you must explicitly cite where you obtained any code you directly use or use as inspiration in your solution(s).</p></li>
-<li><p>Any recycled code that is discovered and is not explicitly cited will be treated as plagiarism, regardless of source.</p></li>
+<li><p>Any recycled code / solutions that are not explicitly cited will be treated as plagiarism, regardless of source.</p></li>
 </ul>
 </section>
 <section id="academic-integrity" class="slide level2">
 <h2>Academic integrity</h2>
+<p><br></p>
 <div class="medium">
 <blockquote>
 <p>To uphold the Duke Community Standard:</p>
@@ -900,7 +909,8 @@
       for (var i=0; i<noterefs.length; i++) {
         const ref = noterefs[i];
         tippyHover(ref, function() {
-          let href = ref.getAttribute('href');
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);

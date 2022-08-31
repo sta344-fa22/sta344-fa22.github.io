@@ -36,7 +36,7 @@ ggplot2::theme_set(ggplot2::theme_bw())
 ### Instrutor
 
 * Dr. Colin Rundel 
-    - [colin.rundel@duke.edu](mailto:colin.rundel@duke.edu) *or* [rundel@gmail.com ](mailto:rundel@gmail.com)
+    - [colin.rundel@duke.edu](mailto:colin.rundel@duke.edu) / [cr173@duke.edu](mailto:cr173@duke.edu) / [rundel@gmail.com ](mailto:rundel@gmail.com)
 
 
 ### TA
@@ -46,13 +46,13 @@ ggplot2::theme_set(ggplot2::theme_bw())
 
 ## Course website(s)
 
-* GitHub pages - https://sta344-fa22.github.io
+* GitHub pages - [sta344-fa22.github.io](https://sta344-fa22.github.io)
   - HTML, PDF, and qmds of Slides
   - Lecture screencasts (youtube)
   - Suggested Readings
 
-* Sakai - https://sakai.duke.edu
-  - Link to GitHub page
+* Sakai - [sakai.duke.edu](https://sakai.duke.edu/portal/site/ce7276bc-e677-46ce-a1e6-9c3f98d6d465)
+  - Links to GitHub page
   - Announcements
   - Gradebook
 
@@ -73,13 +73,20 @@ ggplot2::theme_set(ggplot2::theme_bw())
 
 - Opportunity to work on course assignments with TA support
 
+- Q&A + Worked examples
+
 - Labs will begin in Week 2 (September 6th) 
-  - no lab Week 1
 
 
 ## Announcements
 
-Will be posted on Sakai (Announcements tool) and sent via email, be sure to check both regularly.
+Will be posted on Sakai (Announcements tool)
+
+- Will also be sent via email
+
+- Recent announcements available on overview page
+
+- Check Sakai or email regularly
 
 
 ## Grading
@@ -106,17 +113,20 @@ We will be assessing you based on the following assignments,
 - i.e. you should not directly share complete answers / code with others.
 
 
-## Sharing / reusing code policy
+## Sharing / reusing code or solutions policy
 
-- We are aware that a huge amount of code is available on the web, and many tasks may have solutions posted.
+- We are aware that a huge amount of code available on the web, and many tasks may have solutions posted.
 
 - Unless explicitly stated otherwise, this course's policy is that you may make use of any online resources (e.g. Google, StackOverflow, etc.) but you must explicitly cite where you obtained any code you directly use or use as inspiration in your solution(s). 
-- Any recycled code that is discovered and is not explicitly cited will be treated as plagiarism, regardless of source.
+
+- Any recycled code / solutions that are not explicitly cited will be treated as plagiarism, regardless of source.
 
 
 
 
 ## Academic integrity
+
+<br/>
 
 ::: {.medium}
 > To uphold the Duke Community Standard:
