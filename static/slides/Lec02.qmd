@@ -199,7 +199,7 @@ We will be using a package called [brms](https://paul-buerkner.github.io/brms/) 
 ## brms + linear regression
 
 ```{r echo=TRUE}
-b = brms::brm(Y ~ X1 + X2 + X3, data=d, chains = 2)
+b = brms::brm(Y ~ X1 + X2 + X3, data=d, chains = 1)
 ```
 
 ## Model results
