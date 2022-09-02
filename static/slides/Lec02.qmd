@@ -150,7 +150,8 @@ $$
 \partial (a\boldsymbol{X}) &= a (\partial \boldsymbol{A})\\
 \partial (\boldsymbol{X} + \boldsymbol{Y}) &= \partial \boldsymbol{X} + \partial \boldsymbol{Y} \\
 \partial (\boldsymbol{X} \boldsymbol{Y}) &= (\partial \boldsymbol{X}) \boldsymbol{Y} + \boldsymbol{X} (\partial \boldsymbol{Y}) \\
-\partial (\boldsymbol{X}') &= (\partial \boldsymbol{X})'
+\partial (\boldsymbol{X}') &= (\partial \boldsymbol{X})' \\
+\partial (\boldsymbol{X}'\boldsymbol{A}\boldsymbol{X}) &= (\boldsymbol{A} + \boldsymbol{A}')\boldsymbol{X} \\
 \end{aligned}
 $$
 :::
@@ -182,12 +183,16 @@ $$
 
 Lets generate some simulated data where the underlying model is known and see how various regression procedures function.
 
+:::: {.columns}
+::: {.column width='50%'}
+
 $$ y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{3i} +\epsilon_i $$ 
-$$ \beta_0 = 0.7, \quad \beta_1 = 1.5, \quad \beta_2 = -2.2, \quad \beta_3 = 0.1 $$
 $$ \epsilon_i \sim N(0,1) $$
+$$ \beta_0 = 0.7, \beta_1 = 1.5, \beta_2 = -2.2, \beta_3 = 0.1 $$
 
-. . .
+:::
 
+::: {.column width='50%'}
 ```{r echo=TRUE}
 set.seed(1234)
 n = 100
@@ -202,6 +207,10 @@ d = data_frame(
 ) %>%
   mutate(Y = beta[1] + beta[2]*X1 + beta[3]*X2 + beta[4]*X3 + eps)
 ```
+:::
+::::
+
+
 
 ## Model Matrix
 
@@ -232,7 +241,7 @@ $$ \underset{\boldsymbol{\beta}}{\text{argmin}} \sum_{i=1}^n \left( Y_i - \bolds
 Previously we showed that,
 $$ \hat{\boldsymbol{\beta}}_{ls} = (\boldsymbol{X}' \boldsymbol{X})^{-1} \boldsymbol{X}' \, \boldsymbol{Y} $$
 
-## Frequentist Fit
+## Beta estimate
 
 ```{r echo=TRUE}
 (beta_hat = solve(t(X) %*% X, t(X)) %*% d$Y)
@@ -249,6 +258,19 @@ l$coefficients
 
 ## Basics of Bayes
 
+We will be fitting the same model as described above, we just need to provide some additional information in the form of a prior for our model parameters (the $\beta$s and $\sigma^2$).
+
+$$
+\begin{aligned}
+f(\theta | x) &= \frac{f(x | \theta) \; \pi(\theta)}{\int f(x|\theta) d\theta} \\
+&\propto f(x|\theta) \; \pi(\theta)
+\end{aligned}
+$$
+* The posterior ($f(\theta|x)$) reflects an updated set of beliefs about the parameters ($\theta$) based on the observed data ($x$) via the likelihood ($f(x|\theta)$)
+
+* Most of the time the posterior will not have a closed form so we will use a technique like MCMC to draw samples
+
+* Our inference will be based on the posterior *distribution* and not a point estimate (e.g. MLE)
 
 ## brms
 
@@ -265,7 +287,7 @@ We will be using a package called [brms](https://paul-buerkner.github.io/brms/) 
 
 ## brms + linear regression
 
-```{r echo=TRUE}
+```{r echo=TRUE, warning=FALSE}
 b = brms::brm(Y ~ X1 + X2 + X3, data=d, chains = 2)
 ```
 
@@ -284,23 +306,11 @@ plot(b)
 
 ## What about the priors?
 
-:::: {.columns}
-::: {.column width='50%'}
+::: {.medium}
 ```{r}
 brms::prior_summary(b)
 ```
 :::
-
-::: {.column width='50%'}
-```{r}
-brms::get_prior("Y ~ X1 + X2 + X3", data = d)
-```
-:::
-::::
-
-
-
-
 
 ## tidybayes
 

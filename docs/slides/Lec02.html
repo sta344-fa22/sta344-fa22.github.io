@@ -487,7 +487,8 @@ f\big(\boldsymbol{Y} | \boldsymbol{\mu}, \boldsymbol{\Sigma}\big) = (2\pi)^{-n/2
 \partial (a\boldsymbol{X}) &amp;= a (\partial \boldsymbol{A})\\
 \partial (\boldsymbol{X} + \boldsymbol{Y}) &amp;= \partial \boldsymbol{X} + \partial \boldsymbol{Y} \\
 \partial (\boldsymbol{X} \boldsymbol{Y}) &amp;= (\partial \boldsymbol{X}) \boldsymbol{Y} + \boldsymbol{X} (\partial \boldsymbol{Y}) \\
-\partial (\boldsymbol{X}') &amp;= (\partial \boldsymbol{X})'
+\partial (\boldsymbol{X}') &amp;= (\partial \boldsymbol{X})' \\
+\partial (\boldsymbol{X}'\boldsymbol{A}\boldsymbol{X}) &amp;= (\boldsymbol{A} + \boldsymbol{A}')\boldsymbol{X} \\
 \end{aligned}
 \]</span></p>
 </div>
@@ -519,10 +520,12 @@ f\big(\boldsymbol{Y} | \boldsymbol{\mu}, \boldsymbol{\Sigma}\big) = (2\pi)^{-n/2
 <section id="parameters---synthetic-data" class="slide level2">
 <h2>Parameters -&gt; Synthetic Data</h2>
 <p>Lets generate some simulated data where the underlying model is known and see how various regression procedures function.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
 <p><span class="math display">\[ y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{3i} +\epsilon_i \]</span></p>
-<p><span class="math display">\[ \beta_0 = 0.7, \quad \beta_1 = 1.5, \quad \beta_2 = -2.2, \quad \beta_3 = 0.1 \]</span></p>
 <p><span class="math display">\[ \epsilon_i \sim N(0,1) \]</span></p>
-<div class="fragment">
+<p><span class="math display">\[ \beta_0 = 0.7, \beta_1 = 1.5, \beta_2 = -2.2, \beta_3 = 0.1 \]</span></p>
+</div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-1_4dce2d72732251461a699734025e981e">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
 <span id="cb1-2"><a href="#cb1-2"></a>n <span class="ot">=</span> <span class="dv">100</span></span>
@@ -536,6 +539,7 @@ f\big(\boldsymbol{Y} | \boldsymbol{\mu}, \boldsymbol{\Sigma}\big) = (2\pi)^{-n/2
 <span id="cb1-10"><a href="#cb1-10"></a>  <span class="at">X3 =</span> <span class="fu">rt</span>(n,<span class="at">df=</span><span class="dv">5</span>)</span>
 <span id="cb1-11"><a href="#cb1-11"></a>) <span class="sc">%&gt;%</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a>  <span class="fu">mutate</span>(<span class="at">Y =</span> beta[<span class="dv">1</span>] <span class="sc">+</span> beta[<span class="dv">2</span>]<span class="sc">*</span>X1 <span class="sc">+</span> beta[<span class="dv">3</span>]<span class="sc">*</span>X2 <span class="sc">+</span> beta[<span class="dv">4</span>]<span class="sc">*</span>X3 <span class="sc">+</span> eps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -582,8 +586,8 @@ f\big(\boldsymbol{Y} | \boldsymbol{\mu}, \boldsymbol{\Sigma}\big) = (2\pi)^{-n/2
 <p><span class="math display">\[ \hat{\boldsymbol{\beta}}_{ls} = (\boldsymbol{X}' \boldsymbol{X})^{-1} \boldsymbol{X}' \, \boldsymbol{Y} \]</span></p>
 </div>
 </section>
-<section id="frequentist-fit" class="slide level2">
-<h2>Frequentist Fit</h2>
+<section id="beta-estimate" class="slide level2">
+<h2>Beta estimate</h2>
 <div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-4_edefd806d219bc65ee62777bdfebfe1d">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>(<span class="at">beta_hat =</span> <span class="fu">solve</span>(<span class="fu">t</span>(X) <span class="sc">%*%</span> X, <span class="fu">t</span>(X)) <span class="sc">%*%</span> d<span class="sc">$</span>Y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -612,6 +616,18 @@ X3           0.1535830</code></pre>
 </section>
 <section id="basics-of-bayes" class="slide level2">
 <h2>Basics of Bayes</h2>
+<p>We will be fitting the same model as described above, we just need to provide some additional information in the form of a prior for our model parameters (the <span class="math inline">\(\beta\)</span>s and <span class="math inline">\(\sigma^2\)</span>).</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(\theta | x) &amp;= \frac{f(x | \theta) \; \pi(\theta)}{\int f(x|\theta) d\theta} \\
+&amp;\propto f(x|\theta) \; \pi(\theta)
+\end{aligned}
+\]</span></p>
+<ul>
+<li><p>The posterior (<span class="math inline">\(f(\theta|x)\)</span>) reflects an updated set of beliefs about the parameters (<span class="math inline">\(\theta\)</span>) based on the observed data (<span class="math inline">\(x\)</span>) via the likelihood (<span class="math inline">\(f(x|\theta)\)</span>)</p></li>
+<li><p>Most of the time the posterior will not have a closed form so we will use a technique like MCMC to draw samples</p></li>
+<li><p>Our inference will be based on the posterior <em>distribution</em> and not a point estimate (e.g.&nbsp;MLE)</p></li>
+</ul>
 </section>
 <section id="brms" class="slide level2">
 <h2>brms</h2>
@@ -625,7 +641,7 @@ X3           0.1535830</code></pre>
 </section>
 <section id="brms-linear-regression" class="slide level2">
 <h2>brms + linear regression</h2>
-<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-6_e3f68f0010173ab46cf728800f063421">
+<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-6_e153c21545bfe6d43357d27c2809b63a">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>b <span class="ot">=</span> brms<span class="sc">::</span><span class="fu">brm</span>(Y <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, <span class="at">data=</span>d, <span class="at">chains =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running /usr/lib64/R/bin/R CMD SHLIB foo.c
@@ -641,8 +657,8 @@ make: *** [/usr/lib64/R/etc/Makeconf:168: foo.o] Error 1
 
 SAMPLING FOR MODEL '63bfe1fe670faa5c207a7d2d657dea78' NOW (CHAIN 1).
 Chain 1: 
-Chain 1: Gradient evaluation took 1.5e-05 seconds
-Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.
+Chain 1: Gradient evaluation took 2e-05 seconds
+Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.
 Chain 1: Adjust your expectations accordingly!
 Chain 1: 
 Chain 1: 
@@ -659,15 +675,15 @@ Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 1: 
-Chain 1:  Elapsed Time: 0.024313 seconds (Warm-up)
-Chain 1:                0.025657 seconds (Sampling)
-Chain 1:                0.04997 seconds (Total)
+Chain 1:  Elapsed Time: 0.025025 seconds (Warm-up)
+Chain 1:                0.02603 seconds (Sampling)
+Chain 1:                0.051055 seconds (Total)
 Chain 1: 
 
 SAMPLING FOR MODEL '63bfe1fe670faa5c207a7d2d657dea78' NOW (CHAIN 2).
 Chain 2: 
-Chain 2: Gradient evaluation took 8e-06 seconds
-Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.08 seconds.
+Chain 2: Gradient evaluation took 7e-06 seconds
+Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.07 seconds.
 Chain 2: Adjust your expectations accordingly!
 Chain 2: 
 Chain 2: 
@@ -684,9 +700,9 @@ Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
 Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 Chain 2: 
-Chain 2:  Elapsed Time: 0.023679 seconds (Warm-up)
-Chain 2:                0.023419 seconds (Sampling)
-Chain 2:                0.047098 seconds (Total)
+Chain 2:  Elapsed Time: 0.024312 seconds (Warm-up)
+Chain 2:                0.024222 seconds (Sampling)
+Chain 2:                0.048534 seconds (Total)
 Chain 2: </code></pre>
 </div>
 </div>
@@ -700,19 +716,19 @@ Chain 2: </code></pre>
   Links: mu = identity; sigma = identity 
 Formula: Y ~ X1 + X2 + X3 
    Data: d (Number of observations: 100) 
-  Draws: 1 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 1000
+  Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 2000
 
 Population-Level Effects: 
           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept     0.55      0.11     0.34     0.76 1.00     1269      627
-X1            1.47      0.09     1.29     1.64 1.00     1273      723
-X2           -2.18      0.08    -2.32    -2.02 1.00     1178      663
-X3            0.15      0.08    -0.00     0.30 1.00     1295      765
+Intercept     0.55      0.11     0.35     0.76 1.00     2623     1609
+X1            1.47      0.09     1.29     1.64 1.00     2292     1416
+X2           -2.18      0.08    -2.33    -2.02 1.00     2294     1604
+X3            0.15      0.08    -0.00     0.30 1.00     2403     1297
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     1.03      0.08     0.90     1.18 1.00     1028      720
+sigma     1.03      0.08     0.89     1.20 1.00     2460     1420
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -729,8 +745,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <img data-src="Lec02_files/figure-revealjs/unnamed-chunk-8-1.png" class="r-stretch quarto-figure-center"></section>
 <section id="what-about-the-priors" class="slide level2">
 <h2>What about the priors?</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
+<div class="medium">
 <div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-9_8df48aa2a0e319e9c90b7b5e6d983310">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>brms<span class="sc">::</span><span class="fu">prior_summary</span>(b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -743,28 +758,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
    student_t(3, 0, 3.1)     sigma                             0         default</code></pre>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-10_056c803d35df9fe780a0aa7c914ee575">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>brms<span class="sc">::</span><span class="fu">get_prior</span>(<span class="st">"Y ~ X1 + X2 + X3"</span>, <span class="at">data =</span> d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                  prior     class coef group resp dpar nlpar lb ub       source
-                 (flat)         b                                       default
-                 (flat)         b   X1                             (vectorized)
-                 (flat)         b   X2                             (vectorized)
-                 (flat)         b   X3                             (vectorized)
- student_t(3, 1.1, 3.1) Intercept                                       default
-   student_t(3, 0, 3.1)     sigma                             0         default</code></pre>
-</div>
-</div>
-</div>
 </div>
 </section>
 <section id="tidybayes" class="slide level2">
 <h2>tidybayes</h2>
-<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-11_f70b3ae5469c48006df3261f72471280">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>(<span class="at">post =</span> b <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a>  tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(b_Intercept, b_X1, b_X2, b_X3, sigma)</span>
-<span id="cb18-3"><a href="#cb18-3"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-10_f43a248a6932799060f3bd0680cffe55">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>(<span class="at">post =</span> b <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>  tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(b_Intercept, b_X1, b_X2, b_X3, sigma)</span>
+<span id="cb16-3"><a href="#cb16-3"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10,000 × 5
 # Groups:   .variable [5]
@@ -786,14 +787,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </section>
 <section id="tidybayes-posterior-summaries" class="slide level2">
 <h2>tidybayes + posterior summaries</h2>
-<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-12_c5d513532a9da6245602f27d59153d0e">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>(<span class="at">post_sum =</span> post <span class="sc">%&gt;%</span></span>
-<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">group_by</span>(.variable, .chain) <span class="sc">%&gt;%</span></span>
-<span id="cb20-3"><a href="#cb20-3"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb20-4"><a href="#cb20-4"></a>    <span class="at">post_mean =</span> <span class="fu">mean</span>(.value),</span>
-<span id="cb20-5"><a href="#cb20-5"></a>    <span class="at">post_median =</span> <span class="fu">median</span>(.value)</span>
-<span id="cb20-6"><a href="#cb20-6"></a>  )</span>
-<span id="cb20-7"><a href="#cb20-7"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-11_6d84127ac41a8eee32d257a9ff3dea48">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>(<span class="at">post_sum =</span> post <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">group_by</span>(.variable, .chain) <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb18-4"><a href="#cb18-4"></a>    <span class="at">post_mean =</span> <span class="fu">mean</span>(.value),</span>
+<span id="cb18-5"><a href="#cb18-5"></a>    <span class="at">post_median =</span> <span class="fu">median</span>(.value)</span>
+<span id="cb18-6"><a href="#cb18-6"></a>  )</span>
+<span id="cb18-7"><a href="#cb18-7"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10 × 4
 # Groups:   .variable [5]
@@ -814,38 +815,38 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </section>
 <section id="tidybayes-ggplot---traceplot" class="slide level2">
 <h2>tidybayes + ggplot - traceplot</h2>
-<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-13_5d11ab33da37cd70adf4d8a1c52f6544">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>post <span class="sc">%&gt;%</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>.iteration, <span class="at">y=</span>.value, <span class="at">color=</span><span class="fu">as.character</span>(.chain))) <span class="sc">+</span></span>
-<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">geom_line</span>(<span class="at">alpha=</span><span class="fl">0.33</span>) <span class="sc">+</span></span>
-<span id="cb22-4"><a href="#cb22-4"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>.variable, <span class="at">scale=</span><span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb22-5"><a href="#cb22-5"></a>  <span class="fu">labs</span>(<span class="at">color=</span><span class="st">"Chain"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-12_41d7ee6bc5de27df6c69acfbfd64ebdb">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>.iteration, <span class="at">y=</span>.value, <span class="at">color=</span><span class="fu">as.character</span>(.chain))) <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3"></a>  <span class="fu">geom_line</span>(<span class="at">alpha=</span><span class="fl">0.33</span>) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>.variable, <span class="at">scale=</span><span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a>  <span class="fu">labs</span>(<span class="at">color=</span><span class="st">"Chain"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec02_files/figure-revealjs/unnamed-chunk-12-1.png" class="r-stretch quarto-figure-center"></section>
+<section id="tidy-bayes-ggplot---density-plot" class="slide level2">
+<h2>Tidy Bayes + ggplot - Density plot</h2>
+<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-13_bfd861ef638b4b58e61ff8e6ccfe0f56">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>.value, <span class="at">fill=</span><span class="fu">as.character</span>(.chain))) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>.variable, <span class="at">scale=</span><span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a>  <span class="fu">labs</span>(<span class="at">fill=</span><span class="st">"Chain"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="Lec02_files/figure-revealjs/unnamed-chunk-13-1.png" class="r-stretch quarto-figure-center"></section>
-<section id="tidy-bayes-ggplot---density-plot" class="slide level2">
-<h2>Tidy Bayes + ggplot - Density plot</h2>
-<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-14_e94d0a1588783af76384c79b3e481311">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>post <span class="sc">%&gt;%</span></span>
-<span id="cb23-2"><a href="#cb23-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>.value, <span class="at">fill=</span><span class="fu">as.character</span>(.chain))) <span class="sc">+</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb23-4"><a href="#cb23-4"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>.variable, <span class="at">scale=</span><span class="st">"free_x"</span>) <span class="sc">+</span></span>
-<span id="cb23-5"><a href="#cb23-5"></a>  <span class="fu">labs</span>(<span class="at">fill=</span><span class="st">"Chain"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="Lec02_files/figure-revealjs/unnamed-chunk-14-1.png" class="r-stretch quarto-figure-center"></section>
 <section id="comparing-approaches" class="slide level2">
 <h2>Comparing Approaches</h2>
-<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-15_9bc2e4b6f9e0db8a2d5c968fd4286d80">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>(<span class="at">pt_est =</span> post_sum <span class="sc">%&gt;%</span> </span>
-<span id="cb24-2"><a href="#cb24-2"></a>  <span class="fu">filter</span>(.chain <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb24-5"><a href="#cb24-5"></a>    <span class="at">truth =</span> <span class="fu">c</span>(beta, sigma),</span>
-<span id="cb24-6"><a href="#cb24-6"></a>    <span class="at">ols   =</span> <span class="fu">c</span>(l<span class="sc">$</span>coefficients, <span class="fu">sd</span>(l<span class="sc">$</span>residuals))</span>
-<span id="cb24-7"><a href="#cb24-7"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb24-8"><a href="#cb24-8"></a>  <span class="fu">select</span>(.variable, truth, ols, post_mean)</span>
-<span id="cb24-9"><a href="#cb24-9"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/unnamed-chunk-14_62f123698e7668fb08e8969d64121979">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>(<span class="at">pt_est =</span> post_sum <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">filter</span>(.chain <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb22-5"><a href="#cb22-5"></a>    <span class="at">truth =</span> <span class="fu">c</span>(beta, sigma),</span>
+<span id="cb22-6"><a href="#cb22-6"></a>    <span class="at">ols   =</span> <span class="fu">c</span>(l<span class="sc">$</span>coefficients, <span class="fu">sd</span>(l<span class="sc">$</span>residuals))</span>
+<span id="cb22-7"><a href="#cb22-7"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a>  <span class="fu">select</span>(.variable, truth, ols, post_mean)</span>
+<span id="cb22-9"><a href="#cb22-9"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 4
   .variable   truth    ols post_mean
@@ -861,22 +862,22 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="comparing-approaches---code" class="slide level2">
 <h2>Comparing Approaches - code</h2>
 <div class="cell" data-layout-align="center" data-hash="Lec02_cache/revealjs/dens-plot_9d3d19273326f6ec18bc89ba4b45579e">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>post <span class="sc">%&gt;%</span></span>
-<span id="cb26-2"><a href="#cb26-2"></a>  <span class="fu">filter</span>(.chain <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb26-3"><a href="#cb26-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>.value)) <span class="sc">+</span></span>
-<span id="cb26-4"><a href="#cb26-4"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>, <span class="at">fill=</span><span class="st">"lightblue"</span>) <span class="sc">+</span></span>
-<span id="cb26-5"><a href="#cb26-5"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>.variable, <span class="at">scale=</span><span class="st">"free_x"</span>) <span class="sc">+</span></span>
-<span id="cb26-6"><a href="#cb26-6"></a>  <span class="fu">geom_vline</span>(</span>
-<span id="cb26-7"><a href="#cb26-7"></a>    <span class="at">data =</span> pt_est <span class="sc">%&gt;%</span> tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> truth<span class="sc">:</span>post_mean, <span class="at">names_to =</span> <span class="st">"pt_est"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>), </span>
-<span id="cb26-8"><a href="#cb26-8"></a>    <span class="fu">aes</span>(<span class="at">xintercept =</span> value, <span class="at">color=</span>pt_est),</span>
-<span id="cb26-9"><a href="#cb26-9"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">2</span></span>
-<span id="cb26-10"><a href="#cb26-10"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a>  <span class="fu">filter</span>(.chain <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>.value)) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>, <span class="at">fill=</span><span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>.variable, <span class="at">scale=</span><span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a>  <span class="fu">geom_vline</span>(</span>
+<span id="cb24-7"><a href="#cb24-7"></a>    <span class="at">data =</span> pt_est <span class="sc">%&gt;%</span> tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> truth<span class="sc">:</span>post_mean, <span class="at">names_to =</span> <span class="st">"pt_est"</span>, <span class="at">values_to =</span> <span class="st">"value"</span>), </span>
+<span id="cb24-8"><a href="#cb24-8"></a>    <span class="fu">aes</span>(<span class="at">xintercept =</span> value, <span class="at">color=</span>pt_est),</span>
+<span id="cb24-9"><a href="#cb24-9"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size=</span><span class="dv">2</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="comparing-approaches---plot" class="slide level2">
 <h2>Comparing Approaches - plot</h2>
 
-<img data-src="Lec02_files/figure-revealjs/unnamed-chunk-16-1.png" class="r-stretch quarto-figure-center"><div class="footer footer-default">
+<img data-src="Lec02_files/figure-revealjs/unnamed-chunk-15-1.png" class="r-stretch quarto-figure-center"><div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>
 </section></section>
