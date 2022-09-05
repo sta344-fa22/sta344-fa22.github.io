@@ -4,7 +4,7 @@ schedule:
 
 - week: 1
   day: 1
-  lecture: <i>No lab week 1</i>
+  lecture: <i>No lab</i>
 
 - week: 1
   day: 2
@@ -19,6 +19,11 @@ schedule:
   readings:
   - text: Matrix Cookbook
     link: https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
+  notes: <a href="notes/Lec 02 - Notes.pdf">notes</a>
+  
+- week: 2
+  day: 1
+  lecture: <i>No lab</i>
 
 - week: 2
   day: 2
