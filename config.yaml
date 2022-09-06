@@ -44,9 +44,18 @@ params:
     - about
   contact:
     - name: Dr. Colin Rundel
-      office: 204 Old Chemistry
       email: colin.rundel@duke.edu
-      hours: TBD
+      hours:
+      - loc: 204 Old Chemistry / Zoom
+        day: Thursday
+        time: 3 - 4 pm
+    - name: Olivier Binette
+      email: olivier.binette@duke.edu
+      hours:
+      - loc: 211A Old Chemistry
+        day: Tuesday
+        time: 4 - 5pm
+    
   assignments:
     - name: Homework
       value: 40%
