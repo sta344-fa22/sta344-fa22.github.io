@@ -59,3 +59,10 @@ details>summary {
 .reveal table td {
   border-bottom: 0;
 }
+
+.reveal div.sourceCode pre code {
+    min-height: 100%;
+}
+.reveal pre.sourceCode code {
+  max-height: 550px;
+}
