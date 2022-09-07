@@ -28,12 +28,13 @@ schedule:
 - week: 2
   day: 2
   lecture: Diagnostics and Model Evaluation
-  slides: 
+  slides: Lec03
   screencast: 
   readings:
   - text: Gelman, et. al - R^2 for Bayesian regression models
     link: http://www.stat.columbia.edu/~gelman/research/unpublished/bayes_R2.pdf
-
+  notes: <a href="util-crps.R">util-crps.R</a>
+  
 - week: 2
   day: 4
   lecture: Generalized Linear Models (pt. 1)
