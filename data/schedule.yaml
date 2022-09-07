@@ -33,7 +33,7 @@ schedule:
   readings:
   - text: Gelman, et. al - R^2 for Bayesian regression models
     link: http://www.stat.columbia.edu/~gelman/research/unpublished/bayes_R2.pdf
-  notes: <a href="util-crps.R">util-crps.R</a>
+  notes: <a href="https://raw.githubusercontent.com/sta344-fa22/sta344-fa22.github.io/main/static/slides/util-crps.R">util-crps.R</a>
   
 - week: 2
   day: 4
