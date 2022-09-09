@@ -54,7 +54,7 @@ mean(crps)
 
 ## Empirical Coverage
 
-\scriptoutput
+
 
 ```{r}
 df_cover = df_pred %>% 

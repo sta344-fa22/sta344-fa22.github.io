@@ -38,11 +38,13 @@ schedule:
 - week: 2
   day: 4
   lecture: Generalized Linear Models (pt. 1)
-  slides: 
+  slides: Lec04
   screencast: 
   readings:
   - text: "Gelman & Hill 6"
-  notes: ""
+  notes: >
+    <a href="notes/Lec 04 - Notes.pdf">notes</a>, 
+    <a href="https://raw.githubusercontent.com/sta344-fa22/sta344-fa22.github.io/main/static/slides/fix_pred_draws.R">fix_pred_draws.R</a>
 
 - week: 3
   day: 2
