@@ -33,40 +33,44 @@ ggplot2::theme_set(ggplot2::theme_bw())
 
 * Expected Value
 
+::: {.medium}
 $$
-\begin{aligned}
-E(X) &= \sum_x x \cdot P(X = x) \\
-     &= \int_{-\infty}^{\infty} x \cdot f(x) \; dx
-\end{aligned}
+E(X) = \begin{cases}
+  \sum_x x \cdot P(X = x)                     & \text{$X$ is discrete}\\
+  \int_{-\infty}^{\infty} x \cdot f(x) \; dx  & \text{$X$ is continuous}
+\end{cases}
 $$
+:::
 
 * Variance
 
-  $$
-  \begin{aligned}
-  Var(X) &= E\Big(\big(X-E(X)\big)^2\Big) = E(X^2)-E(X)^2 \\
-         &= \sum_x \big(x - E(X)\big)^2 \cdot P(X = x) \\
-         &= \int_{-\infty}^{\infty} (x-E(X))^2 \cdot f(x) \; dx
-  \end{aligned}
-  $$
-
-* Standard Deviation
-  
-  $$ SD(X) = \sqrt{Var(X)} $$
+::: {.medium}
+$$
+\begin{aligned}
+Var(X) &= E\Big(\big(X-E(X)\big)^2\Big) = E(X^2)-E(X)^2 \\
+       &= \begin{cases}
+            \sum_x \big(x - E(X)\big)^2 \cdot P(X = x)                   & \text{$X$ is discrete}\\
+            \int_{-\infty}^{\infty} \big(x-E(X)\big)^2 \cdot f(x) \; dx  & \text{$X$ is continuous}
+          \end{cases}
+\end{aligned}
+$$
+:::
 
 ## Covariance of RVs
 
+::: {.medium}
 $$
 \begin{aligned}
 Cov(X,Y) &= E\Big(\big(X-E(X)\big)\big(Y-E(Y)\big)\Big) = E(XY)-E(X)E(Y) \\
-       &= \sum_x \big(x - E(X)\big)\big(y - E(Y)\big) \cdot P(X = x, Y=y) \\
-       &= \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} (x-E(X))(y-E(Y)) \cdot f(x,y) \; dx \; dy \\
-\\       
+       &= \begin{cases}
+            \sum_x \big(x - E(X)\big)\big(y - E(Y)\big) \cdot P(X = x, Y=y)                           & \text{$X$ is discrete}\\
+            \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \big(x-E(X)\big)\big(y-E(Y)\big) \cdot f(x,y) \; dx \; dy & \text{$X$ is continuous} 
+          \end{cases} \\
+\\
 Corr(X,Y) &= \frac{Cov(X,Y)}{\sqrt{Var(X)\,Var(Y)}}
 \end{aligned}
 $$
-
-. . .
+:::
 
 
 
@@ -189,17 +193,17 @@ A stocastic process (i.e. a time series) is considered to be *strictly stationar
 In the time series context this means that the joint distribution of $\{y_{t_1}, \ldots, y_{t_n}\}$ must be identical to the distribution of $\{y_{t_1+k}, \ldots, y_{t_n+k}\}$ for any value of $n$ and $k$.
 
 
-## Weak Stationary
+## Weakly Stationary
 
 Strict stationary is unnecessarily strong / restrictive for many applications, so instead we often opt for *weak stationary* which requires the following,
 
-1. The process has finite variance / second moment 
+1. The process must have finite variance / second moment 
 $$E(y_t^2) < \infty \text{ for all $t$}$$
 
-2. The mean of the process is constant 
+2. The mean of the process must be constant 
 $$E(y_t) = \mu \text{ for all $t$}$$
 
-3. The second moment only depends on the lag 
+3. The cross moment (covariance) may only depends on the lag (i.e. $t-s$ for $y_t$ and $y_s$)
 $$Cov(y_t,y_s) = Cov(y_{t+k},y_{s+k}) \text{ for all $t,s,k$}$$
 
 . . . 
@@ -296,6 +300,26 @@ $$
 
 where $P_{t,k}(y)$ is the project of $y$ onto the space spanned by $y_{t+1},\ldots,y_{t+k-1}$.
 
+
+## pACF - Calculation
+
+Let $\rho(k)$ be the autocorrelation for the process at lag $k$ then the partial autocorrelation at lag $k$ will be $\phi(k,k)$ given by the Durbin-Levinson algorithm,
+
+$$
+\phi(k,k) = \frac{
+              \rho(k) - \sum_{t=1}^{k-1} \phi(k-1, t) \, \rho(k-t)
+            }{
+             1 - \sum_{t=1}^{k-1} \phi(k-1, t) \, \rho(t)
+            }
+$$
+where
+$$
+\phi(k,t) = \phi(k-1,t) - \phi(k,k) \, \phi(k-1, k-t) \\
+$$
+
+. . .
+
+Starting with $\phi(1,1) = \rho(1)$ we can solve iteratively for $\phi(2,2), \ldots, \phi(k,k)$.
 
 
 ## Example - Random walk with drift

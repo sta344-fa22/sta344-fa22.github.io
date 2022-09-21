@@ -410,36 +410,44 @@ Dr.&nbsp;Colin Rundel
 <ul>
 <li>Expected Value</li>
 </ul>
+<div class="medium">
 <p><span class="math display">\[
-\begin{aligned}
-E(X) &amp;= \sum_x x \cdot P(X = x) \\
-     &amp;= \int_{-\infty}^{\infty} x \cdot f(x) \; dx
-\end{aligned}
+E(X) = \begin{cases}
+  \sum_x x \cdot P(X = x)                     &amp; \text{$X$ is discrete}\\
+  \int_{-\infty}^{\infty} x \cdot f(x) \; dx  &amp; \text{$X$ is continuous}
+\end{cases}
 \]</span></p>
+</div>
 <ul>
-<li><p>Variance</p>
+<li>Variance</li>
+</ul>
+<div class="medium">
 <p><span class="math display">\[
 \begin{aligned}
 Var(X) &amp;= E\Big(\big(X-E(X)\big)^2\Big) = E(X^2)-E(X)^2 \\
-       &amp;= \sum_x \big(x - E(X)\big)^2 \cdot P(X = x) \\
-       &amp;= \int_{-\infty}^{\infty} (x-E(X))^2 \cdot f(x) \; dx
+       &amp;= \begin{cases}
+            \sum_x \big(x - E(X)\big)^2 \cdot P(X = x)                   &amp; \text{$X$ is discrete}\\
+            \int_{-\infty}^{\infty} \big(x-E(X)\big)^2 \cdot f(x) \; dx  &amp; \text{$X$ is continuous}
+          \end{cases}
 \end{aligned}
-\]</span></p></li>
-<li><p>Standard Deviation</p>
-<p><span class="math display">\[ SD(X) = \sqrt{Var(X)} \]</span></p></li>
-</ul>
+\]</span></p>
+</div>
 </section>
 <section id="covariance-of-rvs" class="slide level2">
 <h2>Covariance of RVs</h2>
+<div class="medium">
 <p><span class="math display">\[
 \begin{aligned}
 Cov(X,Y) &amp;= E\Big(\big(X-E(X)\big)\big(Y-E(Y)\big)\Big) = E(XY)-E(X)E(Y) \\
-       &amp;= \sum_x \big(x - E(X)\big)\big(y - E(Y)\big) \cdot P(X = x, Y=y) \\
-       &amp;= \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} (x-E(X))(y-E(Y)) \cdot f(x,y) \; dx \; dy \\
-\\       
+       &amp;= \begin{cases}
+            \sum_x \big(x - E(X)\big)\big(y - E(Y)\big) \cdot P(X = x, Y=y)                           &amp; \text{$X$ is discrete}\\
+            \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \big(x-E(X)\big)\big(y-E(Y)\big) \cdot f(x,y) \; dx \; dy &amp; \text{$X$ is continuous}
+          \end{cases} \\
+\\
 Corr(X,Y) &amp;= \frac{Cov(X,Y)}{\sqrt{Var(X)\,Var(Y)}}
 \end{aligned}
 \]</span></p>
+</div>
 </section>
 <section id="properties-of-expected-value" class="slide level2">
 <h2>Properties of Expected Value</h2>
@@ -530,13 +538,13 @@ Corr(X,Y) &amp;= \frac{Cov(X,Y)}{\sqrt{Var(X)\,Var(Y)}}
 <p>In the time series context this means that the joint distribution of <span class="math inline">\(\{y_{t_1}, \ldots, y_{t_n}\}\)</span> must be identical to the distribution of <span class="math inline">\(\{y_{t_1+k}, \ldots, y_{t_n+k}\}\)</span> for any value of <span class="math inline">\(n\)</span> and <span class="math inline">\(k\)</span>.</p>
 </div>
 </section>
-<section id="weak-stationary" class="slide level2">
-<h2>Weak Stationary</h2>
+<section id="weakly-stationary" class="slide level2">
+<h2>Weakly Stationary</h2>
 <p>Strict stationary is unnecessarily strong / restrictive for many applications, so instead we often opt for <em>weak stationary</em> which requires the following,</p>
 <ol type="1">
-<li><p>The process has finite variance / second moment <span class="math display">\[E(y_t^2) &lt; \infty \text{ for all $t$}\]</span></p></li>
-<li><p>The mean of the process is constant <span class="math display">\[E(y_t) = \mu \text{ for all $t$}\]</span></p></li>
-<li><p>The second moment only depends on the lag <span class="math display">\[Cov(y_t,y_s) = Cov(y_{t+k},y_{s+k}) \text{ for all $t,s,k$}\]</span></p></li>
+<li><p>The process must have finite variance / second moment <span class="math display">\[E(y_t^2) &lt; \infty \text{ for all $t$}\]</span></p></li>
+<li><p>The mean of the process must be constant <span class="math display">\[E(y_t) = \mu \text{ for all $t$}\]</span></p></li>
+<li><p>The cross moment (covariance) may only depends on the lag (i.e.&nbsp;<span class="math inline">\(t-s\)</span> for <span class="math inline">\(y_t\)</span> and <span class="math inline">\(y_s\)</span>) <span class="math display">\[Cov(y_t,y_s) = Cov(y_{t+k},y_{s+k}) \text{ for all $t,s,k$}\]</span></p></li>
 </ol>
 <div class="fragment">
 <p>When we say stationary in class we will almost always mean <em>weakly stationary</em>.</p>
@@ -606,6 +614,22 @@ Corr(X,Y) &amp;= \frac{Cov(X,Y)}{\sqrt{Var(X)\,Var(Y)}}
 \end{aligned}
 \]</span></p>
 <p>where <span class="math inline">\(P_{t,k}(y)\)</span> is the project of <span class="math inline">\(y\)</span> onto the space spanned by <span class="math inline">\(y_{t+1},\ldots,y_{t+k-1}\)</span>.</p>
+</section>
+<section id="pacf---calculation" class="slide level2">
+<h2>pACF - Calculation</h2>
+<p>Let <span class="math inline">\(\rho(k)\)</span> be the autocorrelation for the process at lag <span class="math inline">\(k\)</span> then the partial autocorrelation at lag <span class="math inline">\(k\)</span> will be <span class="math inline">\(\phi(k,k)\)</span> given by the Durbin-Levinson algorithm,</p>
+<p><span class="math display">\[
+\phi(k,k) = \frac{
+              \rho(k) - \sum_{t=1}^{k-1} \phi(k-1, t) \, \rho(k-t)
+            }{
+             1 - \sum_{t=1}^{k-1} \phi(k-1, t) \, \rho(t)
+            }
+\]</span> where <span class="math display">\[
+\phi(k,t) = \phi(k-1,t) - \phi(k,k) \, \phi(k-1, k-t) \\
+\]</span></p>
+<div class="fragment">
+<p>Starting with <span class="math inline">\(\phi(1,1) = \rho(1)\)</span> we can solve iteratively for <span class="math inline">\(\phi(2,2), \ldots, \phi(k,k)\)</span>.</p>
+</div>
 </section>
 <section id="example---random-walk-with-drift" class="slide level2">
 <h2>Example - Random walk with drift</h2>
