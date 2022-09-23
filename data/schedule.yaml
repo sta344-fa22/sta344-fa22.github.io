@@ -19,7 +19,7 @@ schedule:
   readings:
   - text: Matrix Cookbook
     link: https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf
-  notes: <a href="notes/Lec 02 - Notes.pdf">notes</a>
+  notes: <a href="notes/Lec 02 - Notes.pdf">Lec 02 Notes</a>
   
 - week: 2
   day: 1
@@ -43,7 +43,7 @@ schedule:
   readings:
   - text: "Gelman & Hill 6"
   notes: >
-    <a href="notes/Lec 04 - Notes.pdf">notes</a>, 
+    <a href="notes/Lec 04 - Notes.pdf">Lec 04 Notes</a>, 
     <a href="https://raw.githubusercontent.com/sta344-fa22/sta344-fa22.github.io/main/static/slides/fix_pred_draws.R">fix_pred_draws.R</a>
 
 - week: 3
@@ -72,7 +72,7 @@ schedule:
   readings:
   - text: "Shumway 1.2-1.6, 2, 3.1-3.4"
   notes: >
-    <a href="notes/Lec 07 - Notes.pdf">notes</a>, 
+    <a href="notes/Lec 07 - Notes.pdf">Lec 07 Notes</a>
 
 - week: 4
   day: 4
@@ -81,6 +81,8 @@ schedule:
   screencast: 
   readings:
   - text: "Shumway 3.2, 3.4"
+  notes: >
+    <a href="notes/Lec 08 - Notes.pdf">Lec 08 Notes</a>
 
 - week: 5
   day: 4

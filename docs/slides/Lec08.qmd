@@ -1,5 +1,5 @@
 ---
-title: "Lagged predictors & AR(1) Models" 
+title: "CCFs, Differencing, & AR(1) models" 
 subtitle: "Lecture 08"
 author: "Dr. Colin Rundel"
 footer: "Sta 344 - Fall 2022"
@@ -60,7 +60,8 @@ fish %>%
 fish %>%
   ggplot(aes(x=soi, y=recruitment)) +
   geom_point() + 
-  geom_smooth(color="red", alpha=0.5, se=FALSE)
+  geom_smooth(color="blue", alpha=0.75, se=FALSE, method="lm") +
+  geom_smooth(color="red", alpha=0.75, se=FALSE)
 ```
 
 ## `soi` - ACF & PACF
@@ -116,13 +117,13 @@ fish_lags %>%
     geom_point(alpha=0.3) +
     facet_wrap(~forcats::as_factor(lag)) +
     #geom_line(stat="smooth", method="loess", color='red',  size=1.2, alpha=0.75) +
-    geom_line(stat="smooth", method="lm",    color="blue", size=1.2, alpha=0.75) +
-    geom_text(data=corrs, aes(x=-0.85, y=5, label=round(corr,3)), size=3)
+    geom_line(stat="smooth", method="lm", color="blue", size=1.2, alpha=0.75) +
+    geom_text(data=corrs, aes(x=-0.75, y=5, label=round(corr,2)), size=3)
 ```
 
 . . .
 
-The CCF gave us negative lags, why am I not considering them here?
+The CCF gave us negative lags, why are we not considering them here?
 
 
 ## Model
