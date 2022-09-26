@@ -78,7 +78,7 @@ schedule:
   day: 4
   lecture: CCF, Differencing, & AR(1) models
   slides: Lec08
-  screencast: 
+  screencast: https://youtu.be/cXVg7DS1AKQ
   readings:
   - text: "Shumway 3.2, 3.4"
   notes: >
@@ -87,7 +87,7 @@ schedule:
 - week: 5
   day: 4
   lecture: AR, MA, and ARMA models
-  slides: 
+  slides: Lec09
   screencast: 
   readings:
   - text: "Shumway 3.7, 3.8"
