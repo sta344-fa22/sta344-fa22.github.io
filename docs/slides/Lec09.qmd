@@ -121,8 +121,6 @@ $$
 
 . . .
 
-$$~$$
-
 This polynomial of lags 
 $$\phi_p(L) = (1 - \phi_1 \, L - \phi_2 \, L^2 - \cdots - \phi_p \, L^p)$$ 
 is called the characteristic polynomial of the AR process.
