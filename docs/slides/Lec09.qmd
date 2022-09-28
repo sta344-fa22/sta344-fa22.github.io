@@ -164,13 +164,44 @@ From Shumway & Stofer 4th ed.
 
 We can rewrite the $AR(p)$ model into an $AR(1)$ form using matrix notation
 $$
-\begin{aligned}
-y_t &= \delta + \phi_1 \, y_{t-1} + \phi_2 \, y_{t-2} + \cdots + \phi_p \, y_{t-p} + w_t  \\
-\boldsymbol\xi_t &= \boldsymbol{\delta} + \boldsymbol{F} \, \boldsymbol\xi_{t-1} + \boldsymbol w_t
-\end{aligned}
+y_t = \delta + \phi_1 \, y_{t-1} + \phi_2 \, y_{t-2} + \cdots + \phi_p \, y_{t-p} + w_t  \\
+\boldsymbol\xi_t = \boldsymbol{\delta} + \boldsymbol{F} \, \boldsymbol\xi_{t-1} + \boldsymbol w_t
 $$
 where
+
+:::: {.columns .small}
+::: {.column width='50%'}
 $$
+\begin{aligned}
+\underset{p \times 1}{\boldsymbol\xi_t} &= [y_t, y_{t-1}, y_{t-2}, \ldots, y_{t-p+1}]' \\
+\underset{p \times 1}{\boldsymbol\delta} &= [\delta, 0, 0,\ldots, 0]'\\
+\underset{p \times 1}{\boldsymbol{w}_{t}} &= [w_t, 0, 0,\ldots, 0]' \\
+\end{aligned}
+$$
+:::
+
+::: {.column width='50%'}
+$$
+\begin{aligned}
+\underset{p \times p}{\boldsymbol{F}} &= 
+\begin{bmatrix}
+\phi_1 & \phi_2 & \phi_3 & \cdots & \phi_{p-1} & \phi_p \\
+1 & 0 & 0 & \cdots & 0 & 0 \\
+0 & 1 & 0 & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \cdots & \vdots & \vdots \\
+0 & 0 & 0 & \cdots & 1 & 0 \\
+\end{bmatrix} 
+\end{aligned}
+$$
+:::
+::::
+
+
+
+
+## Putting it together
+
+::: {.medium}
 \begin{aligned}
 \begin{bmatrix}
 y_t \\
@@ -207,10 +238,10 @@ y_{t-p}
 w_t \\
 0 \\
 0 \\
-
 \vdots \\
 0
 \end{bmatrix} \\
+\\
 &=
 \begin{bmatrix}
 \delta + w_t + \sum_{i=1}^p \phi_i \, y_{t-i} \\
@@ -220,8 +251,7 @@ y_{t-2} \\
 y_{t-p+1}
 \end{bmatrix}
 \end{aligned}
-$$
-
+:::
 
 ## Proof sketch (cont.)
 
@@ -233,11 +263,11 @@ $$
   &= \boldsymbol{\delta} + \boldsymbol w_t + \boldsymbol{F} \, \boldsymbol\xi_{t-1}  \\
   &= \boldsymbol{\delta} + \boldsymbol w_t + \boldsymbol{F} \, (\boldsymbol\delta+\boldsymbol w_{t-1}) + \boldsymbol{F}^2 \, (\boldsymbol \delta+\boldsymbol w_{t-2}) + \cdots \\
   &\qquad\qquad~\,\,\,                        + \boldsymbol{F}^{t-1} \, (\boldsymbol \delta+\boldsymbol w_{1}) + \boldsymbol{F}^t \, (\boldsymbol \delta+\boldsymbol w_0) \\
-  &= (\sum_{i=0}^t F^i)\boldsymbol{\delta} + \sum_{i=0}^t F^i \, w_{t-i}
+  &= \left(\sum_{i=0}^t F^i\right)\boldsymbol{\delta} + \sum_{i=0}^t F^i \, w_{t-i}
 \end{aligned}
 $$
 
-and therefore we need $\underset{t\to\infty}{\lim} F^t \to 0$.
+and therefore we need $\underset{t\to\infty}{\lim} F^t \to 0$ so that $\underset{t\to\infty}{\lim} \sum_{i=0}^t F^i < \infty$.
 
 
 ## Proof sketch (cont.)
@@ -256,7 +286,7 @@ $$
 \begin{aligned}
 \boldsymbol\xi_t 
   &= (\sum_{i=0}^t F^i)\boldsymbol{\delta} + \sum_{i=0}^t F^i \, w_{t-i} \\
-  &= (\sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1})\boldsymbol{\delta} + \sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1} \, w_{t-i}
+  &= \left(\sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1}\right)\boldsymbol{\delta} + \sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1} \, w_{t-i}
 \end{aligned}
 $$
 
@@ -272,10 +302,7 @@ $$
 \end{bmatrix}
 $$
 
-Therefore,
-$$\underset{t\to\infty}{\lim} F^t \to 0$$
-when 
-$$\underset{t\to\infty}{\lim} \Lambda^t \to 0$$ 
+Therefore, $\underset{t\to\infty}{\lim} F^t \to 0$ when  $\underset{t\to\infty}{\lim} \Lambda^t \to 0$ 
 which requires that 
 $$|\lambda_i| < 1 \;\; \text{ for all} \; i$$
 
@@ -316,9 +343,11 @@ $$
 
 . . .
 
+
 $$
 Var(y_t) = \gamma(0) = \phi_1\gamma(1) + \phi_2\gamma(2) + \ldots + \phi_p\gamma(p) + \sigma_w^2 \\
 $$
+
 
 . . .
 
@@ -347,7 +376,7 @@ Properties:
 ## MA(1) - properties (cont.)
 
 
-8
+
 ## Time series
 
 ```{r echo=FALSE, dev="png", dpi=150}
@@ -391,10 +420,11 @@ $$E(y_t) = \delta$$
 
 $$
 \begin{aligned}
-\gamma(0) &= (1 + \theta_1^2+\theta_2^2 + \cdots + \theta_q^2) \, \sigma_w^2 \\
-\gamma(h) &= \begin{cases}
--\theta_k + \theta_1\theta_{k+1} + \theta_2\theta_{k+2} + \cdots + \theta_{q+k}\theta_{q} & \text{if } |k| \in \{1,\ldots,q\} \\
-0 & \text{otherwise}
+Var(y_t) = \gamma(0) &= (1 + \theta_1^2+\theta_2^2 + \cdots + \theta_q^2) \, \sigma_w^2 \\
+\\
+Cov(y_t, y_{t+h}) = \gamma(h) &= \begin{cases}
+\sigma^2 \sum_{j=0}^{q-|h|} \theta_j \theta_{j+|h|} & \text{if $|h| \leq q$} \\
+0 & \text{if $|h| > q$}
 \end{cases}
 \end{aligned}
 $$
@@ -429,6 +459,16 @@ acf(ma_q[[4]], lag.max = 10, main=expression(paste(theta,"={-1.5, -1, 2}"   )))
 acf(ma_q[[5]], lag.max = 10, main=expression(paste(theta,"={-1.5, -1, 2, 3}")))
 ```
 
+
+## PACF
+
+```{r echo=FALSE}
+par(mfrow=c(2,2))
+pacf(ma_q[[2]], lag.max = 10, main=expression(paste(theta,"={-1.5}"          )))
+pacf(ma_q[[3]], lag.max = 10, main=expression(paste(theta,"={-1.5, -1}"      )))
+pacf(ma_q[[4]], lag.max = 10, main=expression(paste(theta,"={-1.5, -1, 2}"   )))
+pacf(ma_q[[5]], lag.max = 10, main=expression(paste(theta,"={-1.5, -1, 2, 3}")))
+```
 
 # ARMA Model
 

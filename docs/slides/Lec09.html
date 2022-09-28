@@ -7,7 +7,7 @@
 <link href="Lec09_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec09_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec09_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.2.154">
+  <meta name="generator" content="quarto-1.2.160">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>AR, MA, and ARMA Models</title>
@@ -448,12 +448,38 @@ y_t &amp;= \delta + \phi_1 \, y_{t-1} + \phi_2 \, y_{t-2} + \ldots + \phi_p \, y
 </div></aside></section>
 <section id="proof-sketch" class="slide level2">
 <h2>Proof Sketch</h2>
-We can rewrite the <span class="math inline">\(AR(p)\)</span> model into an <span class="math inline">\(AR(1)\)</span> form using matrix notation <span class="math display">\[
+<p>We can rewrite the <span class="math inline">\(AR(p)\)</span> model into an <span class="math inline">\(AR(1)\)</span> form using matrix notation <span class="math display">\[
+y_t = \delta + \phi_1 \, y_{t-1} + \phi_2 \, y_{t-2} + \cdots + \phi_p \, y_{t-p} + w_t  \\
+\boldsymbol\xi_t = \boldsymbol{\delta} + \boldsymbol{F} \, \boldsymbol\xi_{t-1} + \boldsymbol w_t
+\]</span> where</p>
+<div class="columns small">
+<div class="column" style="width:50%;">
+<p><span class="math display">\[
 \begin{aligned}
-y_t &amp;= \delta + \phi_1 \, y_{t-1} + \phi_2 \, y_{t-2} + \cdots + \phi_p \, y_{t-p} + w_t  \\
-\boldsymbol\xi_t &amp;= \boldsymbol{\delta} + \boldsymbol{F} \, \boldsymbol\xi_{t-1} + \boldsymbol w_t
+\underset{p \times 1}{\boldsymbol\xi_t} &amp;= [y_t, y_{t-1}, y_{t-2}, \ldots, y_{t-p+1}]' \\
+\underset{p \times 1}{\boldsymbol\delta} &amp;= [\delta, 0, 0,\ldots, 0]'\\
+\underset{p \times 1}{\boldsymbol{w}_{t}} &amp;= [w_t, 0, 0,\ldots, 0]' \\
 \end{aligned}
-\]</span> where $$
+\]</span></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{aligned}
+\underset{p \times p}{\boldsymbol{F}} &amp;=
+\begin{bmatrix}
+\phi_1 &amp; \phi_2 &amp; \phi_3 &amp; \cdots &amp; \phi_{p-1} &amp; \phi_p \\
+1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+\vdots &amp; \vdots &amp; \vdots &amp; \cdots &amp; \vdots &amp; \vdots \\
+0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1 &amp; 0 \\
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+</div>
+</div>
+</section>
+<section id="putting-it-together" class="slide level2">
+<h2>Putting it together</h2>
+<div class="medium">
 <span class="math display">\[\begin{aligned}
 \begin{bmatrix}
 y_t \\
@@ -490,10 +516,10 @@ y_{t-p}
 w_t \\
 0 \\
 0 \\
-
 \vdots \\
 0
 \end{bmatrix} \\
+\\
 &amp;=
 \begin{bmatrix}
 \delta + w_t + \sum_{i=1}^p \phi_i \, y_{t-i} \\
@@ -503,7 +529,7 @@ y_{t-2} \\
 y_{t-p+1}
 \end{bmatrix}
 \end{aligned}\]</span>
-<p>$$</p>
+</div>
 </section>
 <section id="proof-sketch-cont." class="slide level2">
 <h2>Proof sketch (cont.)</h2>
@@ -514,10 +540,10 @@ y_{t-p+1}
   &amp;= \boldsymbol{\delta} + \boldsymbol w_t + \boldsymbol{F} \, \boldsymbol\xi_{t-1}  \\
   &amp;= \boldsymbol{\delta} + \boldsymbol w_t + \boldsymbol{F} \, (\boldsymbol\delta+\boldsymbol w_{t-1}) + \boldsymbol{F}^2 \, (\boldsymbol \delta+\boldsymbol w_{t-2}) + \cdots \\
   &amp;\qquad\qquad~\,\,\,                        + \boldsymbol{F}^{t-1} \, (\boldsymbol \delta+\boldsymbol w_{1}) + \boldsymbol{F}^t \, (\boldsymbol \delta+\boldsymbol w_0) \\
-  &amp;= (\sum_{i=0}^t F^i)\boldsymbol{\delta} + \sum_{i=0}^t F^i \, w_{t-i}
+  &amp;= \left(\sum_{i=0}^t F^i\right)\boldsymbol{\delta} + \sum_{i=0}^t F^i \, w_{t-i}
 \end{aligned}
 \]</span></p>
-<p>and therefore we need <span class="math inline">\(\underset{t\to\infty}{\lim} F^t \to 0\)</span>.</p>
+<p>and therefore we need <span class="math inline">\(\underset{t\to\infty}{\lim} F^t \to 0\)</span> so that <span class="math inline">\(\underset{t\to\infty}{\lim} \sum_{i=0}^t F^i &lt; \infty\)</span>.</p>
 </section>
 <section id="proof-sketch-cont.-1" class="slide level2">
 <h2>Proof sketch (cont.)</h2>
@@ -530,7 +556,7 @@ y_{t-p+1}
 \begin{aligned}
 \boldsymbol\xi_t
   &amp;= (\sum_{i=0}^t F^i)\boldsymbol{\delta} + \sum_{i=0}^t F^i \, w_{t-i} \\
-  &amp;= (\sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1})\boldsymbol{\delta} + \sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1} \, w_{t-i}
+  &amp;= \left(\sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1}\right)\boldsymbol{\delta} + \sum_{i=0}^t \boldsymbol Q \boldsymbol \Lambda^i \boldsymbol Q^{-1} \, w_{t-i}
 \end{aligned}
 \]</span></p>
 </div>
@@ -545,7 +571,7 @@ y_{t-p+1}
 0 &amp; 0 &amp; \cdots &amp; \lambda_p^i \\
 \end{bmatrix}
 \]</span></p>
-<p>Therefore, <span class="math display">\[\underset{t\to\infty}{\lim} F^t \to 0\]</span> when <span class="math display">\[\underset{t\to\infty}{\lim} \Lambda^t \to 0\]</span> which requires that <span class="math display">\[|\lambda_i| &lt; 1 \;\; \text{ for all} \; i\]</span></p>
+<p>Therefore, <span class="math inline">\(\underset{t\to\infty}{\lim} F^t \to 0\)</span> when <span class="math inline">\(\underset{t\to\infty}{\lim} \Lambda^t \to 0\)</span> which requires that <span class="math display">\[|\lambda_i| &lt; 1 \;\; \text{ for all} \; i\]</span></p>
 </section>
 <section id="proof-sketch-cont.-3" class="slide level2">
 <h2>Proof sketch (cont.)</h2>
@@ -600,7 +626,9 @@ Corr(y_t, y_{t+h}) = \rho(h) = \phi_1\,\rho(h-1) + \phi_2\,\rho(h-2) + \ldots + 
 </section>
 <section id="ma1---properties-cont." class="slide level2">
 <h2>MA(1) - properties (cont.)</h2>
-<p>8 ## Time series</p>
+</section>
+<section id="time-series" class="slide level2">
+<h2>Time series</h2>
 
 <img data-src="Lec09_files/figure-revealjs/unnamed-chunk-1-1.png" width="1500" class="r-stretch quarto-figure-center"></section>
 <section id="acf" class="slide level2">
@@ -614,10 +642,11 @@ Corr(y_t, y_{t+h}) = \rho(h) = \phi_1\,\rho(h-1) + \phi_2\,\rho(h-2) + \ldots + 
 <p><span class="math display">\[E(y_t) = \delta\]</span></p>
 <p><span class="math display">\[
 \begin{aligned}
-\gamma(0) &amp;= (1 + \theta_1^2+\theta_2^2 + \cdots + \theta_q^2) \, \sigma_w^2 \\
-\gamma(h) &amp;= \begin{cases}
--\theta_k + \theta_1\theta_{k+1} + \theta_2\theta_{k+2} + \cdots + \theta_{q+k}\theta_{q} &amp; \text{if } |k| \in \{1,\ldots,q\} \\
-0 &amp; \text{otherwise}
+Var(y_t) = \gamma(0) &amp;= (1 + \theta_1^2+\theta_2^2 + \cdots + \theta_q^2) \, \sigma_w^2 \\
+\\
+Cov(y_t, y_{t+h}) = \gamma(h) &amp;= \begin{cases}
+\sigma^2 \sum_{j=0}^{q-|h|} \theta_j \theta_{j+|h|} &amp; \text{if $|h| \leq q$} \\
+0 &amp; \text{if $|h| &gt; q$}
 \end{cases}
 \end{aligned}
 \]</span></p>
@@ -629,7 +658,11 @@ Corr(y_t, y_{t+h}) = \rho(h) = \phi_1\,\rho(h-1) + \phi_2\,\rho(h-2) + \ldots + 
 <section id="acf-1" class="slide level2">
 <h2>ACF</h2>
 
-<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
+<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="pacf" class="slide level2">
+<h2>PACF</h2>
+
+<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
 <section>
 <section id="arma-model" class="title-slide slide level1 center">
 <h1>ARMA Model</h1>
@@ -645,22 +678,22 @@ y_t = \delta + \phi_1 \, y_{t-1} + \cdots \phi_p \, y_{t-p} + w_{t} + \theta_1 w
 \]</span></p>
 <p>Since all MA processes are stationary, we only need to examine the AR component to determine stationarity, i.e.&nbsp;check roots of <span class="math inline">\(\phi_p(L)\)</span> lie outside the complex unit circle.</p>
 </section>
-<section id="time-series" class="slide level2">
+<section id="time-series-1" class="slide level2">
 <h2>Time series</h2>
 
-<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="phi0.9-theta0" class="slide level2">
 <h2><span class="math inline">\(\phi=0.9\)</span>, <span class="math inline">\(\theta=0\)</span></h2>
 
-<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="phi0-theta0.9" class="slide level2">
 <h2><span class="math inline">\(\phi=0\)</span>, <span class="math inline">\(\theta=0.9\)</span></h2>
 
-<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="phi0.9-theta0.9" class="slide level2">
 <h2><span class="math inline">\(\phi=0.9\)</span>, <span class="math inline">\(\theta=0.9\)</span></h2>
 
-<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
+<img data-src="Lec09_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>
 </section></section>

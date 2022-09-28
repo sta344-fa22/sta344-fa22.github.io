@@ -91,6 +91,9 @@ schedule:
   screencast: 
   readings:
   - text: "Shumway 3.7, 3.8"
+  notes: >
+    <a href="notes/Lec 09 - Notes.pdf">Lec 09 Notes</a>
+  
 
 - week: 6
   day: 2
