@@ -163,6 +163,7 @@ From Shumway & Stofer 4th ed.
 ## Proof Sketch
 
 We can rewrite the $AR(p)$ model into an $AR(1)$ form using matrix notation
+
 $$
 y_t = \delta + \phi_1 \, y_{t-1} + \phi_2 \, y_{t-2} + \cdots + \phi_p \, y_{t-p} + w_t  \\
 \boldsymbol\xi_t = \boldsymbol{\delta} + \boldsymbol{F} \, \boldsymbol\xi_{t-1} + \boldsymbol w_t
