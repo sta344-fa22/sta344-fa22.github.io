@@ -103,7 +103,8 @@ schedule:
   notes: ""
   readings:
   - text: "Shumway 3.7, 3.8"
-
+  notes: >
+    <a href="notes/Lec 10 - Notes.pdf">Lec 10 Notes</a>
 
 - week: 6
   day: 2
