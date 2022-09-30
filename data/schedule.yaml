@@ -85,7 +85,7 @@ schedule:
     <a href="notes/Lec 08 - Notes.pdf">Lec 08 Notes</a>
 
 - week: 5
-  day: 4
+  day: 2
   lecture: AR, MA, and ARMA models
   slides: Lec09
   screencast: https://youtu.be/zrA9_zQEbDc
@@ -95,8 +95,8 @@ schedule:
     <a href="notes/Lec 09 - Notes.pdf">Lec 09 Notes</a>
   
 
-- week: 6
-  day: 2
+- week: 5
+  day: 4
   lecture: ARIMA models
   slides: Lec10
   screencast: 
@@ -106,7 +106,7 @@ schedule:
 
 
 - week: 6
-  day: 4
+  day: 2
   lecture: Seasonal ARIMA
   slides: 
   screencast: 
@@ -116,6 +116,13 @@ schedule:
   - text: "Hyndman 8.6, 8.8, 8.9"
     link: https://www.otexts.org/fpp/8
 
+- week: 6
+  day: 4
+  lecture: Fitting ARIMA Models
+  slides: 
+  screencast: 
+  readings:
+
 - week: 7
   day: 0
   lecture: "<i>No lab - Fall break</i>"
@@ -123,14 +130,23 @@ schedule:
 
 - week: 7
   day: 2
-  lecture: Fitting ARIMA Models
+  lecture: Prediction with ARIMA models
   slides: 
-  screencast: 
+  screencast:
   readings:
 
 - week: 7
   day: 4
-  lecture: Midterm 1
+  lecture: Prophet
+  slides: 
+  screencast:
+  readings:
+  - text: "Forecasting at scale"
+    link: https://peerj.com/preprints/3190/
+  
+- week: 7
+  day: 4
+  lecture: Midterm 1 out
 
 
 - week: 8
