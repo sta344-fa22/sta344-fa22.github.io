@@ -29,21 +29,20 @@ ggplot2::theme_set(ggplot2::theme_bw())
 
 ## $MA(q)$
 
-From last time,
-$$ MA(q): \qquad y_t = \delta + w_t + \theta_1 \, w_{t-1} + \theta_2 \, w_{t-2} + \cdots + \theta_q \, w_{t-q} $$
+From last time - a $MA(q)$ process with $\w_t \overset{iid}{\sim} N(0,\sigma^2_w)$,
+$$y_t = \delta + w_t + \theta_1 \, w_{t-1} + \theta_2 \, w_{t-2} + \cdots + \theta_q \, w_{t-q} $$
 
-Properties:
+has the following properties,
 $$E(y_t) = \delta$$
 
 $$
-\gamma(0) = Var(y_t) = (1 + \theta_1^2 + \theta_2 + \cdots + \theta_q^2) \, \sigma_w^2
+Var(y_t) = \gamma(0) = (1 + \theta_1^2 + \theta_2 + \cdots + \theta_q^2) \, \sigma_w^2
 $$
 
 $$
-\gamma(h) = 
-\begin{cases}
-\theta_h + \theta_1 \, \theta_{1+h} + \theta_2 \, \theta_{2+h} + \cdots + \theta_{q-h}\, \theta_{q} & \text{if } h\in\{1,\ldots,q\} \\
-0 & \text{otherwise}
+Cov(y_t, y_{t+h}) = \gamma(h) = \begin{cases}
+\sigma^2_w \sum_{j=0}^{q-|h|} \theta_j \theta_{j+|h|} & \text{if $|h| \leq q$} \\
+0 & \text{if $|h| > q$}
 \end{cases}
 $$
 
@@ -57,7 +56,7 @@ If we let $q \to \infty$ then process will be stationary if and only if the movi
 
 $$ \sum_{i=1}^\infty \theta_i^2 < \infty$$
 
-which is necessary such that $Var(y_t) < \infty$ so that the weak stationarity conditions are met.
+which is necessary so that the $Var(y_t) < \infty$ condition is met for weak stationarity.
 
 Sometimes, a slightly stronger condition known as absolute summability, 
 $\sum_{i=1}^\infty |\theta_i| < \infty$ 
@@ -69,6 +68,8 @@ is  necessary (e.g. for some CLT related asymptotic results).
 If an $MA(q)$ process, $y_t = \delta + \theta_q(L) w_t$, can be rewritten as a stationary $AR$ process then the process is said to be invertible.
 
 . . .
+
+<br/>
 
 $MA(1)$ w/ $\delta=0$ example:
 
@@ -151,7 +152,7 @@ Differencing can also address stochastic trend such as in the case where $\mu_t$
 Let $y_t = \mu_t + w_t$ where $w_t$ is white noise and $\mu_t = \mu_{t-1} + v_t$ with $v_t$ being a stationary process with mean 0. 
 
 ```{r echo=FALSE}
-d = data_frame(
+d = tibble(
   w=rnorm(300,0,1),
   v=rnorm(300,0,1),
   mu = 0,
@@ -197,7 +198,7 @@ $$
 Let $y_t = \mu_t + w_t$ where $w_t$ is white noise and $\mu_t = \mu_{t-1} + v_t$ but now $v_t = v_{t-1} + e_t$ with $e_t$ being stationary. 
 
 ```{r echo=FALSE}
-d = data_frame(
+d = tibble(
   w=rnorm(300,0,1),
   e=rnorm(300,0,1),
   v=0,
@@ -327,8 +328,8 @@ ts2 = arima.sim(n=250, model=list(order=c(2,1,0), ar=c(0.4,0.5)))
 
 
 par(mfrow=c(1,2), mar=c(2,4,2,2))
-plot(ts1)
-plot(ts2)
+plot(ts1, main="ts1")
+plot(ts2, main="ts2")
 ```
 
 ## EDA
@@ -403,9 +404,7 @@ expand.grid(p=0:2, d=1, q=0:2) %>%
   knitr::kable(digits = 2)
 ```
 
-##  `ts1` - final model
-
-\scriptoutput
+## `ts1` - final model
 
 Fitted:
 ```{r}
@@ -509,8 +508,6 @@ forecast::Arima(elec_sales, order = c(3,1,0)) %>% residuals() %>%
 
 ## Model Comparison
 
-\scriptoutput
-
 Model choices:
 ```{r}
 forecast::Arima(elec_sales, order = c(3,1,0))$aicc
@@ -522,7 +519,7 @@ forecast::Arima(elec_sales, order = c(4,1,0))$aicc
 forecast::Arima(elec_sales, order = c(2,1,0))$aicc
 ```
 
-. . .
+##
 
 Automatic selection:
 ```{r}

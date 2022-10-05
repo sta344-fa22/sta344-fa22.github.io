@@ -96,7 +96,11 @@ schedule:
   
 
 - week: 5
-  day: 4
+  day: 2
+  lecture: <i>Class cancelled</i>
+
+- week: 6
+  day: 2
   lecture: ARIMA models
   slides: Lec10
   screencast: 
@@ -107,7 +111,7 @@ schedule:
     <a href="notes/Lec 10 - Notes.pdf">Lec 10 Notes</a>
 
 - week: 6
-  day: 2
+  day: 4
   lecture: Seasonal ARIMA
   slides: 
   screencast: 
@@ -117,13 +121,6 @@ schedule:
   - text: "Hyndman 8.6, 8.8, 8.9"
     link: https://www.otexts.org/fpp/8
 
-- week: 6
-  day: 4
-  lecture: Fitting ARIMA Models
-  slides: 
-  screencast: 
-  readings:
-
 - week: 7
   day: 0
   lecture: "<i>No lab - Fall break</i>"
@@ -131,9 +128,9 @@ schedule:
 
 - week: 7
   day: 2
-  lecture: Prediction with ARIMA models
+  lecture: Fitting & Prediction w/ ARIMA Models
   slides: 
-  screencast:
+  screencast: 
   readings:
 
 - week: 7
@@ -145,11 +142,6 @@ schedule:
   - text: "Forecasting at scale"
     link: https://peerj.com/preprints/3190/
   
-- week: 7
-  day: 4
-  lecture: Midterm 1 out
-
-
 - week: 8
   day: 2
   lecture: Gaussian Process models (pt. 1)
