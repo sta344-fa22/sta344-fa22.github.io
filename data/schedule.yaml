@@ -113,7 +113,7 @@ schedule:
 - week: 6
   day: 4
   lecture: Seasonal ARIMA
-  slides: 
+  slides: Lec11
   screencast: 
   readings:
   - text: "Shumway 3.5, 3.6, 3.9"
