@@ -103,7 +103,7 @@ schedule:
   day: 2
   lecture: ARIMA models
   slides: Lec10
-  screencast: 
+  screencast: https://youtu.be/tCaYlidglTM
   notes: ""
   readings:
   - text: "Shumway 3.7, 3.8"
