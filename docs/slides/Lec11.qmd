@@ -26,6 +26,113 @@ ggplot2::theme_set(ggplot2::theme_bw())
 ```
 
 
+## ARIMA - General Guidance
+
+::: {.medium}
+1. Positive autocorrelations out to a large number of lags usually indicates a need for differencing
+
+2. Slightly too much or slightly too little differencing can be corrected by adding AR or MA terms respectively.
+
+3. A model with no differencing usually includes a constant term, a model with two or more orders (rare) differencing usually does not include a constant term. 
+
+4. After differencing, if the PACF has a sharp cutoff then consider adding AR terms to the model.
+
+5. After differencing, if the ACF has a sharp cutoff then consider adding an MA term to the model.
+
+6. It is possible for an AR term and an MA term to cancel each other's effects, so try models with fewer AR terms and fewer MA terms.
+:::
+
+::: {.aside}
+Based on guidance in Robert Nau's notes on [regression and time series analysis](https://people.duke.edu/~rnau/411home.htm) - Chapter 5
+:::
+
+# Electrical Equipment Sales 
+
+## Data
+
+```{r echo=FALSE}
+data(elecequip, package = "fpp")
+elec_sales = forecast::seasadj(stl(elecequip, s.window="periodic"))
+
+par(mar=c(2,2,2,2))
+forecast::tsdisplay(elec_sales, points=FALSE)
+```
+
+## 1st order differencing
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(diff(elec_sales,1), points=FALSE)
+```
+
+## 2nd order differencing
+
+```{r echo=FALSE}
+forecast::ggtsdisplay(diff(elec_sales,2), points=FALSE)
+```
+
+## Model
+
+```{r}
+forecast::Arima(elec_sales, order = c(3,1,0))
+```
+
+## Residuals
+
+::: {.small}
+```{r}
+forecast::Arima(elec_sales, order = c(3,1,0)) %>% residuals() %>% 
+  forecast::ggtsdisplay(points=FALSE)
+```
+:::
+
+## Model Comparison
+
+Model choices:
+```{r}
+forecast::Arima(elec_sales, order = c(3,1,0))$aicc
+
+forecast::Arima(elec_sales, order = c(3,1,1))$aicc
+
+forecast::Arima(elec_sales, order = c(4,1,0))$aicc
+
+forecast::Arima(elec_sales, order = c(2,1,0))$aicc
+```
+
+## Automatic selection (AICc)
+
+```{r}
+forecast::auto.arima(elec_sales)
+```
+
+## Automatic selection (BIC)
+
+```{r}
+forecast::auto.arima(elec_sales, ic = "bic")
+```
+
+## Model fit
+
+```{r}
+plot(elec_sales, lwd=2, col=adjustcolor("black", alpha.f=0.75))
+forecast::Arima(elec_sales, order = c(3,1,0)) %>% fitted() %>% 
+  lines(col=adjustcolor('red',alpha.f=0.75),lwd=2)
+```
+
+## Model forecast
+
+```{r}
+forecast::Arima(elec_sales, order = c(3,1,0)) %>% 
+  forecast::forecast() %>% autoplot()
+```
+
+## Model forecast - Zoom
+
+```{r message=FALSE}
+forecast::Arima(elec_sales, order = c(3,1,0)) %>% 
+  forecast::forecast() %>% autoplot() + xlim(2009,2014)
+```
+
+
 # Seasonal Models
 
 
@@ -54,7 +161,9 @@ We can extend the existing ARIMA model to handle these higher order lags (withou
 
 Seasonal $\text{ARIMA}\,(p,d,q) \times (P,D,Q)_s$:
 $$ \Phi_P(L^s) \, \phi_p(L) \, \Delta_s^D \, \Delta^d \, y_t = \delta + \Theta_Q(L^s) \, \theta_q(L) \, w_t$$
-\pause where
+. . .
+
+where
 
 ::: {.small}
 $$
@@ -80,14 +189,13 @@ $$
 y_t = \Phi_1 y_{t-12} + \delta + w_t
 \end{aligned}
 $$
-\vspace{2mm}
 
 ```{r}
 (m1.1 = forecast::Arima(wineind, seasonal=list(order=c(1,0,0), period=12)))
 ```
 
 
-## Fitted model
+## Fitted - Model 1.1
 
 ```{r echo=FALSE, fig.height=4}
 cbPalette = c("#000000", "#ff3333", "#92c5de")
@@ -120,15 +228,16 @@ $$
 y_t = y_{t-12} + \delta + w_t
 \end{aligned}
 $$
-\vspace{2mm}
 
 ```{r}
-(m1.2 = forecast::Arima(wineind, seasonal=list(order=c(0,1,0), period=12)))
+(m1.2 = forecast::Arima(
+  wineind, seasonal=list(order=c(0,1,0), period=12)
+))
 ```
 
 
 
-## Fitted model
+## Fitted - Model 1.2
 
 ```{r echo=FALSE, fig.height=4}
 cbPalette = c("#000000", "#ff3333", "#92c5de")
@@ -151,7 +260,7 @@ m1.2 %>%
 ```
 
 
-## Residuals - Model 1.1
+## Residuals - Model 1.1 (SAR)
 
 ```{r echo=FALSE}
 forecast::ggtsdisplay(m1.1$residuals)
@@ -159,7 +268,7 @@ forecast::ggtsdisplay(m1.1$residuals)
 
 
 
-## Residuals - Model 1.2
+## Residuals - Model 1.2 (SDiff)
 
 ```{r echo=FALSE}
 forecast::ggtsdisplay(m1.2$residuals)
@@ -188,7 +297,7 @@ $$
 ```
 
 
-## Fitted model
+## Fitted - Model 2
 
 ```{r echo=FALSE, fig.height=4}
 model = "Model 2 - forecast::Arima (0,0,0) x (0,1,1)[12]"
@@ -225,18 +334,17 @@ $\text{ARIMA}(3,0,0) \times (0,1,1)_{12}$
 $$
 \begin{aligned}
 (1-\phi_1 L - \phi_2 L^2 - \phi_3 L^3) \, (1-L^{12}) y_t = \delta + (1 + \Theta_1 L)w_t \\
-(1-\phi_1 L - \phi_2 L^2 - \phi_3 L^3) \, (y_t-y_{t-12}) = \delta + w_t + w_{t-12} \\
-y_t = \delta + \sum_{i=1}^3 \phi_i y_{t-1}  + y_{t-12}  - \sum_{i=1}^3 \phi_i y_{t-12-i} + w_t + w_{t-12}
+y_t = \delta + \sum_{i=1}^3 \phi_i y_{t-i}  + y_{t-12}  - \sum_{i=1}^3 \phi_i y_{t-12-i} + w_t + w_{t-12}
 \end{aligned}
 $$
 :::
 
-
+::: {.medium}
 ```{r}
 (m3 = forecast::Arima(wineind, order=c(3,0,0), 
                       seasonal=list(order=c(0,1,1), period=12)))
 ```
-
+:::
 
 ## Fitted model
 
@@ -269,13 +377,16 @@ forecast::ggtsdisplay(m3$residuals)
 # Federal Reserve Board Production Index
 
 
-## \texttt{prodn} from the \texttt{astsa} package
+## `prodn` from the `astsa` package
 
 Monthly Federal Reserve Board Production Index (1948-1978)
 
+::: {.small}
 ```{r}
-data(prodn, package="astsa"); forecast::ggtsdisplay(prodn, points = FALSE)
+data(prodn, package="astsa")
+forecast::ggtsdisplay(prodn, points = FALSE)
 ```
+:::
 
 
 ## Differencing
@@ -337,15 +448,14 @@ yardstick::rmse_vec(
 
 
 
-## Residuals
+## Residuals - Model 2
 
-```{r echo=FALSE}
+```{r}
 forecast::ggtsdisplay(fr_m2$residuals, points=FALSE, lag.max=36)
 ```
 
 
 ## Adding Seasonal MA
-
 
 :::: {.columns .small}
 ::: {.column width='50%'}
@@ -392,9 +502,8 @@ yardstick::rmse_vec(
 
 ## Adding Seasonal MA (cont.)
 
-
-::: {.small}
-
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{r}
 (fr_m3.3 = forecast::Arima(
   prodn, order = c(0,1,0), 
@@ -402,10 +511,12 @@ yardstick::rmse_vec(
 ))
 ```
 :::
+::::
 
 . . .
 
-::: {.small}
+:::: {.columns .small}
+::: {.column width='50%'}
 ```{r}
 yardstick::rmse_vec(
   prodn %>% unclass(), 
@@ -413,6 +524,9 @@ yardstick::rmse_vec(
 )
 ```
 :::
+::::
+
+
 ## Residuals - Model 3.3
 
 ```{r echo=FALSE}
@@ -423,7 +537,7 @@ forecast::ggtsdisplay(fr_m3.3$residuals, points=FALSE, lag.max = 36)
 
 ## Adding AR
 
-:::: {.columns}
+:::: {.columns .small}
 ::: {.column width='50%'}
 ```{r}
 (fr_m4.1 = forecast::Arima(
