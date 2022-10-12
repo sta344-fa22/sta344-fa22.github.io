@@ -1,3 +1,8 @@
+strip_attr = function(x) {
+  attributes(x) = NULL
+  x
+}
+
 crps_test = function(post,obs,n_pts = 1e6)
 {
   F_post = ecdf(post)
