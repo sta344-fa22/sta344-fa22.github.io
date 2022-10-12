@@ -511,9 +511,16 @@ d = modelr::add_residuals(d,lm4,"w_hat5")
 ## BRMS
 
 ::: {.medium}
-```{r cache=TRUE}
-( arma22_brms = brm(y~arma(p=2,q=2)-1, data=d, chains=2, refresh=0, iter = 5000) )
+```{r eval=FALSE}
+( arma22_brms = brm(
+    y~arma(p=2,q=2)-1, data=d, 
+    chains=2, refresh=0, iter = 5000
+) )
 ```
+```{r echo=FALSE}
+(arma22_brms = readRDS("prev/Lec11/arma22_brms.rds"))
+```
+
 :::
 
 ## Chains
@@ -603,6 +610,7 @@ arma22_brms %>%
       aes(y=.prediction), alpha=0.25
     )
 ```
+:::
 
 
 ## Stan Code

@@ -1031,26 +1031,36 @@ F-statistic:  1568 on 4 and 485 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="brms" class="slide level2">
 <h2>BRMS</h2>
 <div class="medium">
-<div class="cell" data-layout-align="center" data-hash="Lec12_cache/revealjs/unnamed-chunk-27_29c73c03227f3e031f7402f87f526c84">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>( <span class="at">arma22_brms =</span> <span class="fu">brm</span>(y<span class="sc">~</span><span class="fu">arma</span>(<span class="at">p=</span><span class="dv">2</span>,<span class="at">q=</span><span class="dv">2</span>)<span class="sc">-</span><span class="dv">1</span>, <span class="at">data=</span>d, <span class="at">chains=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter =</span> <span class="dv">5000</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>( <span class="at">arma22_brms =</span> <span class="fu">brm</span>(</span>
+<span id="cb33-2"><a href="#cb33-2"></a>    y<span class="sc">~</span><span class="fu">arma</span>(<span class="at">p=</span><span class="dv">2</span>,<span class="at">q=</span><span class="dv">2</span>)<span class="sc">-</span><span class="dv">1</span>, <span class="at">data=</span>d, </span>
+<span id="cb33-3"><a href="#cb33-3"></a>    <span class="at">chains=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter =</span> <span class="dv">5000</span></span>
+<span id="cb33-4"><a href="#cb33-4"></a>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
-Formula: y ~ arma(p = 2, q = 2) - 1 
+Formula: y ~ 1 
+         autocor ~ arma(time = NA, gr = NA, p = 2, q = 2, cov = FALSE)
    Data: d (Number of observations: 500) 
-  Draws: 2 chains, each with iter = 5000; warmup = 2500; thin = 1;
-         total post-warmup draws = 5000
+  Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 2000
 
 Correlation Structures:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-ar[1]     1.20      0.16     1.05     1.46 2.24        3        2
-ar[2]     0.42      0.97    -0.65     1.38 2.24        3       NA
-ma[1]    -0.20      0.62    -0.82     0.55 2.24        3        2
-ma[2]    -0.13      0.27    -0.40     0.23 2.24        3        2
+ar[1]     0.97      0.03     0.90     1.00 1.00      761      803
+ar[2]    -0.20      0.04    -0.27    -0.13 1.01      754      511
+ma[1]     0.82      0.05     0.73     0.90 1.00      838      634
+ma[2]     0.39      0.04     0.31     0.47 1.00     1117     1332
+
+Population-Level Effects: 
+          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept    -0.38      0.38    -1.12     0.35 1.01     1253     1247
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     1.09      0.11     0.94     1.20 2.23        3       NA
+sigma     0.99      0.03     0.93     1.05 1.00     1583     1373
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1067,7 +1077,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-28-1.png" width="960"></p>
+<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-29-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-29-2.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1080,14 +1097,14 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 
 </div>
 
-<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-30-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-31-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="predictions-1" class="slide level2">
 <h2>Predictions</h2>
 
-<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-31-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-32-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="forecasting-1" class="slide level2">
 <h2>Forecasting</h2>
-<p>:::{.small}</p>
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>arma22_brms_fc <span class="ot">=</span> arma22_brms <span class="sc">%&gt;%</span></span>
 <span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">predicted_draws_fix</span>(</span>
@@ -1095,64 +1112,73 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb36-4"><a href="#cb36-4"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb36-5"><a href="#cb36-5"></a>  <span class="fu">filter</span>(.chain <span class="sc">==</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-
-<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-34-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="stan-code" class="slide level2">
 <h2>Stan Code</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>arma22_brms <span class="sc">%&gt;%</span> <span class="fu">stancode</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>// generated with brms 2.18.0
-functions {
-}
-data {
-  int&lt;lower=1&gt; N;  // total number of observations
-  vector[N] Y;  // response variable
-  // data needed for ARMA correlations
-  int&lt;lower=0&gt; Kar;  // AR order
-  int&lt;lower=0&gt; Kma;  // MA order
-  // number of lags per observation
-  int&lt;lower=0&gt; J_lag[N];
-  int prior_only;  // should the likelihood be ignored?
-}
-transformed data {
-  int max_lag = max(Kar, Kma);
-}
-parameters {
-  vector[Kar] ar;  // autoregressive coefficients
-  vector[Kma] ma;  // moving-average coefficients
-  real&lt;lower=0&gt; sigma;  // dispersion parameter
-}
-transformed parameters {
-  real lprior = 0;  // prior contributions to the log posterior
-  lprior += student_t_lpdf(sigma | 3, 0, 3.9)
-    - 1 * student_t_lccdf(0 | 3, 0, 3.9);
-}
-model {
-  // likelihood including constants
-  if (!prior_only) {
-    // matrix storing lagged residuals
-    matrix[N, max_lag] Err = rep_matrix(0, N, max_lag);
-    vector[N] err;  // actual residuals
-    // initialize linear predictor term
-    vector[N] mu = rep_vector(0.0, N);
-    // include ARMA terms
-    for (n in 1:N) {
-      mu[n] += Err[n, 1:Kma] * ma;
-      err[n] = Y[n] - mu[n];
-      for (i in 1:J_lag[n]) {
-        Err[n + 1, i] = err[n + 1 - i];
-      }
-      mu[n] += Err[n, 1:Kar] * ar;
-    }
+<pre><code>// generated with brms 2.5.0
+functions { 
+} 
+data { 
+  int&lt;lower=1&gt; N;  // total number of observations 
+  vector[N] Y;  // response variable 
+  // data needed for ARMA correlations 
+  int&lt;lower=0&gt; Kar;  // AR order 
+  int&lt;lower=0&gt; Kma;  // MA order 
+  int&lt;lower=0&gt; J_lag[N]; 
+  int prior_only;  // should the likelihood be ignored? 
+} 
+transformed data { 
+  int max_lag = max(Kar, Kma); 
+} 
+parameters { 
+  real temp_Intercept;  // temporary intercept 
+  real&lt;lower=0&gt; sigma;  // residual SD 
+  vector&lt;lower=-1,upper=1&gt;[Kar] ar;  // autoregressive effects 
+  vector&lt;lower=-1,upper=1&gt;[Kma] ma;  // moving-average effects 
+} 
+transformed parameters { 
+} 
+model { 
+  vector[N] mu = temp_Intercept + rep_vector(0, N);
+  // objects storing residuals 
+  matrix[N, max_lag] E = rep_matrix(0, N, max_lag); 
+  vector[N] e; 
+  for (n in 1:N) { 
+    mu[n] += head(E[n], Kma) * ma;
+    // computation of ARMA correlations 
+    e[n] = Y[n] - mu[n]; 
+    for (i in 1:J_lag[n]) { 
+      E[n + 1, i] = e[n + 1 - i]; 
+    } 
+    mu[n] += head(E[n], Kar) * ar;
+  } 
+  // priors including all constants 
+  target += student_t_lpdf(temp_Intercept | 3, 0, 10); 
+  target += student_t_lpdf(sigma | 3, 0, 10)
+    - 1 * student_t_lccdf(0 | 3, 0, 10); 
+  // likelihood including all constants 
+  if (!prior_only) { 
     target += normal_lpdf(Y | mu, sigma);
-  }
-  // priors including constants
-  target += lprior;
-}
-generated quantities {
-}</code></pre>
+  } 
+} 
+generated quantities { 
+  // actual population-level intercept 
+  real b_Intercept = temp_Intercept; 
+} </code></pre>
 </div>
 </div>
 </div>
