@@ -265,7 +265,7 @@ ar1_brms_fc = ar1_brms %>%
   filter(.chain == 1)
 ```
 
-```{r}
+```{r echo=FALSE}
 ar1_brms %>%
   predicted_draws_fix(newdata = d) %>%
   filter(.chain == 1) %>%
@@ -591,7 +591,7 @@ arma22_brms_fc = arma22_brms %>%
   filter(.chain == 1)
 ```
 
-```{r}
+```{r echo=FALSE}
 arma22_brms %>%
   predicted_draws_fix(newdata = d) %>%
   filter(.chain == 1) %>%
