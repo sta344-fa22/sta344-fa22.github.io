@@ -725,7 +725,7 @@ y_t | \delta, &amp;y_{t-1}, y_{t-2}, w_{t-1}, w_{t-2} \\
 </section>
 <section id="arma22-example" class="slide level2">
 <h2>ARMA(2,2) Example</h2>
-<p>with <span class="math inline">\(\phi = (1.3,-0.5)\)</span>, <span class="math inline">\(\theta = (0.5,0.2)\)</span>, <span class="math inline">\(\delta=0\)</span>, and <span class="math inline">\(\sigma_w^2=1\)</span> using the same models</p>
+<p>with <span class="math inline">\(\phi = (0.75,-0.5)\)</span>, <span class="math inline">\(\theta = (0.5,0.2)\)</span>, <span class="math inline">\(\delta=0\)</span>, and <span class="math inline">\(\sigma_w^2=1\)</span> using the same models</p>
 
 <img data-src="Lec12_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="arima-1" class="slide level2">
@@ -738,17 +738,17 @@ ARIMA(2,0,2) with zero mean
 
 Coefficients:
          ar1      ar2     ma1     ma2
-      1.3702  -0.5634  0.4324  0.1274
-s.e.  0.0652   0.0597  0.0740  0.0593
+      0.7290  -0.4967  0.4896  0.2543
+s.e.  0.0868   0.0586  0.0940  0.0727
 
-sigma^2 = 0.928:  log likelihood = -690.59
-AIC=1391.18   AICc=1391.3   BIC=1412.25
+sigma^2 = 1.082:  log likelihood = -728.13
+AIC=1466.26   AICc=1466.38   BIC=1487.33
 
 Training set error measures:
-                      ME      RMSE       MAE      MPE     MAPE      MASE
-Training set -0.03436806 0.9594506 0.7601683 8.679472 91.22363 0.6042665
-                    ACF1
-Training set 0.003470383</code></pre>
+                     ME     RMSE       MAE       MPE     MAPE      MASE
+Training set 0.02160055 1.036121 0.8309352 -7.423015 270.5659 0.6674512
+                     ACF1
+Training set -0.001909506</code></pre>
 </div>
 </div>
 </section>
@@ -763,21 +763,21 @@ Call:
 lm(formula = y ~ lag(y, 1) + lag(y, 2))
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--2.5507 -0.6394  0.0231  0.6421  2.8795 
+     Min       1Q   Median       3Q      Max 
+-2.95562 -0.69955  0.00587  0.77063  3.13283 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) -0.04934    0.04521  -1.091    0.276    
-lag(y, 1)    1.58595    0.02972  53.360   &lt;2e-16 ***
-lag(y, 2)   -0.75056    0.02968 -25.288   &lt;2e-16 ***
+(Intercept)  0.02892    0.04802   0.602    0.547    
+lag(y, 1)    1.07883    0.03430  31.455   &lt;2e-16 ***
+lag(y, 2)   -0.64708    0.03438 -18.820   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 1.005 on 495 degrees of freedom
+Residual standard error: 1.071 on 495 degrees of freedom
   (2 observations deleted due to missingness)
-Multiple R-squared:  0.9217,    Adjusted R-squared:  0.9214 
-F-statistic:  2914 on 2 and 495 DF,  p-value: &lt; 2.2e-16</code></pre>
+Multiple R-squared:  0.6677,    Adjusted R-squared:  0.6664 
+F-statistic: 497.4 on 2 and 495 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
@@ -805,11 +805,9 @@ ar.mle(x = y, order.max = 10)
 
 Coefficients:
       1        2        3        4        5  
- 1.7977  -1.1882   0.2859  -0.0282  -0.0585  
-      6        7  
- 0.1857  -0.1212  
+ 1.2135  -0.8334   0.0921   0.1544  -0.0989  
 
-Order selected 7  sigma^2 estimated as  0.8989</code></pre>
+Order selected 5  sigma^2 estimated as  1.072</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
@@ -820,18 +818,18 @@ Order selected 7  sigma^2 estimated as  0.8989</code></pre>
 ARIMA(10,0,0) with non-zero mean 
 
 Coefficients:
-         ar1      ar2     ar3      ar4      ar5
-      1.7940  -1.1824  0.2840  -0.0291  -0.0497
-s.e.  0.0447   0.0919  0.1061   0.1069   0.1066
-         ar6      ar7      ar8      ar9    ar10
-      0.1492  -0.0657  -0.0298  -0.0028  0.0020
-s.e.  0.1067   0.1072   0.1068   0.0925  0.0449
-         mean
-      -0.2661
-s.e.   0.3251
+         ar1      ar2     ar3     ar4      ar5
+      1.2162  -0.8378  0.0927  0.1693  -0.1274
+s.e.  0.0446   0.0702  0.0796  0.0800   0.0807
+         ar6     ar7      ar8     ar9     ar10
+      0.0198  0.0274  -0.0841  0.1001  -0.0736
+s.e.  0.0809  0.0809   0.0808  0.0713   0.0453
+        mean
+      0.0501
+s.e.  0.0930
 
-sigma^2 = 0.9183:  log likelihood = -684.48
-AIC=1392.97   AICc=1393.61   BIC=1443.54</code></pre>
+sigma^2 = 1.09:  log likelihood = -726.47
+AIC=1476.93   AICc=1477.57   BIC=1527.51</code></pre>
 </div>
 </div>
 </div>
@@ -864,22 +862,22 @@ lm(formula = y ~ lag(y, 1) + lag(y, 2) + lag(w_hat1, 1) + lag(w_hat1,
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--2.60703 -0.64222  0.05338  0.61697  2.65558 
+-2.95099 -0.67750 -0.06171  0.71850  2.76012 
 
 Coefficients:
                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    -0.05660    0.04374  -1.294   0.1962    
-lag(y, 1)       1.37470    0.05443  25.254  &lt; 2e-16 ***
-lag(y, 2)      -0.56901    0.04731 -12.026  &lt; 2e-16 ***
-lag(w_hat1, 1)  0.41893    0.07124   5.881 7.54e-09 ***
-lag(w_hat1, 2)  0.13703    0.07051   1.943   0.0525 .  
+(Intercept)     0.03851    0.04682   0.822  0.41120    
+lag(y, 1)       0.75235    0.07460  10.085  &lt; 2e-16 ***
+lag(y, 2)      -0.50700    0.04260 -11.901  &lt; 2e-16 ***
+lag(w_hat1, 1)  0.46543    0.08735   5.328 1.51e-07 ***
+lag(w_hat1, 2)  0.23369    0.08193   2.852  0.00452 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.9711 on 493 degrees of freedom
+Residual standard error: 1.043 on 493 degrees of freedom
   (2 observations deleted due to missingness)
-Multiple R-squared:  0.9272,    Adjusted R-squared:  0.9266 
-F-statistic:  1570 on 4 and 493 DF,  p-value: &lt; 2.2e-16</code></pre>
+Multiple R-squared:  0.6861,    Adjusted R-squared:  0.6836 
+F-statistic: 269.4 on 4 and 493 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
@@ -900,22 +898,22 @@ lm(formula = y ~ lag(y, 1) + lag(y, 2) + lag(w_hat2, 1) + lag(w_hat2,
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--2.56613 -0.62523  0.04716  0.60059  2.75031 
+-2.94460 -0.66888 -0.05112  0.74813  2.82163 
 
 Coefficients:
                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    -0.05595    0.04367  -1.281   0.2007    
-lag(y, 1)       1.35622    0.05582  24.296  &lt; 2e-16 ***
-lag(y, 2)      -0.55171    0.04834 -11.412  &lt; 2e-16 ***
-lag(w_hat2, 1)  0.44057    0.07075   6.227 1.02e-09 ***
-lag(w_hat2, 2)  0.14147    0.07029   2.013   0.0447 *  
+(Intercept)     0.03373    0.04685   0.720  0.47187    
+lag(y, 1)       0.75142    0.07501  10.017  &lt; 2e-16 ***
+lag(y, 2)      -0.50683    0.04271 -11.866  &lt; 2e-16 ***
+lag(w_hat2, 1)  0.46357    0.08737   5.306  1.7e-07 ***
+lag(w_hat2, 2)  0.23568    0.08183   2.880  0.00415 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.9663 on 491 degrees of freedom
+Residual standard error: 1.042 on 491 degrees of freedom
   (4 observations deleted due to missingness)
-Multiple R-squared:  0.9281,    Adjusted R-squared:  0.9275 
-F-statistic:  1585 on 4 and 491 DF,  p-value: &lt; 2.2e-16</code></pre>
+Multiple R-squared:  0.6877,    Adjusted R-squared:  0.6851 
+F-statistic: 270.3 on 4 and 491 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
@@ -936,22 +934,22 @@ lm(formula = y ~ lag(y, 1) + lag(y, 2) + lag(w_hat3, 1) + lag(w_hat3,
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--2.65130 -0.61871  0.05274  0.59498  2.79882 
+-2.97513 -0.67010 -0.04563  0.76228  2.78317 
 
 Coefficients:
                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    -0.05273    0.04369  -1.207    0.228    
-lag(y, 1)       1.33721    0.05702  23.453  &lt; 2e-16 ***
-lag(y, 2)      -0.53509    0.04942 -10.828  &lt; 2e-16 ***
-lag(w_hat3, 1)  0.46434    0.07231   6.422  3.2e-10 ***
-lag(w_hat3, 2)  0.16669    0.07198   2.316    0.021 *  
+(Intercept)     0.02734    0.04700   0.582  0.56097    
+lag(y, 1)       0.75611    0.07540  10.028  &lt; 2e-16 ***
+lag(y, 2)      -0.50692    0.04287 -11.826  &lt; 2e-16 ***
+lag(w_hat3, 1)  0.45652    0.08791   5.193 3.05e-07 ***
+lag(w_hat3, 2)  0.22498    0.08228   2.734  0.00648 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.9654 on 489 degrees of freedom
+Residual standard error: 1.044 on 489 degrees of freedom
   (6 observations deleted due to missingness)
-Multiple R-squared:  0.9283,    Adjusted R-squared:  0.9277 
-F-statistic:  1583 on 4 and 489 DF,  p-value: &lt; 2.2e-16</code></pre>
+Multiple R-squared:  0.6845,    Adjusted R-squared:  0.6819 
+F-statistic: 265.2 on 4 and 489 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
@@ -972,22 +970,22 @@ lm(formula = y ~ lag(y, 1) + lag(y, 2) + lag(w_hat4, 1) + lag(w_hat4,
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--2.63962 -0.61993  0.05707  0.60544  2.76777 
+-2.95836 -0.66815 -0.03775  0.74089  2.77938 
 
 Coefficients:
                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    -0.05192    0.04385  -1.184   0.2370    
-lag(y, 1)       1.33603    0.05786  23.089  &lt; 2e-16 ***
-lag(y, 2)      -0.53401    0.05005 -10.669  &lt; 2e-16 ***
-lag(w_hat4, 1)  0.46596    0.07351   6.339 5.29e-10 ***
-lag(w_hat4, 2)  0.16906    0.07305   2.314   0.0211 *  
+(Intercept)     0.02909    0.04699   0.619  0.53614    
+lag(y, 1)       0.73928    0.07567   9.769  &lt; 2e-16 ***
+lag(y, 2)      -0.50025    0.04291 -11.657  &lt; 2e-16 ***
+lag(w_hat4, 1)  0.47626    0.08791   5.417 9.52e-08 ***
+lag(w_hat4, 2)  0.24343    0.08248   2.951  0.00332 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.9678 on 487 degrees of freedom
+Residual standard error: 1.042 on 487 degrees of freedom
   (8 observations deleted due to missingness)
-Multiple R-squared:  0.9279,    Adjusted R-squared:  0.9273 
-F-statistic:  1567 on 4 and 487 DF,  p-value: &lt; 2.2e-16</code></pre>
+Multiple R-squared:  0.6859,    Adjusted R-squared:  0.6833 
+F-statistic: 265.8 on 4 and 487 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
@@ -1008,22 +1006,22 @@ lm(formula = y ~ lag(y, 1) + lag(y, 2) + lag(w_hat5, 1) + lag(w_hat5,
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--2.64145 -0.61486  0.04973  0.60549  2.78622 
+-2.96227 -0.68428 -0.04699  0.75613  2.77697 
 
 Coefficients:
                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    -0.05057    0.04383  -1.154    0.249    
-lag(y, 1)       1.33475    0.05789  23.056  &lt; 2e-16 ***
-lag(y, 2)      -0.53338    0.05009 -10.648  &lt; 2e-16 ***
-lag(w_hat5, 1)  0.47224    0.07358   6.418 3.29e-10 ***
-lag(w_hat5, 2)  0.16768    0.07297   2.298    0.022 *  
+(Intercept)     0.02844    0.04721   0.602  0.54724    
+lag(y, 1)       0.75159    0.07681   9.785  &lt; 2e-16 ***
+lag(y, 2)      -0.50072    0.04335 -11.551  &lt; 2e-16 ***
+lag(w_hat5, 1)  0.46345    0.08938   5.185 3.18e-07 ***
+lag(w_hat5, 2)  0.22949    0.08355   2.747  0.00624 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.9657 on 485 degrees of freedom
+Residual standard error: 1.044 on 485 degrees of freedom
   (10 observations deleted due to missingness)
-Multiple R-squared:  0.9282,    Adjusted R-squared:  0.9276 
-F-statistic:  1568 on 4 and 485 DF,  p-value: &lt; 2.2e-16</code></pre>
+Multiple R-squared:  0.685, Adjusted R-squared:  0.6824 
+F-statistic: 263.6 on 4 and 485 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
@@ -1034,33 +1032,28 @@ F-statistic:  1568 on 4 and 485 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>( <span class="at">arma22_brms =</span> <span class="fu">brm</span>(</span>
 <span id="cb33-2"><a href="#cb33-2"></a>    y<span class="sc">~</span><span class="fu">arma</span>(<span class="at">p=</span><span class="dv">2</span>,<span class="at">q=</span><span class="dv">2</span>)<span class="sc">-</span><span class="dv">1</span>, <span class="at">data=</span>d, </span>
-<span id="cb33-3"><a href="#cb33-3"></a>    <span class="at">chains=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter =</span> <span class="dv">5000</span></span>
+<span id="cb33-3"><a href="#cb33-3"></a>    <span class="at">chains=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter =</span> <span class="dv">5000</span>, <span class="at">cores =</span> <span class="dv">4</span></span>
 <span id="cb33-4"><a href="#cb33-4"></a>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
-Formula: y ~ 1 
-         autocor ~ arma(time = NA, gr = NA, p = 2, q = 2, cov = FALSE)
+Formula: y ~ arma(p = 2, q = 2) - 1 
    Data: d (Number of observations: 500) 
-  Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 2000
+  Draws: 2 chains, each with iter = 5000; warmup = 2500; thin = 1;
+         total post-warmup draws = 5000
 
 Correlation Structures:
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-ar[1]     0.97      0.03     0.90     1.00 1.00      761      803
-ar[2]    -0.20      0.04    -0.27    -0.13 1.01      754      511
-ma[1]     0.82      0.05     0.73     0.90 1.00      838      634
-ma[2]     0.39      0.04     0.31     0.47 1.00     1117     1332
-
-Population-Level Effects: 
-          Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept    -0.38      0.38    -1.12     0.35 1.01     1253     1247
+ar[1]     0.73      0.09     0.54     0.90 1.00      789      967
+ar[2]    -0.49      0.06    -0.60    -0.36 1.00     1237     1288
+ma[1]     0.49      0.10     0.29     0.68 1.00      795     1054
+ma[2]     0.25      0.08     0.09     0.39 1.00      873     1280
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.99      0.03     0.93     1.05 1.00     1583     1373
+sigma     1.05      0.03     0.98     1.11 1.00     6406     3711
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -1077,14 +1070,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-29-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-29-2.png" width="960"></p>
+<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-30-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1097,11 +1083,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 
 </div>
 
-<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-31-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-32-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="predictions-1" class="slide level2">
 <h2>Predictions</h2>
 
-<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-32-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec12_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="forecasting-1" class="slide level2">
 <h2>Forecasting</h2>
 <div class="small">
@@ -1116,7 +1102,7 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-34-1.png" width="960"></p>
+<p><img data-src="Lec12_files/figure-revealjs/unnamed-chunk-35-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1129,56 +1115,56 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>arma22_brms <span class="sc">%&gt;%</span> <span class="fu">stancode</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>// generated with brms 2.5.0
-functions { 
-} 
-data { 
-  int&lt;lower=1&gt; N;  // total number of observations 
-  vector[N] Y;  // response variable 
-  // data needed for ARMA correlations 
-  int&lt;lower=0&gt; Kar;  // AR order 
-  int&lt;lower=0&gt; Kma;  // MA order 
-  int&lt;lower=0&gt; J_lag[N]; 
-  int prior_only;  // should the likelihood be ignored? 
-} 
-transformed data { 
-  int max_lag = max(Kar, Kma); 
-} 
-parameters { 
-  real temp_Intercept;  // temporary intercept 
-  real&lt;lower=0&gt; sigma;  // residual SD 
-  vector&lt;lower=-1,upper=1&gt;[Kar] ar;  // autoregressive effects 
-  vector&lt;lower=-1,upper=1&gt;[Kma] ma;  // moving-average effects 
-} 
-transformed parameters { 
-} 
-model { 
-  vector[N] mu = temp_Intercept + rep_vector(0, N);
-  // objects storing residuals 
-  matrix[N, max_lag] E = rep_matrix(0, N, max_lag); 
-  vector[N] e; 
-  for (n in 1:N) { 
-    mu[n] += head(E[n], Kma) * ma;
-    // computation of ARMA correlations 
-    e[n] = Y[n] - mu[n]; 
-    for (i in 1:J_lag[n]) { 
-      E[n + 1, i] = e[n + 1 - i]; 
-    } 
-    mu[n] += head(E[n], Kar) * ar;
-  } 
-  // priors including all constants 
-  target += student_t_lpdf(temp_Intercept | 3, 0, 10); 
-  target += student_t_lpdf(sigma | 3, 0, 10)
-    - 1 * student_t_lccdf(0 | 3, 0, 10); 
-  // likelihood including all constants 
-  if (!prior_only) { 
+<pre><code>// generated with brms 2.18.0
+functions {
+}
+data {
+  int&lt;lower=1&gt; N;  // total number of observations
+  vector[N] Y;  // response variable
+  // data needed for ARMA correlations
+  int&lt;lower=0&gt; Kar;  // AR order
+  int&lt;lower=0&gt; Kma;  // MA order
+  // number of lags per observation
+  int&lt;lower=0&gt; J_lag[N];
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+  int max_lag = max(Kar, Kma);
+}
+parameters {
+  vector[Kar] ar;  // autoregressive coefficients
+  vector[Kma] ma;  // moving-average coefficients
+  real&lt;lower=0&gt; sigma;  // dispersion parameter
+}
+transformed parameters {
+  real lprior = 0;  // prior contributions to the log posterior
+  lprior += student_t_lpdf(sigma | 3, 0, 2.5)
+    - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    // matrix storing lagged residuals
+    matrix[N, max_lag] Err = rep_matrix(0, N, max_lag);
+    vector[N] err;  // actual residuals
+    // initialize linear predictor term
+    vector[N] mu = rep_vector(0.0, N);
+    // include ARMA terms
+    for (n in 1:N) {
+      mu[n] += Err[n, 1:Kma] * ma;
+      err[n] = Y[n] - mu[n];
+      for (i in 1:J_lag[n]) {
+        Err[n + 1, i] = err[n + 1 - i];
+      }
+      mu[n] += Err[n, 1:Kar] * ar;
+    }
     target += normal_lpdf(Y | mu, sigma);
-  } 
-} 
-generated quantities { 
-  // actual population-level intercept 
-  real b_Intercept = temp_Intercept; 
-} </code></pre>
+  }
+  // priors including constants
+  target += lprior;
+}
+generated quantities {
+}</code></pre>
 </div>
 </div>
 </div>
