@@ -130,15 +130,19 @@ schedule:
   day: 2
   lecture: Fitting ARIMA Models
   slides: Lec12
-  screencast: 
+  screencast: https://youtu.be/T3IxGB_7iX4
   readings:
 
 - week: 7
   day: 4
-  lecture: Prophet
-  slides: 
+  lecture: tidyverts + Prophet
+  slides: Lec12
   screencast:
   readings:
+  - text: "Hyndman (fpp3) Chp 5"
+    link: https://otexts.com/fpp3/toolbox.html
+  - text: "Hyndman (fpp3) Chp 12.2"
+    link: https://otexts.com/fpp3/prophet.html
   - text: "Forecasting at scale"
     link: https://peerj.com/preprints/3190/
   
