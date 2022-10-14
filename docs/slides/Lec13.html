@@ -7,7 +7,7 @@
 <link href="Lec13_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec13_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec13_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.2.207">
+  <meta name="generator" content="quarto-1.2.210">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>tidyverts &amp; prophet</title>
@@ -653,9 +653,11 @@ $class
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>tsibble<span class="sc">::</span><span class="fu">as_tsibble</span>(co2) <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lubridate<span class="sc">::</span><span class="fu">as_date</span>(index),<span class="at">y=</span>value)) <span class="sc">+</span></span>
-<span id="cb18-3"><a href="#cb18-3"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb18-4"><a href="#cb18-4"></a>    <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb18-3"><a href="#cb18-3"></a>    <span class="fu">aes</span>(<span class="at">x=</span>lubridate<span class="sc">::</span><span class="fu">as_date</span>(index), <span class="at">y=</span>value)</span>
+<span id="cb18-4"><a href="#cb18-4"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>    <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -698,16 +700,16 @@ $class
 </div>
 </section>
 <section id="ggtsdisplay-replacement" class="slide level2">
-<h2>ggtsdisplay() replacement</h2>
-<p>The equivalent to this plot is provided by <code>feasts</code>,</p>
+<h2><code>ggtsdisplay()</code> replacement</h2>
+<p>The equivalent to the <code>ggtsdisplay()</code> plot is provided by <code>feasts</code> with <code>gg_tsdisplay()</code>,</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>tsibble<span class="sc">::</span><span class="fu">as_tsibble</span>(co2) <span class="sc">%&gt;%</span></span>
 <span id="cb21-2"><a href="#cb21-2"></a>  feasts<span class="sc">::</span><span class="fu">gg_tsdisplay</span>(<span class="at">y =</span> value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="Lec13_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="ggtsdisplay---pact" class="slide level2">
-<h2>ggtsdisplay() - pACT</h2>
+<section id="ggtsdisplay---pacf" class="slide level2">
+<h2><code>ggtsdisplay()</code> - pACF</h2>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>tsibble<span class="sc">::</span><span class="fu">as_tsibble</span>(co2) <span class="sc">%&gt;%</span></span>
 <span id="cb22-2"><a href="#cb22-2"></a>  feasts<span class="sc">::</span><span class="fu">gg_tsdisplay</span>(<span class="at">y =</span> value, <span class="at">plot_type =</span> <span class="st">"partial"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -785,7 +787,7 @@ $class
 <h2>Modeling</h2>
 <div class="medium">
 <p>To fit a model with fable we use the <code>model()</code> function along with a specific function for the model we are trying to fit (<code>ARIMA()</code> here).</p>
-<p>As with the rest of tidyverts - <code>fable</code> using a tidy approach for modeling which means that the model results are stored in a tibble (called a mable for model table).</p>
+<p>As with the rest of tidyverts - <code>fable</code> using a tidy approach for modeling which means that the model results are stored in a tibble (called a <code>mable</code>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="fu">library</span>(fable)</span>
 <span id="cb27-2"><a href="#cb27-2"></a>( <span class="at">m =</span> elec_sales <span class="sc">%&gt;%</span></span>
@@ -826,7 +828,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <div class="cell" data-layout-align="center">
 
 </div>
-<div class="small">
+<p>::: {.small}</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>m <span class="sc">%&gt;%</span> <span class="fu">glance</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -835,6 +837,10 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
   &lt;chr&gt;                        &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;   
 1 ARIMA(value ~ pdq(3, 1, 0))   9.85   -486.  979.  980.  992. &lt;cpl [3]&gt; &lt;cpl [0]&gt;</code></pre>
 </div>
+</div>
+<div class="fragment">
+<p>::: {.small}</p>
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>m <span class="sc">%&gt;%</span> <span class="fu">accuracy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 10
@@ -842,6 +848,11 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
   &lt;chr&gt;                       &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
 1 ARIMA(value ~ pdq(3, 1, 0)) Training 0.0117  3.11  2.43 -0.0435  2.56 0.296 0.281 -0.0346</code></pre>
 </div>
+</div>
+</div>
+<div class="fragment">
+<div class="small">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>m <span class="sc">%&gt;%</span> <span class="fu">augment</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tsibble: 191 x 6 [1M]
@@ -862,6 +873,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 </div>
 </div>
 </div>
+</div>
 </section>
 <section id="observed-vs-predicted" class="slide level2">
 <h2>Observed vs predicted</h2>
@@ -873,7 +885,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
+<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-23-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -890,7 +902,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></p>
+<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -929,7 +941,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <span id="cb41-3"><a href="#cb41-3"></a>  <span class="fu">autoplot</span>(elec_sales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="comparing-models" class="slide level2">
 <h2>Comparing models</h2>
 <p>The <code>fable</code> <code>model()</code> function also has the ability to fit multiple models at the same time which then makes comparison more straight forward.</p>
@@ -993,7 +1005,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <span id="cb48-3"><a href="#cb48-3"></a>  <span class="fu">autoplot</span>(elec_sales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-30-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
 <section>
 <section id="cross-validation" class="title-slide slide level1 center">
 <h1>Cross validation</h1>
@@ -1002,7 +1014,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <section id="test-train-split" class="slide level2">
 <h2>Test train split</h2>
 <div class="small">
-<p>The general approach is to keep the data ordered and split the first <code>prop</code>% into the training data and the remained as testing data.</p>
+<p>The general approach is to keep the data ordered and split the first <code>prop</code>% into the training data and the remainder as testing data.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="imgs/Lec13/fpp3-cv1.png" style="width:100.0%"></p>
@@ -1100,7 +1112,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <span id="cb56-5"><a href="#cb56-5"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-35-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="accuracy" class="slide level2">
 <h2>Accuracy</h2>
 <p><strong>Out-of-sample:</strong></p>
@@ -1141,6 +1153,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 </section>
 <section id="rolling-forecasting-origin" class="slide level2">
 <h2>Rolling forecasting origin</h2>
+<p>One-step ahead predictive performance</p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="imgs/Lec13/fpp3-cv2.png" style="width:100.0%"></p>
@@ -1152,6 +1165,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 </div></aside></section>
 <section id="section" class="slide level2">
 <h2></h2>
+<p>Four-step ahead predictive performance</p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="imgs/Lec13/fpp3-cv3.png" style="width:100.0%"></p>
@@ -1192,14 +1206,14 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <span id="cb61-2"><a href="#cb61-2"></a><span class="fu">autoplot</span>(prodn, value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-38-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="test-train-split-1" class="slide level2">
 <h2>Test train split</h2>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>prodn_split <span class="ot">=</span> rsample<span class="sc">::</span><span class="fu">initial_time_split</span>(prodn, <span class="at">prop=</span><span class="fl">0.90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-38-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-40-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="models" class="slide level2">
 <h2>Models</h2>
 <div class="cell" data-layout-align="center">
@@ -1209,9 +1223,10 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <span id="cb63-4"><a href="#cb63-4"></a>   <span class="fu">model</span>(</span>
 <span id="cb63-5"><a href="#cb63-5"></a>     <span class="at">arima =</span> <span class="fu">ARIMA</span>(value <span class="sc">~</span> <span class="fu">pdq</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>) <span class="sc">+</span> <span class="fu">PDQ</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">3</span>)),</span>
 <span id="cb63-6"><a href="#cb63-6"></a>     <span class="at">autoarima =</span> <span class="fu">ARIMA</span>(value),</span>
-<span id="cb63-7"><a href="#cb63-7"></a>     <span class="at">prophet =</span> <span class="fu">prophet</span>(value <span class="sc">~</span> <span class="fu">season</span>(<span class="at">period=</span><span class="dv">12</span>, <span class="at">type =</span> <span class="st">"multiplicative"</span>))</span>
-<span id="cb63-8"><a href="#cb63-8"></a>   )</span>
-<span id="cb63-9"><a href="#cb63-9"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb63-7"><a href="#cb63-7"></a>     <span class="at">prophet =</span> <span class="fu">prophet</span>(value <span class="sc">~</span> <span class="fu">season</span>(<span class="at">period =</span> <span class="dv">12</span>, </span>
+<span id="cb63-8"><a href="#cb63-8"></a>                                      <span class="at">type =</span> <span class="st">"multiplicative"</span>))</span>
+<span id="cb63-9"><a href="#cb63-9"></a>   )</span>
+<span id="cb63-10"><a href="#cb63-10"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A mable: 1 x 3
                       arima                          autoarima   prophet
@@ -1228,7 +1243,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <span id="cb65-3"><a href="#cb65-3"></a>  <span class="fu">autoplot</span>(prodn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-40-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-42-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="forecast---zoom" class="slide level2">
 <h2>Forecast - zoom</h2>
 <div class="cell" data-layout-align="center">
@@ -1239,7 +1254,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <span id="cb66-5"><a href="#cb66-5"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-41-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-43-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="accuracy-1" class="slide level2">
 <h2>Accuracy</h2>
 <p><strong>Out-of-sample:</strong></p>
@@ -1287,7 +1302,7 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-44-1.png" width="960"></p>
+<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-46-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1514,12 +1529,15 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -1530,13 +1548,6 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy
