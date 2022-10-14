@@ -136,7 +136,7 @@ schedule:
 - week: 7
   day: 4
   lecture: tidyverts + Prophet
-  slides: Lec12
+  slides: Lec13
   screencast:
   readings:
   - text: "Hyndman (fpp3) Chp 5"
