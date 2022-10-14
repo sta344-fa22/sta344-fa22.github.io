@@ -253,6 +253,7 @@ m %>% glance()
 ```{r}
 m %>% accuracy()
 ```
+:::
 
 . . .
 
@@ -260,6 +261,7 @@ m %>% accuracy()
 ```{r}
 m %>% augment()
 ```
+:::
 :::
 
 ## Observed vs predicted
