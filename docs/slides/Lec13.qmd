@@ -564,3 +564,91 @@ prodn_fit %>%
 ```
 :::
 
+# Complex seasonality
+
+## Half-hourly electricity demand - `vic_elec`
+
+```{r}
+tsibbledata::vic_elec
+```
+
+
+::: {.aside}
+For another treatment of these data with some additional feature engineering see FPP3 - Chp 12.1 & 12.2
+:::
+
+## Full data
+
+::: {.small}
+```{r}
+tsibbledata::vic_elec %>%
+  autoplot(vars(Demand, Temperature))
+```
+:::
+
+
+## Data - December 2014
+
+::: {.small}
+```{r}
+tsibbledata::vic_elec %>%
+  filter(Time >= lubridate::ymd("2014/12/01")) %>%
+  autoplot(vars(Demand, Temperature))
+```
+:::
+
+## Seasonality - Yearly
+
+```{r}
+tsibbledata::vic_elec %>%
+  feasts::gg_season(
+    y=Demand, period = "year", alpha=0.5
+  )
+```
+
+## Seasonality - Weekly
+
+```{r}
+tsibbledata::vic_elec %>%
+  feasts::gg_season(
+    y=Demand, period = "week"
+  )
+```
+
+
+## Seasonality - Daily
+
+```{r}
+tsibbledata::vic_elec %>%
+  feasts::gg_season(
+    y = Demand, period = "day"
+  )
+```
+
+## Model
+
+```{r}
+( vic_elec_fit = tsibbledata::vic_elec %>%
+    model(
+      p = prophet(Demand ~ Temperature  + Holiday +
+                  season(period = "day", order = 10) +
+                  season(period = "week", order = 5) +
+                  season(period = "year", order = 3))
+    )
+)
+```
+
+## Components
+
+```{r}
+vic_elec_fit %>%
+  components() %>%
+  autoplot()
+```
+
+## Residuals
+
+```{r}
+vic_elec_fit %>%
+  feasts::gg_tsresiduals()
+```

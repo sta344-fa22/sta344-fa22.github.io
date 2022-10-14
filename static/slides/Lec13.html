@@ -1308,7 +1308,136 @@ AIC=979.33   AICc=979.55   BIC=992.32</code></pre>
 </div>
 </div>
 </div>
-<div class="footer footer-default">
+</section></section>
+<section>
+<section id="complex-seasonality" class="title-slide slide level1 center">
+<h1>Complex seasonality</h1>
+
+</section>
+<section id="half-hourly-electricity-demand---vic_elec" class="slide level2">
+<h2>Half-hourly electricity demand - <code>vic_elec</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a>tsibbledata<span class="sc">::</span>vic_elec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 52,608 x 5 [30m] &lt;Australia/Melbourne&gt;
+   Time                Demand Temperature Date       Holiday
+   &lt;dttm&gt;               &lt;dbl&gt;       &lt;dbl&gt; &lt;date&gt;     &lt;lgl&gt;  
+ 1 2012-01-01 00:00:00  4383.        21.4 2012-01-01 TRUE   
+ 2 2012-01-01 00:30:00  4263.        21.0 2012-01-01 TRUE   
+ 3 2012-01-01 01:00:00  4049.        20.7 2012-01-01 TRUE   
+ 4 2012-01-01 01:30:00  3878.        20.6 2012-01-01 TRUE   
+ 5 2012-01-01 02:00:00  4036.        20.4 2012-01-01 TRUE   
+ 6 2012-01-01 02:30:00  3866.        20.2 2012-01-01 TRUE   
+ 7 2012-01-01 03:00:00  3694.        20.1 2012-01-01 TRUE   
+ 8 2012-01-01 03:30:00  3562.        19.6 2012-01-01 TRUE   
+ 9 2012-01-01 04:00:00  3433.        19.1 2012-01-01 TRUE   
+10 2012-01-01 04:30:00  3359.        19.0 2012-01-01 TRUE   
+# … with 52,598 more rows</code></pre>
+</div>
+</div>
+
+<aside><div>
+<p>For another treatment of these data with some additional feature engineering see FPP3 - Chp 12.1 &amp; 12.2</p>
+</div></aside></section>
+<section id="full-data" class="slide level2">
+<h2>Full data</h2>
+<div class="small">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>tsibbledata<span class="sc">::</span>vic_elec <span class="sc">%&gt;%</span></span>
+<span id="cb74-2"><a href="#cb74-2"></a>  <span class="fu">autoplot</span>(<span class="fu">vars</span>(Demand, Temperature))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-48-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="data---december-2014" class="slide level2">
+<h2>Data - December 2014</h2>
+<div class="small">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>tsibbledata<span class="sc">::</span>vic_elec <span class="sc">%&gt;%</span></span>
+<span id="cb75-2"><a href="#cb75-2"></a>  <span class="fu">filter</span>(Time <span class="sc">&gt;=</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(<span class="st">"2014/12/01"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb75-3"><a href="#cb75-3"></a>  <span class="fu">autoplot</span>(<span class="fu">vars</span>(Demand, Temperature))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="Lec13_files/figure-revealjs/unnamed-chunk-49-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="seasonality---yearly" class="slide level2">
+<h2>Seasonality - Yearly</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a>tsibbledata<span class="sc">::</span>vic_elec <span class="sc">%&gt;%</span></span>
+<span id="cb76-2"><a href="#cb76-2"></a>  feasts<span class="sc">::</span><span class="fu">gg_season</span>(</span>
+<span id="cb76-3"><a href="#cb76-3"></a>    <span class="at">y=</span>Demand, <span class="at">period =</span> <span class="st">"year"</span>, <span class="at">alpha=</span><span class="fl">0.5</span></span>
+<span id="cb76-4"><a href="#cb76-4"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-50-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="seasonality---weekly" class="slide level2">
+<h2>Seasonality - Weekly</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a>tsibbledata<span class="sc">::</span>vic_elec <span class="sc">%&gt;%</span></span>
+<span id="cb77-2"><a href="#cb77-2"></a>  feasts<span class="sc">::</span><span class="fu">gg_season</span>(</span>
+<span id="cb77-3"><a href="#cb77-3"></a>    <span class="at">y=</span>Demand, <span class="at">period =</span> <span class="st">"week"</span></span>
+<span id="cb77-4"><a href="#cb77-4"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-51-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="seasonality---daily" class="slide level2">
+<h2>Seasonality - Daily</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1"></a>tsibbledata<span class="sc">::</span>vic_elec <span class="sc">%&gt;%</span></span>
+<span id="cb78-2"><a href="#cb78-2"></a>  feasts<span class="sc">::</span><span class="fu">gg_season</span>(</span>
+<span id="cb78-3"><a href="#cb78-3"></a>    <span class="at">y =</span> Demand, <span class="at">period =</span> <span class="st">"day"</span></span>
+<span id="cb78-4"><a href="#cb78-4"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-52-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="model" class="slide level2">
+<h2>Model</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a>( <span class="at">vic_elec_fit =</span> tsibbledata<span class="sc">::</span>vic_elec <span class="sc">%&gt;%</span></span>
+<span id="cb79-2"><a href="#cb79-2"></a>    <span class="fu">model</span>(</span>
+<span id="cb79-3"><a href="#cb79-3"></a>      <span class="at">p =</span> <span class="fu">prophet</span>(Demand <span class="sc">~</span> Temperature  <span class="sc">+</span> Holiday <span class="sc">+</span></span>
+<span id="cb79-4"><a href="#cb79-4"></a>                  <span class="fu">season</span>(<span class="at">period =</span> <span class="st">"day"</span>, <span class="at">order =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb79-5"><a href="#cb79-5"></a>                  <span class="fu">season</span>(<span class="at">period =</span> <span class="st">"week"</span>, <span class="at">order =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb79-6"><a href="#cb79-6"></a>                  <span class="fu">season</span>(<span class="at">period =</span> <span class="st">"year"</span>, <span class="at">order =</span> <span class="dv">3</span>))</span>
+<span id="cb79-7"><a href="#cb79-7"></a>    )</span>
+<span id="cb79-8"><a href="#cb79-8"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A mable: 1 x 1
+          p
+    &lt;model&gt;
+1 &lt;prophet&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="components-1" class="slide level2">
+<h2>Components</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a>vic_elec_fit <span class="sc">%&gt;%</span></span>
+<span id="cb81-2"><a href="#cb81-2"></a>  <span class="fu">components</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb81-3"><a href="#cb81-3"></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-54-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="residuals-1" class="slide level2">
+<h2>Residuals</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1"></a>vic_elec_fit <span class="sc">%&gt;%</span></span>
+<span id="cb82-2"><a href="#cb82-2"></a>  feasts<span class="sc">::</span><span class="fu">gg_tsresiduals</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec13_files/figure-revealjs/unnamed-chunk-55-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>
 </section></section>
