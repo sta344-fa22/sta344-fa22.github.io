@@ -1,6 +1,6 @@
 ---
 title: "tidyverts & prophet"
-subtitle: "Lecture 12"
+subtitle: "Lecture 13"
 author: "Dr. Colin Rundel"
 footer: "Sta 344 - Fall 2022"
 format:
