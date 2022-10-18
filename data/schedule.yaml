@@ -137,7 +137,7 @@ schedule:
   day: 4
   lecture: tidyverts + Prophet
   slides: Lec13
-  screencast:
+  screencast: https://youtu.be/qCSYkxlhoN8
   readings:
   - text: "Hyndman (fpp3) Chp 5"
     link: https://otexts.com/fpp3/toolbox.html
@@ -149,8 +149,8 @@ schedule:
 - week: 8
   day: 2
   lecture: Gaussian Process models
-  slides: 
-  screencast: https://youtu.be/qCSYkxlhoN8
+  slides: Lec14
+  screencast: 
   readings:
   - text: "Rasmussen & Williams 2, 4"
     link: http://www.gaussianprocess.org/gpml/chapters/RW.pdf
