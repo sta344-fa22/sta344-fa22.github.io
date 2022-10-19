@@ -46,7 +46,7 @@ $$
 
 $$
 \begin{pmatrix}
-y_1\\ \vdots\\ ys_n
+y_1\\ \vdots\\ y_n
 \end{pmatrix}
 \sim N\left(
 \begin{pmatrix}
@@ -115,7 +115,7 @@ map_dfr(
     facet_wrap(~param, ncol=4)
 ```
 
-## Marginal distributions
+## Marginal / conditional distributions
 
 
 
@@ -123,17 +123,17 @@ map_dfr(
 
 . . .
 
-For a univariate marginal distribution,
+*Univariate marginal distribution*:
 $$ y_i = N(\boldsymbol{\mu}_i,\,\boldsymbol{\Sigma}_{ii}) $$
 
 . . .
 
-For a bivariate marginal distribution,
+*Bivariate marginal distribution*:
 $$ \boldsymbol{y}_{ij} = N\left( \begin{pmatrix}\boldsymbol{\mu}_i \\ \boldsymbol{\mu}_j \end{pmatrix},\; \begin{pmatrix} \boldsymbol{\Sigma}_{ii} & \boldsymbol{\Sigma}_{ij} \\ \boldsymbol{\Sigma}_{ji} & \boldsymbol{\Sigma}_{jj} \end{pmatrix} \right) $$
 
 ## 
 
-For a $k$-dimensional marginal distribution, 
+*$k$-dimensional marginal distribution*:
 
 $$ 
 \boldsymbol{y}_{i,\ldots,k} = 
@@ -157,11 +157,14 @@ If we partition the $n$-dimensions into two pieces such that $\boldsymbol{y} = (
 ::: {.small}
 $$
 \underset{n \times 1}{\boldsymbol{y}} \sim N\left(
-  \underset{n \times 1}{\begin{pmatrix}\boldsymbol{\mu}_1 \\ \boldsymbol{\mu}_2\end{pmatrix}},\, 
-  \underset{n \times n}{\begin{pmatrix} 
+  \begin{pmatrix}
+    \boldsymbol{\mu}_1 \\ 
+    \boldsymbol{\mu}_2
+  \end{pmatrix},\, 
+  \begin{pmatrix} 
     \boldsymbol{\Sigma}_{11} & \boldsymbol{\Sigma}_{12} \\ 
     \boldsymbol{\Sigma}_{21} & \boldsymbol{\Sigma}_{22} 
-  \end{pmatrix}}
+  \end{pmatrix}
 \right)
 $$
 $$ 
@@ -195,6 +198,8 @@ From Shumway,
 
 . . .
 
+<br/>
+
 So far we have only looked at examples of time series where $T$ is discete (and evenly spaces & contiguous), it turns out things get a lot more interesting when we explore the case where $T$ is defined on a *continuous* space  (e.g. $\mathbb{R}$ or some subset of $\mathbb{R}$).
 
 
@@ -222,7 +227,7 @@ Imagine we have a Gaussian process defined such that $\boldsymbol{y} = \{y(t) ~:
 
     * Stationarity
 
-    * Simple parameterization of $\Sigma$
+    * Simple(r) parameterization of $\Sigma$
 
 
 ## Covariance Functions
@@ -231,17 +236,17 @@ More on these next week, but for now some common examples
 
 . . .
 
-Exponential covariance:
+*Exponential covariance*:
 $$ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-|t-t'| \; l\,\big) $$
 
 . . .
 
-Squared exponential covariance (Gaussian):
+*Squared exponential covariance (Gaussian)*:
 $$ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^2\big) $$
 
 . . .
 
-Powered exponential covariance $\left(p \in (0,2]\right)$:
+*Powered exponential covariance $\left(p \in (0,2]\right)$*:
 $$ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^p\big) $$
 
 ## Covariance Function - Correlation Decay
@@ -333,7 +338,7 @@ For now lets use a square exponential covariance with $\sigma^2 = 10$ and $l=15$
 
 We therefore want to sample from $\boldsymbol{y}_{pred} | \boldsymbol{y}_{obs}$.
 
-$$\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim N(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma_{pred}}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})$$
+$$\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim N(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma}_{pred}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})$$
 
 ```{r echo=FALSE}
 d_pred = tibble(t = seq(0,1,length.out = 1000))
@@ -551,6 +556,7 @@ Corr(d) &= \exp\left(-(l \cdot d)^2\right)
 
 we would like to know, for a given value of $l$, beyond what distance apart must observations be to have a correlation less than $0.05$? 
 
+. . .
 
 $$
 \begin{aligned}

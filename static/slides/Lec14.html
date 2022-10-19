@@ -413,7 +413,7 @@ Dr.&nbsp;Colin Rundel
 \]</span></p>
 <p><span class="math display">\[
 \begin{pmatrix}
-y_1\\ \vdots\\ ys_n
+y_1\\ \vdots\\ y_n
 \end{pmatrix}
 \sim N\left(
 \begin{pmatrix}
@@ -465,19 +465,19 @@ y_1\\ \vdots\\ ys_n
 <p><span class="math display">\[ \boldsymbol{\mu} = \begin{pmatrix}0 \\ 0\end{pmatrix} \qquad \boldsymbol{\Sigma} = \begin{pmatrix}1 &amp; \rho \\ \rho &amp; 1 \end{pmatrix}\]</span></p>
 
 <img data-src="Lec14_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="marginal-distributions" class="slide level2">
-<h2>Marginal distributions</h2>
+<section id="marginal-conditional-distributions" class="slide level2">
+<h2>Marginal / conditional distributions</h2>
 <p><em>Proposition</em> - For an <span class="math inline">\(n\)</span>-dimensional multivate normal with mean <span class="math inline">\(\boldsymbol{\mu}\)</span> and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span>, any marginal or conditional distribution of the <span class="math inline">\(y\)</span>’s will also be (multivariate) normal.</p>
 <div class="fragment">
-<p>For a univariate marginal distribution, <span class="math display">\[ y_i = N(\boldsymbol{\mu}_i,\,\boldsymbol{\Sigma}_{ii}) \]</span></p>
+<p><em>Univariate marginal distribution</em>: <span class="math display">\[ y_i = N(\boldsymbol{\mu}_i,\,\boldsymbol{\Sigma}_{ii}) \]</span></p>
 </div>
 <div class="fragment">
-<p>For a bivariate marginal distribution, <span class="math display">\[ \boldsymbol{y}_{ij} = N\left( \begin{pmatrix}\boldsymbol{\mu}_i \\ \boldsymbol{\mu}_j \end{pmatrix},\; \begin{pmatrix} \boldsymbol{\Sigma}_{ii} &amp; \boldsymbol{\Sigma}_{ij} \\ \boldsymbol{\Sigma}_{ji} &amp; \boldsymbol{\Sigma}_{jj} \end{pmatrix} \right) \]</span></p>
+<p><em>Bivariate marginal distribution</em>: <span class="math display">\[ \boldsymbol{y}_{ij} = N\left( \begin{pmatrix}\boldsymbol{\mu}_i \\ \boldsymbol{\mu}_j \end{pmatrix},\; \begin{pmatrix} \boldsymbol{\Sigma}_{ii} &amp; \boldsymbol{\Sigma}_{ij} \\ \boldsymbol{\Sigma}_{ji} &amp; \boldsymbol{\Sigma}_{jj} \end{pmatrix} \right) \]</span></p>
 </div>
 </section>
 <section id="section" class="slide level2">
 <h2></h2>
-<p>For a <span class="math inline">\(k\)</span>-dimensional marginal distribution,</p>
+<p><em><span class="math inline">\(k\)</span>-dimensional marginal distribution</em>:</p>
 <p><span class="math display">\[
 \boldsymbol{y}_{i,\ldots,k} =
   N\left(
@@ -498,11 +498,14 @@ y_1\\ \vdots\\ ys_n
 <div class="small">
 <p><span class="math display">\[
 \underset{n \times 1}{\boldsymbol{y}} \sim N\left(
-  \underset{n \times 1}{\begin{pmatrix}\boldsymbol{\mu}_1 \\ \boldsymbol{\mu}_2\end{pmatrix}},\,
-  \underset{n \times n}{\begin{pmatrix}
+  \begin{pmatrix}
+    \boldsymbol{\mu}_1 \\
+    \boldsymbol{\mu}_2
+  \end{pmatrix},\,
+  \begin{pmatrix}
     \boldsymbol{\Sigma}_{11} &amp; \boldsymbol{\Sigma}_{12} \\
     \boldsymbol{\Sigma}_{21} &amp; \boldsymbol{\Sigma}_{22}
-  \end{pmatrix}}
+  \end{pmatrix}
 \right)
 \]</span> <span class="math display">\[
 \begin{aligned}
@@ -531,6 +534,7 @@ y_1\\ \vdots\\ ys_n
 <p>A process, <span class="math inline">\(\boldsymbol{y} = \{y(t) ~:~ t \in T\}\)</span>, is said to be a Gaussian process if all possible finite dimensional vectors <span class="math inline">\(\boldsymbol{y} = (y_{t_1},y_{t_2},...,y_{t_n})^t\)</span>, for every collection of time points <span class="math inline">\(t_1, t_2, \ldots , t_n\)</span>, and every positive integer <span class="math inline">\(n\)</span>, have a multivariate normal distribution.</p>
 </blockquote>
 <div class="fragment">
+<p><br></p>
 <p>So far we have only looked at examples of time series where <span class="math inline">\(T\)</span> is discete (and evenly spaces &amp; contiguous), it turns out things get a lot more interesting when we explore the case where <span class="math inline">\(T\)</span> is defined on a <em>continuous</em> space (e.g.&nbsp;<span class="math inline">\(\mathbb{R}\)</span> or some subset of <span class="math inline">\(\mathbb{R}\)</span>).</p>
 </div>
 </section></section>
@@ -562,7 +566,7 @@ y_1\\ \vdots\\ ys_n
 <li><p>Necessary to make some simplifying assumptions:</p>
 <ul>
 <li><p>Stationarity</p></li>
-<li><p>Simple parameterization of <span class="math inline">\(\Sigma\)</span></p></li>
+<li><p>Simple(r) parameterization of <span class="math inline">\(\Sigma\)</span></p></li>
 </ul></li>
 </ul>
 </div>
@@ -571,13 +575,13 @@ y_1\\ \vdots\\ ys_n
 <h2>Covariance Functions</h2>
 <p>More on these next week, but for now some common examples</p>
 <div class="fragment">
-<p>Exponential covariance: <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-|t-t'| \; l\,\big) \]</span></p>
+<p><em>Exponential covariance</em>: <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-|t-t'| \; l\,\big) \]</span></p>
 </div>
 <div class="fragment">
-<p>Squared exponential covariance (Gaussian): <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^2\big) \]</span></p>
+<p><em>Squared exponential covariance (Gaussian)</em>: <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^2\big) \]</span></p>
 </div>
 <div class="fragment">
-<p>Powered exponential covariance <span class="math inline">\(\left(p \in (0,2]\right)\)</span>: <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^p\big) \]</span></p>
+<p><em>Powered exponential covariance <span class="math inline">\(\left(p \in (0,2]\right)\)</span></em>: <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^p\big) \]</span></p>
 </div>
 </section>
 <section id="covariance-function---correlation-decay" class="slide level2">
@@ -615,7 +619,7 @@ y_1\\ \vdots\\ ys_n
 <div class="fragment">
 <p><br></p>
 <p>We therefore want to sample from <span class="math inline">\(\boldsymbol{y}_{pred} | \boldsymbol{y}_{obs}\)</span>.</p>
-<p><span class="math display">\[\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim N(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma_{pred}}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})\]</span></p>
+<p><span class="math display">\[\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim N(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma}_{pred}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})\]</span></p>
 <div class="cell" data-layout-align="center">
 
 </div>
@@ -692,6 +696,7 @@ Cov(d) &amp;= \sigma^2 \exp\left(-(l \cdot d)^2\right) \\
 Corr(d) &amp;= \exp\left(-(l \cdot d)^2\right)
 \end{aligned} \]</span></p>
 <p>we would like to know, for a given value of <span class="math inline">\(l\)</span>, beyond what distance apart must observations be to have a correlation less than <span class="math inline">\(0.05\)</span>?</p>
+<div class="fragment">
 <p><span class="math display">\[
 \begin{aligned}
 \exp\left(-(l \cdot d)^2\right) &amp;&lt; 0.05 \\
@@ -700,6 +705,7 @@ l \cdot d &amp;&lt; \sqrt{3} \\
 d &amp;&lt; \sqrt{3} / l
 \end{aligned}
 \]</span></p>
+</div>
 </section>
 <section id="changing-the-scale-sigma2" class="slide level2">
 <h2>Changing the scale (<span class="math inline">\(\sigma^2\)</span>)</h2>
@@ -727,23 +733,23 @@ Formula: y ~ gp(t)
 
 Gaussian Process Terms: 
             Estimate Est.Error l-95% CI u-95% CI
-sdgp(gpt)       1.72      0.69     0.81     3.47
-lscale(gpt)     0.13      0.03     0.08     0.18
+sdgp(gpt)       1.67      0.67     0.79     3.31
+lscale(gpt)     0.12      0.03     0.08     0.18
             Rhat Bulk_ESS Tail_ESS
-sdgp(gpt)   1.00      536     1211
-lscale(gpt) 1.00      453      976
+sdgp(gpt)   1.01      390     1098
+lscale(gpt) 1.02      262      316
 
 Population-Level Effects: 
           Estimate Est.Error l-95% CI u-95% CI
-Intercept    -1.05      0.85    -2.88     0.57
+Intercept    -1.07      0.79    -2.80     0.36
           Rhat Bulk_ESS Tail_ESS
-Intercept 1.00     1375     1128
+Intercept 1.01     1065     1131
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat
-sigma     0.18      0.05     0.11     0.31 1.01
+sigma     0.18      0.06     0.11     0.32 1.00
       Bulk_ESS Tail_ESS
-sigma     1080     1428
+sigma      914     1180
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
