@@ -7,7 +7,7 @@
 <link href="Lec14_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec14_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec14_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.2.219">
+  <meta name="generator" content="quarto-1.2.222">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>Gaussian Process Models</title>
@@ -440,20 +440,23 @@ y_1\\ \vdots\\ ys_n
 </section>
 <section id="sampling" class="slide level2">
 <h2>Sampling</h2>
-<p>To generate draws from an <span class="math inline">\(n\)</span>-dimensional multivate normal with mean <span class="math inline">\(\boldsymbol{\mu}\)</span> and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span>,</p>
+<p>To generate draws from an <span class="math inline">\(n\)</span>-dimensional multivate normal with mean <span class="math inline">\(\underset{n \times 1}{\boldsymbol{\mu}}\)</span> and covariance matrix <span class="math inline">\(\underset{n \times n}{\boldsymbol{\Sigma}}\)</span>,</p>
 <div class="fragment">
 <ul>
-<li>Find a matrix <span class="math inline">\(\boldsymbol{A}\)</span> such that <span class="math inline">\(\boldsymbol{\Sigma} = \boldsymbol{A}\,\boldsymbol{A}^t\)</span>, most often we use <span class="math inline">\(\boldsymbol{A} = \text{Chol}(\boldsymbol{\Sigma})\)</span> where <span class="math inline">\(\boldsymbol{A}\)</span> is a lower triangular matrix.</li>
+<li><p>Find a matrix <span class="math inline">\(\underset{n \times n}{\boldsymbol{A}}\)</span> such that <span class="math inline">\(\boldsymbol{\Sigma} = \boldsymbol{A}\,\boldsymbol{A}^t\)</span></p>
+<ul>
+<li>most often we use <span class="math inline">\(\boldsymbol{A} = \text{Chol}(\boldsymbol{\Sigma})\)</span> where <span class="math inline">\(\boldsymbol{A}\)</span> is a lower triangular matrix.</li>
+</ul></li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li>Draw <span class="math inline">\(n\)</span> iid unit normals <span class="math inline">\(\left(\mathcal{N}(0,1)\right)\)</span> as <span class="math inline">\(\boldsymbol{z}\)</span></li>
+<li>Draw <span class="math inline">\(n\)</span> iid unit normals, <span class="math inline">\(N(0,1)\)</span>, as <span class="math inline">\(\underset{n \times 1}{\boldsymbol{z}}\)</span></li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li>Obtain multivariate normal draws using <span class="math display">\[ \boldsymbol{y} = \boldsymbol{\mu} + \boldsymbol{A} \, \boldsymbol{z} \]</span></li>
+<li>Obtain multivariate normal draws using <span class="math display">\[ \underset{n \times 1}{\boldsymbol{y}} = \underset{n \times 1}{\boldsymbol{\mu}} + \underset{n \times n}{\boldsymbol{A}} \, \underset{n \times 1}{\boldsymbol{z}} \]</span></li>
 </ul>
 </div>
 </section>
@@ -464,12 +467,12 @@ y_1\\ \vdots\\ ys_n
 <img data-src="Lec14_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="marginal-distributions" class="slide level2">
 <h2>Marginal distributions</h2>
-<p> - For an <span class="math inline">\(n\)</span>-dimensional multivate normal with mean <span class="math inline">\(\boldsymbol{\mu}\)</span> and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span>, any marginal or conditional distribution of the <span class="math inline">\(y\)</span>’s will also be (multivariate) normal.</p>
+<p><em>Proposition</em> - For an <span class="math inline">\(n\)</span>-dimensional multivate normal with mean <span class="math inline">\(\boldsymbol{\mu}\)</span> and covariance matrix <span class="math inline">\(\boldsymbol{\Sigma}\)</span>, any marginal or conditional distribution of the <span class="math inline">\(y\)</span>’s will also be (multivariate) normal.</p>
 <div class="fragment">
-<p>For a univariate marginal distribution, <span class="math display">\[ y_i = \mathcal{N}(\boldsymbol{\mu}_i,\,\boldsymbol{\Sigma}_{ii}) \]</span></p>
+<p>For a univariate marginal distribution, <span class="math display">\[ y_i = N(\boldsymbol{\mu}_i,\,\boldsymbol{\Sigma}_{ii}) \]</span></p>
 </div>
 <div class="fragment">
-<p>For a bivariate marginal distribution, <span class="math display">\[ \boldsymbol{y}_{ij} = \mathcal{N}\left( \begin{pmatrix}\boldsymbol{\mu}_i \\ \boldsymbol{\mu}_j \end{pmatrix},\; \begin{pmatrix} \boldsymbol{\Sigma}_{ii} &amp; \boldsymbol{\Sigma}_{ij} \\ \boldsymbol{\Sigma}_{ji} &amp; \boldsymbol{\Sigma}_{jj} \end{pmatrix} \right) \]</span></p>
+<p>For a bivariate marginal distribution, <span class="math display">\[ \boldsymbol{y}_{ij} = N\left( \begin{pmatrix}\boldsymbol{\mu}_i \\ \boldsymbol{\mu}_j \end{pmatrix},\; \begin{pmatrix} \boldsymbol{\Sigma}_{ii} &amp; \boldsymbol{\Sigma}_{ij} \\ \boldsymbol{\Sigma}_{ji} &amp; \boldsymbol{\Sigma}_{jj} \end{pmatrix} \right) \]</span></p>
 </div>
 </section>
 <section id="section" class="slide level2">
@@ -477,7 +480,7 @@ y_1\\ \vdots\\ ys_n
 <p>For a <span class="math inline">\(k\)</span>-dimensional marginal distribution,</p>
 <p><span class="math display">\[
 \boldsymbol{y}_{i,\ldots,k} =
-  \mathcal{N}\left(
+  N\left(
     \begin{pmatrix}\boldsymbol{\mu}_{i} \\ \vdots \\ \boldsymbol{\mu}_{k} \end{pmatrix},\;
     \begin{pmatrix}
       \boldsymbol{\Sigma}_{ii}  &amp; \cdots &amp; \boldsymbol{\Sigma}_{i k} \\
@@ -494,7 +497,7 @@ y_1\\ \vdots\\ ys_n
 <p>If we partition the <span class="math inline">\(n\)</span>-dimensions into two pieces such that <span class="math inline">\(\boldsymbol{y} = (\boldsymbol{y}_1,\, \boldsymbol{y}_2)^t\)</span> then</p>
 <div class="small">
 <p><span class="math display">\[
-\underset{n \times 1}{\boldsymbol{y}} \sim \mathcal{N}\left(
+\underset{n \times 1}{\boldsymbol{y}} \sim N\left(
   \underset{n \times 1}{\begin{pmatrix}\boldsymbol{\mu}_1 \\ \boldsymbol{\mu}_2\end{pmatrix}},\,
   \underset{n \times n}{\begin{pmatrix}
     \boldsymbol{\Sigma}_{11} &amp; \boldsymbol{\Sigma}_{12} \\
@@ -503,8 +506,8 @@ y_1\\ \vdots\\ ys_n
 \right)
 \]</span> <span class="math display">\[
 \begin{aligned}
-\underset{k \times 1}{~~\boldsymbol{y}_1~~} &amp;\sim \mathcal{N}(\underset{k \times 1}{~~~\boldsymbol{\mu}_1~~~},\, \underset{k \times k}{~~~\boldsymbol{\Sigma}_{11}~~~}) \\
-\underset{n-k \times 1}{\boldsymbol{y}_2} &amp;\sim \mathcal{N}(\underset{n-k \times 1}{\boldsymbol{\mu}_2},\, \underset{n-k \times n-k}{\boldsymbol{\Sigma}_{22}})
+\underset{k \times 1}{~~\boldsymbol{y}_1~~} &amp;\sim N(\underset{k \times 1}{~~~\boldsymbol{\mu}_1~~~},\, \underset{k \times k}{~~~\boldsymbol{\Sigma}_{11}~~~}) \\
+\underset{n-k \times 1}{\boldsymbol{y}_2} &amp;\sim N(\underset{n-k \times 1}{\boldsymbol{\mu}_2},\, \underset{n-k \times n-k}{\boldsymbol{\Sigma}_{22}})
 \end{aligned}
 \]</span></p>
 </div>
@@ -513,9 +516,9 @@ y_1\\ \vdots\\ ys_n
 <div class="small">
 <p><span class="math display">\[
 \begin{aligned}
-\boldsymbol{y}_1 ~|~ \boldsymbol{y}_2 = \boldsymbol{a} ~&amp;\sim \mathcal{N}(\boldsymbol{\mu_1} + \boldsymbol{\Sigma_{12}} \, \boldsymbol{\Sigma_{22}}^{-1} \, (\boldsymbol{a} - \boldsymbol{\mu_2}),~ \boldsymbol{\Sigma_{11}}-\boldsymbol{\Sigma_{12}}\,\boldsymbol{\Sigma_{22}}^{-1} \, \boldsymbol{\Sigma_{21}}) \\
+\boldsymbol{y}_1 ~|~ \boldsymbol{y}_2 = \boldsymbol{a} ~&amp;\sim N(\boldsymbol{\mu_1} + \boldsymbol{\Sigma_{12}} \, \boldsymbol{\Sigma_{22}}^{-1} \, (\boldsymbol{a} - \boldsymbol{\mu_2}),~ \boldsymbol{\Sigma_{11}}-\boldsymbol{\Sigma_{12}}\,\boldsymbol{\Sigma_{22}}^{-1} \, \boldsymbol{\Sigma_{21}}) \\
 \\
-\boldsymbol{y}_2 ~|~ \boldsymbol{y}_1 = \boldsymbol{b} ~&amp;\sim \mathcal{N}(\boldsymbol{\mu_2} + \boldsymbol{\Sigma_{21}} \, \boldsymbol{\Sigma_{11}}^{-1} \, (\boldsymbol{b} - \boldsymbol{\mu_1}),~ \boldsymbol{\Sigma_{22}}-\boldsymbol{\Sigma_{21}}\,\boldsymbol{\Sigma_{11}}^{-1} \, \boldsymbol{\Sigma_{21}})
+\boldsymbol{y}_2 ~|~ \boldsymbol{y}_1 = \boldsymbol{b} ~&amp;\sim N(\boldsymbol{\mu_2} + \boldsymbol{\Sigma_{21}} \, \boldsymbol{\Sigma_{11}}^{-1} \, (\boldsymbol{b} - \boldsymbol{\mu_1}),~ \boldsymbol{\Sigma_{22}}-\boldsymbol{\Sigma_{21}}\,\boldsymbol{\Sigma_{11}}^{-1} \, \boldsymbol{\Sigma_{12}})
 \end{aligned}
 \]</span></p>
 </div>
@@ -574,7 +577,7 @@ y_1\\ \vdots\\ ys_n
 <p>Squared exponential covariance (Gaussian): <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^2\big) \]</span></p>
 </div>
 <div class="fragment">
-<p>Powered exponential covariance (<span class="math inline">\(p \in (0,2]\)</span>): <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^p\big) \]</span></p>
+<p>Powered exponential covariance <span class="math inline">\(\left(p \in (0,2]\right)\)</span>: <span class="math display">\[ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^p\big) \]</span></p>
 </div>
 </section>
 <section id="covariance-function---correlation-decay" class="slide level2">
@@ -584,8 +587,7 @@ y_1\\ \vdots\\ ys_n
 <img data-src="Lec14_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="correlation-decay---ar1" class="slide level2">
 <h2>Correlation Decay - AR(1)</h2>
-<p>Recall that for a stationary AR(1) process:</p>
-<p><span class="math display">\[\gamma(h) = \sigma^2_w \phi^{|h|} \text{ and } \rho(h) = \phi^{|h|}\]</span></p>
+<p>Recall that for a stationary AR(1) process: <span class="math inline">\(\gamma(h) = \sigma^2_w \phi^{|h|}\)</span> and <span class="math inline">\(\rho(h) = \phi^{|h|}\)</span></p>
 <div class="fragment">
 <p>we can draw a somewhat similar picture about the decay of <span class="math inline">\(\rho\)</span> as a function of distance.</p>
 <div class="cell" data-layout-align="center">
@@ -605,15 +607,15 @@ y_1\\ \vdots\\ ys_n
 <img data-src="Lec14_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="prediction" class="slide level2">
 <h2>Prediction</h2>
-<p>Our example has 20 observations which we would like to use as the basis for predicting <span class="math inline">\(y(t)\)</span> at other values of <span class="math inline">\(t\)</span> (say a sequence of values from 0 to 1).</p>
+<p>Our example has 20 observations which we would like to use as the basis for predicting <span class="math inline">\(y(t)\)</span> at other values of <span class="math inline">\(t\)</span> (say a regular sequence of values from 0 to 1).</p>
 <div class="fragment">
 <p><br></p>
-<p>For now lets use a square exponential covariance with <span class="math inline">\(\sigma^2 = 10\)</span> and <span class="math inline">\(l=5\)</span></p>
+<p>For now lets use a square exponential covariance with <span class="math inline">\(\sigma^2 = 10\)</span> and <span class="math inline">\(l=15\)</span></p>
 </div>
 <div class="fragment">
 <p><br></p>
 <p>We therefore want to sample from <span class="math inline">\(\boldsymbol{y}_{pred} | \boldsymbol{y}_{obs}\)</span>.</p>
-<p><span class="math display">\[\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim \mathcal{N}(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma_{pred}}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})\]</span></p>
+<p><span class="math display">\[\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim N(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma_{pred}}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})\]</span></p>
 <div class="cell" data-layout-align="center">
 
 </div>
@@ -645,6 +647,7 @@ y_1\\ \vdots\\ ys_n
 <img data-src="Lec14_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="exponential-covariance" class="slide level2">
 <h2>Exponential Covariance</h2>
+<p>Where <span class="math inline">\(\sigma=10\)</span>, <span class="math inline">\(l = \sqrt{15}\)</span>,</p>
 <div class="cell" data-layout-align="center">
 
 </div>
@@ -658,22 +661,30 @@ y_1\\ \vdots\\ ys_n
 <h2>Exponential Covariance - Draw 3</h2>
 
 <img data-src="Lec14_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="exponential-covariance---posterior" class="slide level2">
-<h2>Exponential Covariance - Posterior</h2>
+<section id="exponential-covariance---draw-4" class="slide level2">
+<h2>Exponential Covariance - Draw 4</h2>
 
 <img data-src="Lec14_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="exponential-covariance---draw-5" class="slide level2">
+<h2>Exponential Covariance - Draw 5</h2>
+
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="exponential-covariance---variability" class="slide level2">
+<h2>Exponential Covariance - Variability</h2>
+
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="powered-exponential-covariance-p1.5" class="slide level2">
 <h2>Powered Exponential Covariance (<span class="math inline">\(p=1.5\)</span>)</h2>
 
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="back-to-the-square-exponential" class="slide level2">
 <h2>Back to the square exponential</h2>
 
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="changing-the-range-l" class="slide level2">
 <h2>Changing the range (<span class="math inline">\(l\)</span>)</h2>
 
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="effective-range" class="slide level2">
 <h2>Effective Range</h2>
 <p>For the square exponential covariance <span class="math display">\[ \begin{aligned}
@@ -693,7 +704,7 @@ d &amp;&lt; \sqrt{3} / l
 <section id="changing-the-scale-sigma2" class="slide level2">
 <h2>Changing the scale (<span class="math inline">\(\sigma^2\)</span>)</h2>
 
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="fitting-w-brms" class="slide level2">
 <h2>Fitting w/ BRMS</h2>
 <div class="small">
@@ -716,23 +727,23 @@ Formula: y ~ gp(t)
 
 Gaussian Process Terms: 
             Estimate Est.Error l-95% CI u-95% CI
-sdgp(gpt)       1.66      0.64     0.80     3.24
-lscale(gpt)     0.12      0.03     0.08     0.18
+sdgp(gpt)       1.72      0.69     0.81     3.47
+lscale(gpt)     0.13      0.03     0.08     0.18
             Rhat Bulk_ESS Tail_ESS
-sdgp(gpt)   1.02      393     1156
-lscale(gpt) 1.02      294      700
+sdgp(gpt)   1.00      536     1211
+lscale(gpt) 1.00      453      976
 
 Population-Level Effects: 
           Estimate Est.Error l-95% CI u-95% CI
-Intercept    -1.00      0.80    -2.74     0.53
+Intercept    -1.05      0.85    -2.88     0.57
           Rhat Bulk_ESS Tail_ESS
-Intercept 1.01     1593     1400
+Intercept 1.00     1375     1128
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat
-sigma     0.18      0.05     0.11     0.32 1.01
+sigma     0.18      0.05     0.11     0.31 1.01
       Bulk_ESS Tail_ESS
-sigma     1238     1444
+sigma     1080     1428
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -748,22 +759,192 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">plot</span>(gp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-25-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="pp-checks" class="slide level2">
 <h2>PP Checks</h2>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">pp_check</span>(gp, <span class="at">ndraws =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="model-predictions" class="slide level2">
 <h2>Model predictions</h2>
 
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-25-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="forecasting" class="slide level2">
 <h2>Forecasting</h2>
 
-<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
+<img data-src="Lec14_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="stan-code" class="slide level2">
+<h2>Stan code</h2>
+<div class="small">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>gp <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>  brms<span class="sc">::</span><span class="fu">stancode</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>// generated with brms 2.18.0
+functions {
+  /* compute a latent Gaussian process
+   * Args:
+   *   x: array of continuous predictor values
+   *   sdgp: marginal SD parameter
+   *   lscale: length-scale parameter
+   *   zgp: vector of independent standard normal variables
+   * Returns:
+   *   a vector to be added to the linear predictor
+   */
+  vector gp(data vector[] x, real sdgp, vector lscale, vector zgp) {
+    int Dls = rows(lscale);
+    int N = size(x);
+    matrix[N, N] cov;
+    if (Dls == 1) {
+      // one dimensional or isotropic GP
+      cov = gp_exp_quad_cov(x, sdgp, lscale[1]);
+    } else {
+      // multi-dimensional non-isotropic GP
+      cov = gp_exp_quad_cov(x[, 1], sdgp, lscale[1]);
+      for (d in 2:Dls) {
+        cov = cov .* gp_exp_quad_cov(x[, d], 1, lscale[d]);
+      }
+    }
+    for (n in 1:N) {
+      // deal with numerical non-positive-definiteness
+      cov[n, n] += 1e-12;
+    }
+    return cholesky_decompose(cov) * zgp;
+  }
+  /* Spectral density function of a Gaussian process
+   * with squared exponential covariance kernel
+   * Args:
+   *   x: array of numeric values of dimension NB x D
+   *   sdgp: marginal SD parameter
+   *   lscale: vector of length-scale parameters
+   * Returns:
+   *   numeric values of the function evaluated at 'x'
+   */
+  vector spd_cov_exp_quad(data vector[] x, real sdgp, vector lscale) {
+    int NB = dims(x)[1];
+    int D = dims(x)[2];
+    int Dls = rows(lscale);
+    vector[NB] out;
+    if (Dls == 1) {
+      // one dimensional or isotropic GP
+      real constant = square(sdgp) * (sqrt(2 * pi()) * lscale[1])^D;
+      real neg_half_lscale2 = -0.5 * square(lscale[1]);
+      for (m in 1:NB) {
+        out[m] = constant * exp(neg_half_lscale2 * dot_self(x[m]));
+      }
+    } else {
+      // multi-dimensional non-isotropic GP
+      real constant = square(sdgp) * sqrt(2 * pi())^D * prod(lscale);
+      vector[Dls] neg_half_lscale2 = -0.5 * square(lscale);
+      for (m in 1:NB) {
+        out[m] = constant * exp(dot_product(neg_half_lscale2, square(x[m])));
+      }
+    }
+    return out;
+  }
+  /* how many elements are in a range of integers?
+   * Args:
+   *   x: an integer array
+   *   start: start of the range (inclusive)
+   *   end: end of the range (inclusive)
+   * Returns:
+   *   a scalar integer
+   */
+  int size_range(int[] x, int start, int end) {
+    int out = 0;
+    for (i in 1:size(x)) {
+      out += (x[i] &gt;= start &amp;&amp; x[i] &lt;= end);
+    }
+    return out;
+  }
+  /* which elements are in a range of integers?
+   * Args:
+   *   x: an integer array
+   *   start: start of the range (inclusive)
+   *   end: end of the range (inclusive)
+   * Returns:
+   *   an integer array
+   */
+  int[] which_range(int[] x, int start, int end) {
+    int out[size_range(x, start, end)];
+    int j = 1;
+    for (i in 1:size(x)) {
+      if (x[i] &gt;= start &amp;&amp; x[i] &lt;= end) {
+        out[j] = i;
+        j += 1;
+      }
+    }
+    return out;
+  }
+  /* adjust array values to x - start + 1
+   * Args:
+   *   x: an integer array
+   *   start: start of the range of values in x (inclusive)
+   * Returns:
+   *   an integer array
+   */
+  int[] start_at_one(int[] x, int start) {
+    int out[size(x)];
+    for (i in 1:size(x)) {
+      out[i] = x[i] - start + 1;
+    }
+    return out;
+  }
+}
+data {
+  int&lt;lower=1&gt; N;  // total number of observations
+  vector[N] Y;  // response variable
+  // data related to GPs
+  int&lt;lower=1&gt; Kgp_1;  // number of sub-GPs (equal to 1 unless 'by' was used)
+  int&lt;lower=1&gt; Dgp_1;  // GP dimension
+  // number of latent GP groups
+  int&lt;lower=1&gt; Nsubgp_1;
+  // indices of latent GP groups per observation
+  int&lt;lower=1&gt; Jgp_1[N];
+  vector[Dgp_1] Xgp_1[Nsubgp_1];  // covariates of the GP
+  int prior_only;  // should the likelihood be ignored?
+}
+transformed data {
+}
+parameters {
+  real Intercept;  // temporary intercept for centered predictors
+  vector&lt;lower=0&gt;[Kgp_1] sdgp_1;  // GP standard deviation parameters
+  vector&lt;lower=0&gt;[1] lscale_1[Kgp_1];  // GP length-scale parameters
+  vector[Nsubgp_1] zgp_1;  // latent variables of the GP
+  real&lt;lower=0&gt; sigma;  // dispersion parameter
+}
+transformed parameters {
+  real lprior = 0;  // prior contributions to the log posterior
+  lprior += student_t_lpdf(Intercept | 3, -0.7, 2.5);
+  lprior += student_t_lpdf(sdgp_1 | 3, 0, 2.5)
+    - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+  lprior += inv_gamma_lpdf(lscale_1[1][1] | 1.82247, 0.11151);
+  lprior += student_t_lpdf(sigma | 3, 0, 2.5)
+    - 1 * student_t_lccdf(0 | 3, 0, 2.5);
+}
+model {
+  // likelihood including constants
+  if (!prior_only) {
+    vector[Nsubgp_1] gp_pred_1 = gp(Xgp_1, sdgp_1[1], lscale_1[1], zgp_1);
+    // initialize linear predictor term
+    vector[N] mu = rep_vector(0.0, N);
+    mu += Intercept + gp_pred_1[Jgp_1];
+    target += normal_lpdf(Y | mu, sigma);
+  }
+  // priors including constants
+  target += lprior;
+  target += std_normal_lpdf(zgp_1);
+}
+generated quantities {
+  // actual population-level intercept
+  real b_Intercept = Intercept;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>
 </section></section>

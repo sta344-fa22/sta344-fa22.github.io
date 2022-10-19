@@ -20,7 +20,7 @@ strip_class = function(obj)
 
 
 post_summary = function(m, ci_width=0.95) {
-  d = data_frame(
+  d = tibble(
     post_mean  = apply(m, 2, mean),
     post_med   = apply(m, 2, median),
     post_lower = apply(m, 2, quantile, probs=(1-ci_width)/2),

@@ -78,20 +78,22 @@ $$
 
 ## Sampling
 
-To generate draws from an $n$-dimensional multivate normal with mean $\boldsymbol{\mu}$ and covariance matrix $\boldsymbol{\Sigma}$, 
+To generate draws from an $n$-dimensional multivate normal with mean $\underset{n \times 1}{\boldsymbol{\mu}}$ and covariance matrix $\underset{n \times n}{\boldsymbol{\Sigma}}$, 
 
 . . .
 
-* Find a matrix $\boldsymbol{A}$ such that $\boldsymbol{\Sigma} = \boldsymbol{A}\,\boldsymbol{A}^t$, most often we use $\boldsymbol{A} = \text{Chol}(\boldsymbol{\Sigma})$ where $\boldsymbol{A}$ is a lower triangular matrix.
+* Find a matrix $\underset{n \times n}{\boldsymbol{A}}$ such that $\boldsymbol{\Sigma} = \boldsymbol{A}\,\boldsymbol{A}^t$
+
+    * most often we use $\boldsymbol{A} = \text{Chol}(\boldsymbol{\Sigma})$ where $\boldsymbol{A}$ is a lower triangular matrix.
 
 . . .
 
-* Draw $n$ iid unit normals $\left(\mathcal{N}(0,1)\right)$ as $\boldsymbol{z}$ 
+* Draw $n$ iid unit normals, $N(0,1)$, as $\underset{n \times 1}{\boldsymbol{z}}$ 
 
 . . .
 
 * Obtain multivariate normal draws using
-$$ \boldsymbol{y} = \boldsymbol{\mu} + \boldsymbol{A} \, \boldsymbol{z} $$
+$$ \underset{n \times 1}{\boldsymbol{y}} = \underset{n \times 1}{\boldsymbol{\mu}} + \underset{n \times n}{\boldsymbol{A}} \, \underset{n \times 1}{\boldsymbol{z}} $$
 
 
 ## Bivariate Examples
@@ -117,17 +119,17 @@ map_dfr(
 
 
 
-\textbf{Proposition} - For an $n$-dimensional multivate normal with mean $\boldsymbol{\mu}$ and covariance matrix $\boldsymbol{\Sigma}$, any marginal or conditional distribution of the $y$'s will also be (multivariate) normal.
+*Proposition* - For an $n$-dimensional multivate normal with mean $\boldsymbol{\mu}$ and covariance matrix $\boldsymbol{\Sigma}$, any marginal or conditional distribution of the $y$'s will also be (multivariate) normal.
 
 . . .
 
 For a univariate marginal distribution,
-$$ y_i = \mathcal{N}(\boldsymbol{\mu}_i,\,\boldsymbol{\Sigma}_{ii}) $$
+$$ y_i = N(\boldsymbol{\mu}_i,\,\boldsymbol{\Sigma}_{ii}) $$
 
 . . .
 
 For a bivariate marginal distribution,
-$$ \boldsymbol{y}_{ij} = \mathcal{N}\left( \begin{pmatrix}\boldsymbol{\mu}_i \\ \boldsymbol{\mu}_j \end{pmatrix},\; \begin{pmatrix} \boldsymbol{\Sigma}_{ii} & \boldsymbol{\Sigma}_{ij} \\ \boldsymbol{\Sigma}_{ji} & \boldsymbol{\Sigma}_{jj} \end{pmatrix} \right) $$
+$$ \boldsymbol{y}_{ij} = N\left( \begin{pmatrix}\boldsymbol{\mu}_i \\ \boldsymbol{\mu}_j \end{pmatrix},\; \begin{pmatrix} \boldsymbol{\Sigma}_{ii} & \boldsymbol{\Sigma}_{ij} \\ \boldsymbol{\Sigma}_{ji} & \boldsymbol{\Sigma}_{jj} \end{pmatrix} \right) $$
 
 ## 
 
@@ -135,7 +137,7 @@ For a $k$-dimensional marginal distribution,
 
 $$ 
 \boldsymbol{y}_{i,\ldots,k} = 
-  \mathcal{N}\left( 
+  N\left( 
     \begin{pmatrix}\boldsymbol{\mu}_{i} \\ \vdots \\ \boldsymbol{\mu}_{k} \end{pmatrix},\; 
     \begin{pmatrix} 
       \boldsymbol{\Sigma}_{ii}  & \cdots & \boldsymbol{\Sigma}_{i k} \\ 
@@ -154,7 +156,7 @@ If we partition the $n$-dimensions into two pieces such that $\boldsymbol{y} = (
 
 ::: {.small}
 $$
-\underset{n \times 1}{\boldsymbol{y}} \sim \mathcal{N}\left(
+\underset{n \times 1}{\boldsymbol{y}} \sim N\left(
   \underset{n \times 1}{\begin{pmatrix}\boldsymbol{\mu}_1 \\ \boldsymbol{\mu}_2\end{pmatrix}},\, 
   \underset{n \times n}{\begin{pmatrix} 
     \boldsymbol{\Sigma}_{11} & \boldsymbol{\Sigma}_{12} \\ 
@@ -164,8 +166,8 @@ $$
 $$
 $$ 
 \begin{aligned}
-\underset{k \times 1}{~~\boldsymbol{y}_1~~} &\sim \mathcal{N}(\underset{k \times 1}{~~~\boldsymbol{\mu}_1~~~},\, \underset{k \times k}{~~~\boldsymbol{\Sigma}_{11}~~~}) \\ 
-\underset{n-k \times 1}{\boldsymbol{y}_2} &\sim \mathcal{N}(\underset{n-k \times 1}{\boldsymbol{\mu}_2},\, \underset{n-k \times n-k}{\boldsymbol{\Sigma}_{22}})
+\underset{k \times 1}{~~\boldsymbol{y}_1~~} &\sim N(\underset{k \times 1}{~~~\boldsymbol{\mu}_1~~~},\, \underset{k \times k}{~~~\boldsymbol{\Sigma}_{11}~~~}) \\ 
+\underset{n-k \times 1}{\boldsymbol{y}_2} &\sim N(\underset{n-k \times 1}{\boldsymbol{\mu}_2},\, \underset{n-k \times n-k}{\boldsymbol{\Sigma}_{22}})
 \end{aligned} 
 $$
 :::
@@ -177,9 +179,9 @@ then the conditional distributions are given by
 ::: {.small}
 $$
 \begin{aligned}
-\boldsymbol{y}_1 ~|~ \boldsymbol{y}_2 = \boldsymbol{a} ~&\sim \mathcal{N}(\boldsymbol{\mu_1} + \boldsymbol{\Sigma_{12}} \, \boldsymbol{\Sigma_{22}}^{-1} \, (\boldsymbol{a} - \boldsymbol{\mu_2}),~ \boldsymbol{\Sigma_{11}}-\boldsymbol{\Sigma_{12}}\,\boldsymbol{\Sigma_{22}}^{-1} \, \boldsymbol{\Sigma_{21}}) \\
+\boldsymbol{y}_1 ~|~ \boldsymbol{y}_2 = \boldsymbol{a} ~&\sim N(\boldsymbol{\mu_1} + \boldsymbol{\Sigma_{12}} \, \boldsymbol{\Sigma_{22}}^{-1} \, (\boldsymbol{a} - \boldsymbol{\mu_2}),~ \boldsymbol{\Sigma_{11}}-\boldsymbol{\Sigma_{12}}\,\boldsymbol{\Sigma_{22}}^{-1} \, \boldsymbol{\Sigma_{21}}) \\
 \\
-\boldsymbol{y}_2 ~|~ \boldsymbol{y}_1 = \boldsymbol{b} ~&\sim \mathcal{N}(\boldsymbol{\mu_2} + \boldsymbol{\Sigma_{21}} \, \boldsymbol{\Sigma_{11}}^{-1} \, (\boldsymbol{b} - \boldsymbol{\mu_1}),~ \boldsymbol{\Sigma_{22}}-\boldsymbol{\Sigma_{21}}\,\boldsymbol{\Sigma_{11}}^{-1} \, \boldsymbol{\Sigma_{21}})
+\boldsymbol{y}_2 ~|~ \boldsymbol{y}_1 = \boldsymbol{b} ~&\sim N(\boldsymbol{\mu_2} + \boldsymbol{\Sigma_{21}} \, \boldsymbol{\Sigma_{11}}^{-1} \, (\boldsymbol{b} - \boldsymbol{\mu_1}),~ \boldsymbol{\Sigma_{22}}-\boldsymbol{\Sigma_{21}}\,\boldsymbol{\Sigma_{11}}^{-1} \, \boldsymbol{\Sigma_{12}})
 \end{aligned}
 $$
 :::
@@ -239,7 +241,7 @@ $$ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^2\big) $$
 
 . . .
 
-Powered exponential covariance ($p \in (0,2]$):
+Powered exponential covariance $\left(p \in (0,2]\right)$:
 $$ \Sigma(y_{t},y_{t'}) = \sigma^2 \exp\big(-(|t-t'| \; l\,)^p\big) $$
 
 ## Covariance Function - Correlation Decay
@@ -266,9 +268,7 @@ ggplot(covs, aes(x=d, y=corr, color=as.factor(round(l,1)))) +
 
 ## Correlation Decay - AR(1)
 
-Recall that for a stationary AR(1) process:
-
-$$\gamma(h) = \sigma^2_w \phi^{|h|} \text{ and } \rho(h) = \phi^{|h|}$$
+Recall that for a stationary AR(1) process: $\gamma(h) = \sigma^2_w \phi^{|h|}$ and $\rho(h) = \phi^{|h|}$
 
 . . .
 
@@ -319,13 +319,13 @@ save(d, d_true, y_f, base, file="lec14_ex.Rdata")
 
 ## Prediction
 
-Our example has 20 observations which we would like to use as the basis for predicting $y(t)$ at other values of $t$ (say a sequence of values from 0 to 1).
+Our example has 20 observations which we would like to use as the basis for predicting $y(t)$ at other values of $t$ (say a regular sequence of values from 0 to 1).
 
 . . .
 
 <br/>
 
-For now lets use a square exponential covariance with $\sigma^2 = 10$ and $l=5$ 
+For now lets use a square exponential covariance with $\sigma^2 = 10$ and $l=15$ 
 
 . . .
 
@@ -333,11 +333,11 @@ For now lets use a square exponential covariance with $\sigma^2 = 10$ and $l=5$
 
 We therefore want to sample from $\boldsymbol{y}_{pred} | \boldsymbol{y}_{obs}$.
 
-$$\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim \mathcal{N}(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma_{pred}}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})$$
+$$\boldsymbol{y}_{pred} ~|~ \boldsymbol{y}_{obs} = \boldsymbol{y} ~\sim N(\boldsymbol{\Sigma}_{po} \, \boldsymbol{\Sigma}_{obs}^{-1} \, \boldsymbol{y},~ \boldsymbol{\Sigma_{pred}}-\boldsymbol{\Sigma}_{po}\,\boldsymbol{\Sigma}_{pred}^{-1} \, \boldsymbol{\Sigma}_{op})$$
 
 ```{r echo=FALSE}
 d_pred = tibble(t = seq(0,1,length.out = 1000))
-y_post = cond_pred(d_pred, d, cov=sq_exp_cov, sigma2 = 10, l = 5, reps=1000)
+y_post = cond_pred(d_pred, d, cov=sq_exp_cov, sigma2 = 10, l = 15, reps=1000)
 
 d_pred = cbind(
   d_pred,
@@ -407,9 +407,11 @@ base +
 
 ## Exponential Covariance
 
+Where $\sigma=10$, $l = \sqrt{15}$,
+
 ```{r echo=FALSE}
 d_pred = tibble(t = seq(0,1,length.out = 1000))
-y_post = cond_pred(d_pred, d, cov = exp_cov, sigma2 = 10, l = 15, reps=10000)
+y_post = cond_pred(d_pred, d, cov = exp_cov, sigma2 = 10, l = sqrt(15), reps=1000)
 
 d_pred = cbind(
   d_pred,
@@ -440,12 +442,38 @@ base +
   geom_line(data=d_pred, color='red', aes(y=y3), alpha=1, size=0.5)
 ```
 
+## Exponential Covariance - Draw 4
 
-## Exponential Covariance - Posterior
+```{r echo=FALSE}
+base + 
+  geom_line(data=d_pred, color='red', aes(y=y1), alpha=0.2, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y2), alpha=0.2, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y3), alpha=0.2, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y4), alpha=1, size=0.5)
+```
+
+## Exponential Covariance - Draw 5
+
+```{r echo=FALSE}
+base + 
+  geom_line(data=d_pred, color='red', aes(y=y1), alpha=0.2, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y2), alpha=0.2, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y3), alpha=0.2, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y4), alpha=0.2, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y5), alpha=1, size=0.5)
+```
+
+
+## Exponential Covariance - Variability
 
 ```{r echo=FALSE}
 base + 
   geom_line(data=d_pred, color='red', aes(y=post_mean), size=1) +
+  geom_line(data=d_pred, color='red', aes(y=y1), alpha=0.4, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y2), alpha=0.4, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y3), alpha=0.4, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y4), alpha=0.4, size=0.5) +
+  geom_line(data=d_pred, color='red', aes(y=y5), alpha=0.4, size=0.5) +
   geom_ribbon(data=d_pred, fill='red', alpha=0.1, aes(ymin=post_lower, ymax=post_upper, y=post_mean))
 ```
 
@@ -488,7 +516,7 @@ d_pred = cbind(
 
 base + 
   geom_line(data=d_pred, color='red', aes(y=post_mean), size=1) +
-  geom_ribbon(data=d_pred, fill='red', alpha=0.1, aes(ymin=post_lower, ymax=post_upper, y=post_mean))
+  geom_ribbon(data=d_pred, fill='red', alpha=0.25, aes(ymin=post_lower, ymax=post_upper, y=post_mean))
 ```
 
 ## Changing the range ($l$)
@@ -497,7 +525,7 @@ base +
 d_pred = tibble(t = seq(0,1,length.out = 100))
 
 d_pred_l = map_dfr(
-  c(5,10,15,20),
+  c(10,15,20,25),
   function(l) {
     cond_pred(d_pred, d, cov = sq_exp_cov, sigma2 = 10, l = l, reps=1000) %>% t() %>% 
       post_summary() %>%
@@ -509,7 +537,7 @@ d_pred_l = map_dfr(
 
 base + 
   geom_line(data=d_pred_l, color='red', aes(y=post_mean), size=1) +
-  geom_ribbon(data=d_pred_l, fill='red', alpha=0.1, aes(ymin=post_lower, ymax=post_upper, y=post_mean)) +
+  geom_ribbon(data=d_pred_l, fill='red', alpha=0.25, aes(ymin=post_lower, ymax=post_upper, y=post_mean)) +
   facet_wrap(~cov)
 ```
 
@@ -541,7 +569,7 @@ $$
 d_pred = tibble(t = seq(0,1,length.out = 100))
 
 d_pred_s = map2_dfr(
-  c(5,5,5,15,15,15), c(5,15,20,5,15,20),
+  c(5,5,5,15,15,15), c(10,15,20,10,15,20),
   function(s,l) {
     cond_pred(d_pred, d, cov = sq_exp_cov, sigma2 = s, l = l, reps=1000) %>% t() %>% 
       post_summary() %>%
@@ -553,7 +581,7 @@ d_pred_s = map2_dfr(
 
 base + 
   geom_line(data=d_pred_s, color='red', aes(y=post_mean), size=1) +
-  geom_ribbon(data=d_pred_s, fill='red', alpha=0.1, aes(ymin=post_lower, ymax=post_upper, y=post_mean)) +
+  geom_ribbon(data=d_pred_s, fill='red', alpha=0.25, aes(ymin=post_lower, ymax=post_upper, y=post_mean)) +
   facet_wrap(~cov)
 ```
 
@@ -620,3 +648,12 @@ ggplot(d, aes(x=t, y=y)) +
   ) +
   geom_point()
 ```
+
+## Stan code
+
+::: {.small}
+```{r}
+gp %>%
+  brms::stancode()
+```
+:::
