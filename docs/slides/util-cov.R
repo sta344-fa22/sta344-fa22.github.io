@@ -83,64 +83,66 @@ linear_cov   = function(x1, x2, sigma2_b=1, sigma2_v=1, c=0)
 
 
 
-# From https://github.com/hadley/dplyr/issues/271
-bin = function(df, var, binwidth, origin = NULL) {
+bin = function(df, var, binwidth, start = NULL, end = NULL) {
   n = nrow(df)
   
   var = as.character(substitute(var))
   x = df[[var]]
   
-  if (is.null(origin)) {
-    origin = min(x)
+  if (is.null(start)) {
+    start = min(x) - (min(x) %% binwidth)
+  }
+  if (is.null(end)) {
+    end = max(x) + binwidth - (max(x) %% binwidth)
   }
   
-  bin = (x - origin) %/% binwidth
-  indices = unname(split(seq_len(n) - 1, bin))
-  
-  mid = origin + (0:(max(bin)+1)) * binwidth + binwidth/2
-  
-  df[["bin_mid"]] = mid[bin+1]
-  
-  attr(df, "indices") = indices
-  attr(df, "drop") = FALSE
-  attr(df, "group_sizes") = sapply(indices, length)
-  attr(df, "biggest_group_size") = max(attr(df, "group_sizes"))
-  attr(df, "labels") = data.frame(bin = seq_along(indices))
-  attr(df, "vars") = list(quote(bin))
-  class(df) = c("grouped_df", "tbl_df", "tbl", "data.frame")
-  
-  df
+  bins = seq(start, end, by = binwidth)
+
+  df %>%
+    mutate(
+      bins = cut(.data[[var]], breaks = bins),
+      bin_mid = .data[[var]] - .data[[var]] %% binwidth + binwidth/2
+    ) %>%
+    group_by(bins)
 }
 
 
+dist_mat = function(d) {
+  as.matrix(dist(d))
+}
 
-dist_long = function(d)
-{
+dist_long = function(d) {
   d = as.matrix(d)
   d[upper.tri(d, diag = TRUE)] = NA
   
-  data.frame(
-    expand.grid(i=1:nrow(d), j=1:nrow(d)),
-    c(d)
+  expand_grid(
+    i=1:nrow(d), 
+    j=1:nrow(d)
   ) %>%
-    setNames(c("i","j","dist")) %>%
+  mutate(
+    dist = c(d)
+  ) %>%
     filter(!is.na(dist))
 }
 
-emp_semivariogram = function(d, y, x, bin=FALSE, binwidth, range_max)
-{
+emp_semivariogram = function(d, y, x, bin=FALSE, binwidth, range_max=NULL) {
   y_col = as.character(substitute(y))
   x_col = as.character(substitute(x))
   
   d = d[[x_col]] %>%
     dist() %>% 
     dist_long() %>%
-    mutate(y_i = d[[y_col]][i], y_j = d[[y_col]][j])
+    mutate(
+      y_i = d[[y_col]][i], 
+      y_j = d[[y_col]][j]
+    )
+  
+  if (is.null(range_max))
+    range_max = max(d$dist, na.rm=TRUE)/3
   
   
-  if (bin)
-  {
-    d = d %>% bin(dist, binwidth = binwidth)
+  if (bin) {
+    d = d %>% bin(dist, binwidth = binwidth, start = 0)
   } else {
     d = d %>% mutate(bin_mid = dist) %>% rowwise()
   }
@@ -148,19 +150,18 @@ emp_semivariogram = function(d, y, x, bin=FALSE, binwidth, range_max)
   d = d %>%
     summarize(
       gamma = sum( (y_i - y_j)^2 / (2*n()) ),
-      h = mean(bin_mid),
+      d = mean(bin_mid),
       n = n()
     )
   
   if (!missing(range_max))
-    d = d %>% filter(h < range_max)
+    d = d %>% filter(d < range_max)
   
   d
 }
 
 
-rmvnorm = function(n, mu=rep(0, nrow(sigma)), sigma, diag_adjust = 1e-6)
-{
+rmvnorm = function(n, mu=rep(0, nrow(sigma)), sigma, diag_adjust = 1e-6) {
   diag(sigma) = diag(sigma) + diag_adjust
   mu %*% matrix(1, ncol=n) + t(chol(sigma)) %*% matrix(rnorm(n*nrow(sigma)), ncol=n)
 }

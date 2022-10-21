@@ -150,15 +150,16 @@ schedule:
   day: 2
   lecture: Gaussian Process models
   slides: Lec14
-  screencast: 
+  screencast: https://youtu.be/rfa_VPJcdRc
   readings:
   - text: "Rasmussen & Williams 2, 4"
     link: http://www.gaussianprocess.org/gpml/chapters/RW.pdf
-
+  notes: <a href="https://raw.githubusercontent.com/sta344-fa22/sta344-fa22.github.io/main/static/slides/util-cov.R">util-cov.R</a>
+  
 - week: 8
   day: 4
   lecture: Gaussian Process models (pt. 2)
-  slides: 
+  slides: Lec15
   screencast: 
   notes: ""
   
