@@ -797,6 +797,90 @@ w_2
 <li><p>constant mean</p></li>
 </ol>
 </div>
+</section></section>
+<section>
+<section id="mauna-loa-example" class="title-slide slide level1 center">
+<h1>Mauna Loa Example</h1>
+
+</section>
+<section id="atmospheric-co_2" class="slide level2">
+<h2>Atmospheric CO<span class="math inline">\(_2\)</span></h2>
+
+<img data-src="Lec16_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="gp-model" class="slide level2">
+<h2>GP Model</h2>
+<p>Based on Rasmussen 5.4.3 (we are using slightly different data and parameterization)</p>
+<p><span class="math display">\[ \boldsymbol{y} \sim \mathcal{N}(\boldsymbol{\mu},~ \boldsymbol{\Sigma}_1 + \boldsymbol{\Sigma}_2 + \boldsymbol{\Sigma}_3 + \boldsymbol{\Sigma}_4 + \sigma^2 \mathit{I}\,) \]</span></p>
+<p><span class="math display">\[\{\boldsymbol{\mu}\}_i = \bar{y}\]</span></p>
+<div class="small">
+<p><span class="math display">\[
+\begin{aligned}
+\{\boldsymbol{\Sigma}_1\}_{ij} &amp;= \sigma^2_1 \exp\left(-(l_1 \cdot d_{ij})^2\right) \\
+\{\boldsymbol{\Sigma}_2\}_{ij} &amp;= \sigma^2_2 \exp\left(-(l_2 \cdot d_{ij})^2\right)\exp\left(-2 \, (l_3)^2  \sin^2(\pi \, d_{ij} / p)\right) \\
+\{\boldsymbol{\Sigma}_3\}_{ij} &amp;= \sigma^2_3 \left(1+\frac{(l_4 \cdot d_{ij})^2}{\alpha}\right)^{-\alpha} \\
+\{\boldsymbol{\Sigma}_4\}_{ij} &amp;= \sigma^2_4 \exp\left(-(l_5 \cdot d_{ij})^2\right)
+\end{aligned}
+\]</span></p>
+</div>
+</section>
+<section id="model-fit" class="slide level2">
+<h2>Model fit</h2>
+
+<img data-src="imgs/Lec16/fit.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="fit-components" class="slide level2">
+<h2>Fit Components</h2>
+
+<img data-src="imgs/Lec16/fit_decomposition.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="model-fit-forecast" class="slide level2">
+<h2>Model fit + forecast</h2>
+
+<img data-src="imgs/Lec16/fit_forecast.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="forecast" class="slide level2">
+<h2>Forecast</h2>
+
+<img data-src="imgs/Lec16/forecast_zoom.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="forecast-components" class="slide level2">
+<h2>Forecast components</h2>
+
+<img data-src="imgs/Lec16/forecast_decomp.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="arima-forecast" class="slide level2">
+<h2>ARIMA forecast</h2>
+
+<img data-src="imgs/Lec16/forecast_arima.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="model-performance" class="slide level2">
+<h2>Model performance</h2>
+<p><br><br></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Forecast<br>dates</th>
+<th style="text-align: left;">arima<br>RMSE</th>
+<th style="text-align: left;">gp <br>RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Jan 1998 - Jan 2003</td>
+<td style="text-align: left;">1.10</td>
+<td style="text-align: left;">1.91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jan 1998 - Jan 2008</td>
+<td style="text-align: left;">2.51</td>
+<td style="text-align: left;">4.58</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jan 1998 - Jan 2013</td>
+<td style="text-align: left;">3.82</td>
+<td style="text-align: left;">7.71</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jan 1998 - Mar 2017</td>
+<td style="text-align: left;">5.46</td>
+<td style="text-align: left;">11.40</td>
+</tr>
+</tbody>
+</table>
 <div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>

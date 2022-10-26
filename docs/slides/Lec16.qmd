@@ -861,3 +861,85 @@ Full stan case study [here](https://avehtari.github.io/casestudies/Birthdays/bir
 8. constant mean
 :::
 
+
+# Mauna Loa Example
+
+## Atmospheric CO$_2$
+
+```{r echo=FALSE, message=FALSE}
+loa = data_frame(
+  y = co2 %>% strip_attrs(),
+  x = time(co2) %>% strip_attrs()
+)
+
+noaa = readr::read_csv("data/noaa_mauna_loa.csv") %>%
+  transmute(x = year+(month-1)/12, y=average) %>%
+  filter(x > max(loa$x))
+
+rbind(
+  loa %>% mutate(Source="Scripps (co2)"),
+  noaa %>% mutate(Source="NOAA")
+) %>%
+  ggplot(aes(x=x,y=y, color=Source)) + 
+  geom_line() 
+```
+
+## GP Model
+
+Based on Rasmussen 5.4.3 (we are using slightly different data and parameterization)
+
+$$ \boldsymbol{y} \sim \mathcal{N}(\boldsymbol{\mu},~ \boldsymbol{\Sigma}_1 + \boldsymbol{\Sigma}_2 + \boldsymbol{\Sigma}_3 + \boldsymbol{\Sigma}_4 + \sigma^2 \mathit{I}\,) $$
+
+$$\{\boldsymbol{\mu}\}_i = \bar{y}$$
+  
+::: {.small}  
+$$
+\begin{aligned}
+\{\boldsymbol{\Sigma}_1\}_{ij} &= \sigma^2_1 \exp\left(-(l_1 \cdot d_{ij})^2\right) \\
+\{\boldsymbol{\Sigma}_2\}_{ij} &= \sigma^2_2 \exp\left(-(l_2 \cdot d_{ij})^2\right)\exp\left(-2 \, (l_3)^2  \sin^2(\pi \, d_{ij} / p)\right) \\
+\{\boldsymbol{\Sigma}_3\}_{ij} &= \sigma^2_3 \left(1+\frac{(l_4 \cdot d_{ij})^2}{\alpha}\right)^{-\alpha} \\
+\{\boldsymbol{\Sigma}_4\}_{ij} &= \sigma^2_4 \exp\left(-(l_5 \cdot d_{ij})^2\right)
+\end{aligned}
+$$
+:::
+
+## Model fit
+
+![](imgs/Lec16/fit.png){fig-align="center" width="100%"}
+
+
+## Fit Components
+
+![](imgs/Lec16/fit_decomposition.png){fig-align="center" width="100%"}
+
+
+## Model fit + forecast
+
+![](imgs/Lec16/fit_forecast.png){fig-align="center" width="100%"}
+
+
+## Forecast
+
+![](imgs/Lec16/forecast_zoom.png){fig-align="center" width="100%"}
+
+
+## Forecast components
+
+![](imgs/Lec16/forecast_decomp.png){fig-align="center" width="100%"}
+
+## ARIMA forecast
+
+![](imgs/Lec16/forecast_arima.png){fig-align="center" width="100%"}
+
+
+## Model performance
+
+<br/><br/>
+
+| Forecast<br/>dates  | arima<br/>RMSE | gp <br/>RMSE |
+|:--------------------|:---------------|:-------------|
+| Jan 1998 - Jan 2003 | 1.10           | 1.91         |
+| Jan 1998 - Jan 2008 | 2.51           | 4.58         |
+| Jan 1998 - Jan 2013 | 3.82           | 7.71         |
+| Jan 1998 - Mar 2017 | 5.46           | 11.40        |
+
