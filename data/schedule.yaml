@@ -160,7 +160,7 @@ schedule:
   day: 4
   lecture: Gaussian Process models (pt. 2)
   slides: Lec15
-  screencast: 
+  screencast: https://youtu.be/9C2qs92NUlM
   notes: ""
   
 
@@ -168,7 +168,7 @@ schedule:
 - week: 9
   day: 2
   lecture: Covariance Functions
-  slides: 
+  slides: Lec16
   readings:
   - text: "Rasmussen & Williams 4, 5"
     link: http://www.gaussianprocess.org/gpml/chapters/RW.pdf
