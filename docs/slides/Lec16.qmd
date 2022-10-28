@@ -1,6 +1,6 @@
 ---
 title: "Covariance Functions"
-subtitle: "Lecture 15"
+subtitle: "Lecture 16"
 author: "Dr. Colin Rundel"
 footer: "Sta 344 - Fall 2022"
 format:

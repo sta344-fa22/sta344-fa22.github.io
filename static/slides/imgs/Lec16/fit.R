@@ -1,6 +1,8 @@
 library(tidyverse)
 library(sta344)
 
+ggplot2::theme_set(ggplot2::theme_bw())
+
 get_coda_parameter = function(coda, pattern) {
   w = coda[[1]] %>% colnames() %>% stringr::str_detect(pattern)
   coda[[1]][,w,drop=FALSE]
