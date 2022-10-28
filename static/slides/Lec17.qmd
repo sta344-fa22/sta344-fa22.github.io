@@ -41,7 +41,6 @@ set.seed(20221028)
 A typical logistic regression problem uses the following model,
 
 $$
-
 \begin{aligned}
 y_i &\sim \text{Bern}(p_i)\\
 \text{logit}(p_i) 
@@ -58,7 +57,7 @@ $$
 \begin{aligned}
 y_i &\sim \text{Bern}(p_i) \\
 \text{logit}(p_i) 
-  &= \boldsymbol{X}\,\boldsymbol{\beta} + w(\boldsymbol{x}) \\
+  &= \eta_i = \boldsymbol{X}\,\boldsymbol{\beta} + w(\boldsymbol{x}) \\
 w(\boldsymbol{x}) &\sim N(0,\Sigma)
 \end{aligned}
 $$
@@ -98,7 +97,7 @@ m = gpglm(
   ),
   priors=list(
     "beta.Normal"=list(0,1),
-    "phi.unif"=c(sqrt(3)/0.5, sqrt(3)/0.01),
+    "phi.unif"=c(3/0.5, 3/0.01),
     "sigma.sq.ig"=c(2, 1)
   ),
   n_batch = 100,
@@ -124,7 +123,7 @@ if (!file.exists(file)) {
     ),
     priors=list(
       "beta.Normal"=list(0,1),
-      "phi.unif"=c(sqrt(3)/0.5, sqrt(3)/0.01),
+      "phi.unif"=c(3/0.5, 3/0.01),
       "sigma.sq.ig"=c(2, 1)
     ),
     n_batch = 100,
@@ -180,7 +179,7 @@ p
 
 ## Predicted y
 
-::: {.medium}
+::: {.small}
 ```{r}
 p |>
   tidybayes::gather_draws(y[i]) |>
@@ -193,7 +192,7 @@ p |>
 
 ## Predicted w
 
-::: {.medium}
+::: {.small}
 ```{r}
 p |>
   tidybayes::gather_draws(w[i]) |>
@@ -260,6 +259,8 @@ w(\boldsymbol{t}) &\sim N(0,\Sigma) \\
 \{\boldsymbol{\Sigma}\}_{ij} &= \sigma^2 \exp(-| l \, d_{ij}|)
 \end{aligned}
 $$
+. . .
+
 
 *Priors*:
 
@@ -295,7 +296,7 @@ m = gpglm(
   verbose = FALSE
 )
 ```
-::: {.medium}
+:::
 
 ```{r echo=FALSE}
 file = "Lec17_gpglm_poisson_model.rds"
@@ -367,7 +368,7 @@ p
 
 ## Predicted y
 
-::: {.medium}
+::: {.small}
 ```{r}
 p |>
   tidybayes::gather_draws(y[i]) |>
@@ -380,7 +381,7 @@ p |>
 
 ## Predicted w
 
-::: {.medium}
+::: {.small}
 ```{r}
 p |>
   tidybayes::gather_draws(w[i]) |>
@@ -396,9 +397,8 @@ p |>
 
 ## Packages for geospatial data in R
 
+::: {.medium}
 R has a rich package ecosystem for read/writing, manipulating, and analyzing geospatial data.
-
-<br/>
 
 Some core packages:
 
@@ -415,8 +415,7 @@ Some core packages:
 * `stars` - Reading, manipulating, writing and plotting spatiotemporal arrays (rasters)
 
 See more - [Spatial task view](http://cran.r-project.org/web/views/Spatial.html)
-
-
+:::
 
 ## Installing `sf`
 
@@ -426,10 +425,10 @@ This is the hardest part of using the `sf` package, difficulty comes from is dep
 
 * *MacOS* - install dependencies via homebrew: `gdal2`, `geos`, `proj`.
 
-* *Linux* - Install development pacakages for GDAL (>= 2.0.0), GEOS (>= 3.3.0) and Proj.4 (>= 4.8.0) from your package manager of choice.
+* *Linux* - Install development packages for GDAL (>= 2.0.0), GEOS (>= 3.3.0) and Proj.4 (>= 4.8.0) from your package manager of choice.
 
 
-More specific details are included in the [repo readme on github](https://github.com/r-spatial/sf).
+More specific details are included in the [README on github](https://github.com/r-spatial/sf).
 
 
 
@@ -483,20 +482,20 @@ plot(polys_hole, axes=FALSE, col="lightgrey", main="Multipolygon w/ Hole(s)");  
 ```
 
 
-## Reading, writing, and converting simple features
+## Reading, writing, and converting
 
 - `sf`
-    * `st_read` / `st_write` - Shapefile, GeoJSON, KML, ...
-    * `read_sf` / `write_sf` - Same, suports tibbles ...
-    * `st_as_sfc` / `st_as_wkt` - WKT
-    * `st_as_sfc` / `st_as_binary` - WKB
-    * `st_as_sfc` / `as(x, "Spatial")` - sp
+    * `st_read()` / `st_write()` - Shapefile, GeoJSON, KML, ...
+    * `read_sf()` / `write_sf()` - Same, supports tibbles ...
+    * `st_as_sfc()` / `st_as_wkt()` - sf <-> WKT
+    * `st_as_sfc()` / `st_as_binary()` - sf <-> WKB
+    * `st_as_sfc()` / `as(x, "Spatial")` - sf <-> sp
 
 ::: {.aside}
 See [sf vignette #2 - Reading, Writing and Converting Simple Features](https://cran.r-project.org/web/packages/sf/vignettes/sf2.html).
 :::
 
-# Geospatial data in the real world
+# Geospatial data in<br/>the real world
 
 ## Projections
 
@@ -621,7 +620,7 @@ lines(path,col='red',lwd=2,lty=3)
 
 ## Example data
 
-::: {.medium}
+::: {.small}
 ```{r}
 nc  = read_sf("data/gis/nc_counties/", quiet=TRUE)
 air = read_sf("data/gis/airports/", quiet=TRUE)
@@ -635,7 +634,7 @@ nc
 
 ##
 
-::: {.medium}
+::: {.small}
 ```{r}
 air
 ```
@@ -643,18 +642,24 @@ air
 
 ##
 
-::: {.medium}
+::: {.small}
 ```{r}
 hwy
 ```
 :::
 
-## `sf` classes
+## `sf` structure
 
 ::: {.small}
 ```{r}
 str(nc)
+```
+:::
 
+## `sf` classes
+
+:::{.small}
+```{r}
 class(nc)
 
 class(nc$geometry)
@@ -672,6 +677,9 @@ st_crs(nc)
 ```
 :::
 
+::: {.aside}
+EPSG? See [here](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset)
+:::
 
 ##
 
@@ -720,7 +728,7 @@ plot(st_geometry(hwy_utm), axes=TRUE, col="red", main="hwy")
 
 ## Comparison
 
-```{r echo=FALSE}
+```{r echo=FALSE, out.width="75%"}
 par(mar=c(3,3,3,0.1), mfrow=c(2,1))
 
 plot(st_geometry(nc_ll),  axes=TRUE, main="Lat/Long")

@@ -167,6 +167,7 @@ m_exp = gplm(
 
 p_exp = predict(m_exp, newdata=newdata, coords = "week")
 ```
+:::
 
 ## Results
 

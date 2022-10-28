@@ -565,7 +565,7 @@ draw y[1] y[2] y[3] y[4] y[5] y[6] y[7] y[8]
 </section>
 <section id="exponential-covariance" class="slide level2">
 <h2>Exponential covariance</h2>
-<p>::: {.small}</p>
+<div class="small">
 <div class="cell" data-layout-align="center" data-hash="Lec16_cache/revealjs/unnamed-chunk-9_a47d678ced9d0dd26a8ceb361a6183de">
 <div class="sourceCode cell-code" id="cb13" data-code-line-numbers="|3,5,11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>m_exp <span class="ot">=</span> <span class="fu">gplm</span>(</span>
 <span id="cb13-2"><a href="#cb13-2"></a>  avg_temp<span class="sc">~</span><span class="dv">1</span>, <span class="at">data =</span> temp, <span class="at">coords =</span> <span class="st">"week"</span>,</span>
@@ -587,6 +587,7 @@ draw y[1] y[2] y[3] y[4] y[5] y[6] y[7] y[8]
 <span id="cb13-18"><a href="#cb13-18"></a>)</span>
 <span id="cb13-19"><a href="#cb13-19"></a></span>
 <span id="cb13-20"><a href="#cb13-20"></a>p_exp <span class="ot">=</span> <span class="fu">predict</span>(m_exp, <span class="at">newdata=</span>newdata, <span class="at">coords =</span> <span class="st">"week"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </div>
 </section>
 <section id="results-1" class="slide level2">

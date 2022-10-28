@@ -408,21 +408,21 @@ Dr.&nbsp;Colin Rundel
 <section id="logistic-regression" class="slide level2">
 <h2>Logistic Regression</h2>
 <p>A typical logistic regression problem uses the following model,</p>
-<p>$$</p>
-<span class="math display">\[\begin{aligned}
+<p><span class="math display">\[
+\begin{aligned}
 y_i &amp;\sim \text{Bern}(p_i)\\
 \text{logit}(p_i)
   &amp;= \boldsymbol{X}\,\boldsymbol{\beta} \\
   &amp;= \beta_0 + \beta_1 \, x_{i1} + \cdots + \beta_k \, x_{ik}
-\end{aligned}\]</span>
-<p>$$</p>
+\end{aligned}
+\]</span></p>
 <div class="fragment">
 <p>there is no reason that the linear equation above can’t contain thing like random effects or GPs</p>
 <p><span class="math display">\[
 \begin{aligned}
 y_i &amp;\sim \text{Bern}(p_i) \\
 \text{logit}(p_i)
-  &amp;= \boldsymbol{X}\,\boldsymbol{\beta} + w(\boldsymbol{x}) \\
+  &amp;= \eta_i = \boldsymbol{X}\,\boldsymbol{\beta} + w(\boldsymbol{x}) \\
 w(\boldsymbol{x}) &amp;\sim N(0,\Sigma)
 \end{aligned}
 \]</span></p>
@@ -448,7 +448,7 @@ w(\boldsymbol{x}) &amp;\sim N(0,\Sigma)
 <span id="cb1-10"><a href="#cb1-10"></a>  ),</span>
 <span id="cb1-11"><a href="#cb1-11"></a>  <span class="at">priors=</span><span class="fu">list</span>(</span>
 <span id="cb1-12"><a href="#cb1-12"></a>    <span class="st">"beta.Normal"</span><span class="ot">=</span><span class="fu">list</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
-<span id="cb1-13"><a href="#cb1-13"></a>    <span class="st">"phi.unif"</span><span class="ot">=</span><span class="fu">c</span>(<span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span><span class="fl">0.5</span>, <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span><span class="fl">0.01</span>),</span>
+<span id="cb1-13"><a href="#cb1-13"></a>    <span class="st">"phi.unif"</span><span class="ot">=</span><span class="fu">c</span>(<span class="dv">3</span><span class="sc">/</span><span class="fl">0.5</span>, <span class="dv">3</span><span class="sc">/</span><span class="fl">0.01</span>),</span>
 <span id="cb1-14"><a href="#cb1-14"></a>    <span class="st">"sigma.sq.ig"</span><span class="ot">=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)</span>
 <span id="cb1-15"><a href="#cb1-15"></a>  ),</span>
 <span id="cb1-16"><a href="#cb1-16"></a>  <span class="at">n_batch =</span> <span class="dv">100</span>,</span>
@@ -512,7 +512,7 @@ draw   w[8]
 </section>
 <section id="predicted-y" class="slide level2">
 <h2>Predicted y</h2>
-<div class="medium">
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>p <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>  tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(y[i]) <span class="sc">|&gt;</span></span>
@@ -531,7 +531,7 @@ draw   w[8]
 </section>
 <section id="predicted-w" class="slide level2">
 <h2>Predicted w</h2>
-<div class="medium">
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>p <span class="sc">|&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a>  tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(w[i]) <span class="sc">|&gt;</span></span>
@@ -579,7 +579,7 @@ y_i &amp;\sim \text{Pois}(\lambda_i) \\
 w(\boldsymbol{t}) &amp;\sim N(0,\Sigma) \\
 \{\boldsymbol{\Sigma}\}_{ij} &amp;= \sigma^2 \exp(-| l \, d_{ij}|)
 \end{aligned}
-\]</span></p>
+\]</span> . . .</p>
 <p><em>Priors</em>:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -591,7 +591,7 @@ w(\boldsymbol{t}) &amp;\sim N(0,\Sigma) \\
 </section>
 <section id="model-fitting-1" class="slide level2">
 <h2>Model fitting</h2>
-<p>::: {.medium}</p>
+<div class="medium">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>m <span class="ot">=</span> <span class="fu">gpglm</span>(</span>
 <span id="cb8-2"><a href="#cb8-2"></a>  cases<span class="sc">~</span><span class="dv">1</span>, <span class="at">family=</span><span class="st">"poisson"</span>,</span>
@@ -613,7 +613,7 @@ w(\boldsymbol{t}) &amp;\sim N(0,\Sigma) \\
 <span id="cb8-18"><a href="#cb8-18"></a>  <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
 <span id="cb8-19"><a href="#cb8-19"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>::: {.medium}</p>
+</div>
 <div class="cell" data-layout-align="center">
 
 </div>
@@ -657,7 +657,7 @@ draw   w[1]   w[2]    w[3]    w[4]  w[5] w[6]    w[7]  w[8]
 </section>
 <section id="predicted-y-1" class="slide level2">
 <h2>Predicted y</h2>
-<div class="medium">
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>p <span class="sc">|&gt;</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>  tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(y[i]) <span class="sc">|&gt;</span></span>
@@ -676,7 +676,7 @@ draw   w[1]   w[2]    w[3]    w[4]  w[5] w[6]    w[7]  w[8]
 </section>
 <section id="predicted-w-1" class="slide level2">
 <h2>Predicted w</h2>
-<div class="medium">
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>p <span class="sc">|&gt;</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a>  tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(w[i]) <span class="sc">|&gt;</span></span>
@@ -699,8 +699,8 @@ draw   w[1]   w[2]    w[3]    w[4]  w[5] w[6]    w[7]  w[8]
 </section>
 <section id="packages-for-geospatial-data-in-r" class="slide level2">
 <h2>Packages for geospatial data in R</h2>
+<div class="medium">
 <p>R has a rich package ecosystem for read/writing, manipulating, and analyzing geospatial data.</p>
-<p><br></p>
 <p>Some core packages:</p>
 <ul>
 <li><p><code>sp</code> - core classes for handling spatial data, additional utility functions - <strong>Deprecated</strong></p></li>
@@ -711,6 +711,7 @@ draw   w[1]   w[2]    w[3]    w[4]  w[5] w[6]    w[7]  w[8]
 <li><p><code>stars</code> - Reading, manipulating, writing and plotting spatiotemporal arrays (rasters)</p></li>
 </ul>
 <p>See more - <a href="http://cran.r-project.org/web/views/Spatial.html">Spatial task view</a></p>
+</div>
 </section>
 <section id="installing-sf" class="slide level2">
 <h2>Installing <code>sf</code></h2>
@@ -718,24 +719,24 @@ draw   w[1]   w[2]    w[3]    w[4]  w[5] w[6]    w[7]  w[8]
 <ul>
 <li><p><em>Windows</em> - installing from source works when Rtools is installed (system requirements are downloaded from rwinlib)</p></li>
 <li><p><em>MacOS</em> - install dependencies via homebrew: <code>gdal2</code>, <code>geos</code>, <code>proj</code>.</p></li>
-<li><p><em>Linux</em> - Install development pacakages for GDAL (&gt;= 2.0.0), GEOS (&gt;= 3.3.0) and Proj.4 (&gt;= 4.8.0) from your package manager of choice.</p></li>
+<li><p><em>Linux</em> - Install development packages for GDAL (&gt;= 2.0.0), GEOS (&gt;= 3.3.0) and Proj.4 (&gt;= 4.8.0) from your package manager of choice.</p></li>
 </ul>
-<p>More specific details are included in the <a href="https://github.com/r-spatial/sf">repo readme on github</a>.</p>
+<p>More specific details are included in the <a href="https://github.com/r-spatial/sf">README on github</a>.</p>
 </section>
 <section id="simple-features" class="slide level2">
 <h2>Simple Features</h2>
 
 <img data-src="Lec17_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="reading-writing-and-converting-simple-features" class="slide level2">
-<h2>Reading, writing, and converting simple features</h2>
+<section id="reading-writing-and-converting" class="slide level2">
+<h2>Reading, writing, and converting</h2>
 <ul>
 <li><code>sf</code>
 <ul>
-<li><code>st_read</code> / <code>st_write</code> - Shapefile, GeoJSON, KML, …</li>
-<li><code>read_sf</code> / <code>write_sf</code> - Same, suports tibbles …</li>
-<li><code>st_as_sfc</code> / <code>st_as_wkt</code> - WKT</li>
-<li><code>st_as_sfc</code> / <code>st_as_binary</code> - WKB</li>
-<li><code>st_as_sfc</code> / <code>as(x, "Spatial")</code> - sp</li>
+<li><code>st_read()</code> / <code>st_write()</code> - Shapefile, GeoJSON, KML, …</li>
+<li><code>read_sf()</code> / <code>write_sf()</code> - Same, supports tibbles …</li>
+<li><code>st_as_sfc()</code> / <code>st_as_wkt()</code> - sf &lt;-&gt; WKT</li>
+<li><code>st_as_sfc()</code> / <code>st_as_binary()</code> - sf &lt;-&gt; WKB</li>
+<li><code>st_as_sfc()</code> / <code>as(x, "Spatial")</code> - sf &lt;-&gt; sp</li>
 </ul></li>
 </ul>
 
@@ -744,7 +745,7 @@ draw   w[1]   w[2]    w[3]    w[4]  w[5] w[6]    w[7]  w[8]
 </div></aside></section></section>
 <section>
 <section id="geospatial-data-in-the-real-world" class="title-slide slide level1 center">
-<h1>Geospatial data in the real world</h1>
+<h1>Geospatial data in<br>the real world</h1>
 
 </section>
 <section id="projections" class="slide level2">
@@ -791,7 +792,7 @@ draw   w[1]   w[2]    w[3]    w[4]  w[5] w[6]    w[7]  w[8]
 </section>
 <section id="example-data" class="slide level2">
 <h2>Example data</h2>
-<div class="medium">
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>nc  <span class="ot">=</span> <span class="fu">read_sf</span>(<span class="st">"data/gis/nc_counties/"</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
 <span id="cb15-2"><a href="#cb15-2"></a>air <span class="ot">=</span> <span class="fu">read_sf</span>(<span class="st">"data/gis/airports/"</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span>
@@ -827,7 +828,7 @@ Geodetic CRS:  NAD83
 </section>
 <section id="section-2" class="slide level2">
 <h2></h2>
-<div class="medium">
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>air</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -860,7 +861,7 @@ Geodetic CRS:  NAD83
 </section>
 <section id="section-3" class="slide level2">
 <h2></h2>
-<div class="medium">
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>hwy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -887,8 +888,8 @@ Projected CRS: NAD83 / UTM zone 15N
 </div>
 </div>
 </section>
-<section id="sf-classes" class="slide level2">
-<h2><code>sf</code> classes</h2>
+<section id="sf-structure" class="slide level2">
+<h2><code>sf</code> structure</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">str</span>(nc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -910,6 +911,13 @@ Projected CRS: NAD83 / UTM zone 15N
  - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA NA NA NA
   ..- attr(*, "names")= chr [1:8] "AREA" "PERIMETER" "COUNTYP010" "STATE" ...</code></pre>
 </div>
+</div>
+</div>
+</section>
+<section id="sf-classes" class="slide level2">
+<h2><code>sf</code> classes</h2>
+<div class="small">
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">class</span>(nc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "sf"         "tbl_df"     "tbl"        "data.frame"</code></pre>
@@ -951,7 +959,10 @@ GEOGCRS["NAD83",
 </div>
 </div>
 </div>
-</section>
+
+<aside><div>
+<p>EPSG? See <a href="https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset">here</a></p>
+</div></aside></section>
 <section id="section-4" class="slide level2">
 <h2></h2>
 <div class="small">
@@ -1011,7 +1022,7 @@ PROJCRS["NAD83 / UTM zone 15N",
 <span id="cb34-3"><a href="#cb34-3"></a>hwy_ll <span class="ot">=</span> <span class="fu">st_transform</span>(hwy, <span class="fu">st_crs</span>(nc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="Lec17_files/figure-revealjs/unnamed-chunk-33-1.png" width="768" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec17_files/figure-revealjs/unnamed-chunk-34-1.png" width="768" class="r-stretch quarto-figure-center"></section>
 <section id="utm" class="slide level2">
 <h2>UTM</h2>
 <div class="cell" data-layout-align="center">
@@ -1020,11 +1031,11 @@ PROJCRS["NAD83 / UTM zone 15N",
 <span id="cb35-3"><a href="#cb35-3"></a>hwy_utm <span class="ot">=</span> hwy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="Lec17_files/figure-revealjs/unnamed-chunk-35-1.png" width="768" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec17_files/figure-revealjs/unnamed-chunk-36-1.png" width="768" class="r-stretch quarto-figure-center"></section>
 <section id="comparison" class="slide level2">
 <h2>Comparison</h2>
 
-<img data-src="Lec17_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
+<img data-src="Lec17_files/figure-revealjs/unnamed-chunk-37-1.png" style="width:75.0%" class="r-stretch quarto-figure-center"><div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>
 </section></section>
