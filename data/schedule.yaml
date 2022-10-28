@@ -177,7 +177,7 @@ schedule:
     link: http://www.cs.toronto.edu/~duvenaud/cookbook/index.html
   notes: ""
 
-- week: 10
+- week: 9
   day: 4
   lecture: GPs & GLMs + Spatial Data (pt. 1)
   slides: Lec17
