@@ -180,7 +180,7 @@ schedule:
 - week: 10
   day: 4
   lecture: GPs & GLMs + Spatial Data (pt. 1)
-  slides: 
+  slides: Lec17
   screencast: 
   readings:
   - text: "sf Vignettes"
