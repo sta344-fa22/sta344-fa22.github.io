@@ -181,7 +181,7 @@ schedule:
   day: 4
   lecture: GPs & GLMs + Spatial Data (pt. 1)
   slides: Lec17
-  screencast: 
+  screencast: https://youtu.be/5plmDkG512o
   readings:
   - text: "sf Vignettes"
     link: https://cran.r-project.org/web/packages/sf/vignettes/
@@ -189,12 +189,21 @@ schedule:
 
 - week: 10
   day: 2
-  lecture: Spatial Data and Cartography (pt. 2)
-  slides: 
-  screencast: 
-  
+  lecture: <i>Class canceled</i>
+
 - week: 10
   day: 4
+  lecture: Spatial Data and Cartography (pt. 2)
+  slides: Lec18
+  screencast: 
+  readings:
+  - text: "Spatial Data Science"
+    link: "https://r-spatial.org/book/"
+  - text: "Geocomputation with R"
+    link: "https://geocompr.robinlovelace.net/"
+  
+- week: 11
+  day: 2
   lecture: Models for areal data
   slides: 
   screencast: 
@@ -202,27 +211,21 @@ schedule:
   - text: Banerjee, Carlin, Gelfand Ch. 4
 
 - week: 11
-  day: 2
+  day: 4
   lecture: Fitting CAR and SAR models
   slides: 
   screencast: 
   
-- week: 11
-  day: 4
+- week: 12
+  day: 2
   lecture: GLMs for areal data + Point referenced data (pt. 1)
   slides: 
   
 - week: 12
-  day: 2
+  day: 4
   lecture: Point referenced data (pt. 2)
   slides: 
   screencast: 
-
-- week: 12
-  day: 4
-  lecture: Computation and GP Models
-  slides: 
-
 
 - week: 13
   day: 1
@@ -236,18 +239,20 @@ schedule:
   day: 4
   lecture: <i>No class - Thanksgiving </i>
 
+
 - week: 14
   day: 2
-  lecture: Spatio-temporal models
+  lecture: Computation and GP Models
   slides: 
-  
+
 - week: 14
   day: 4
-  lecture: Review
+  lecture: Spatio-temporal models
+  slides:
 
 - week: 15
   day: 2
-  lecture: Midterm 2
+  lecture: Review
 
 - week: 15
   day: 4
