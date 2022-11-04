@@ -1,6 +1,6 @@
 ---
 title: "Spatial Data and Cartography (Part 2)"
-subtitle: "Lecture 17"
+subtitle: "Lecture 18"
 author: "Dr. Colin Rundel"
 footer: "Sta 344 - Fall 2022"
 format:
