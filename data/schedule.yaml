@@ -195,7 +195,7 @@ schedule:
   day: 4
   lecture: Spatial Data and Cartography (pt. 2)
   slides: Lec18
-  screencast: 
+  screencast: https://youtu.be/47qtNq8kD8A
   readings:
   - text: "Spatial Data Science"
     link: "https://r-spatial.org/book/"
@@ -205,7 +205,7 @@ schedule:
 - week: 11
   day: 2
   lecture: Models for areal data
-  slides: 
+  slides: Lec19
   screencast: 
   readings:
   - text: Banerjee, Carlin, Gelfand Ch. 4
