@@ -7,7 +7,7 @@
 <link href="Lec19_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec19_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec19_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.2.262">
+  <meta name="generator" content="quarto-1.2.267">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>Models for areal data</title>
@@ -409,19 +409,6 @@ Dr.&nbsp;Colin Rundel
 <h2>Example - NC SIDS</h2>
 
 <img data-src="Lec19_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="eda---morans-i" class="slide level2">
-<h2>EDA - Moran’s I</h2>
-<p>If we have observations at <span class="math inline">\(n\)</span> spatial locations <span class="math inline">\((s_1, \ldots s_n)\)</span></p>
-<p><span class="math display">\[ I = \frac{n}{\sum_{i=1}^n \sum_{j=1}^n w_{ij}} \frac{\sum_{i=1}^n \sum_{j=1}^n w_{ij} \big(y(s_i)-\bar{y}\big)\big(y(s_j)-\bar{y}\big)}{\sum_{i=1}^n \big(y(s_i) - \bar{y}\big)^2} \]</span> where <span class="math inline">\(\boldsymbol{w}\)</span> is a spatial weights matrix.</p>
-<div class="fragment">
-<p>Some properties of Moran’s I when there is no spatial autocorrelation / dependence:</p>
-<ul>
-<li><p><span class="math inline">\(E(I) = -1 / (n-1)\)</span></p></li>
-<li><p><span class="math inline">\(Var(I) = \text{Something ugly but closed form}- E(I)^2\)</span></p></li>
-<li><p><span class="math inline">\(\underset{n\to\infty}{\lim} \frac{I - E(I)}{\sqrt{Var(I)}} \sim \mathcal{N}(0,1)\)</span></p></li>
-</ul>
-</div>
-</section>
 <section id="adjacency-matrix" class="slide level2">
 <h2>Adjacency Matrix</h2>
 <div class="cell" data-layout-align="center">
@@ -443,8 +430,9 @@ Dr.&nbsp;Colin Rundel
 </div>
 </div>
 </section>
-<section id="normalized-adjacency-matrix" class="slide level2">
-<h2>Normalized Adjacency Matrix</h2>
+<section id="normalized-spatial-weight-matrix" class="slide level2">
+<h2>Normalized spatial weight matrix</h2>
+<div class="small">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>normalize_weights <span class="ot">=</span> <span class="cf">function</span>(w) {</span>
 <span id="cb3-2"><a href="#cb3-2"></a>  w <span class="ot">=</span> <span class="dv">1</span><span class="sc">*</span>w</span>
@@ -453,8 +441,7 @@ Dr.&nbsp;Colin Rundel
 <span id="cb3-5"><a href="#cb3-5"></a>  rs[rs <span class="sc">==</span> <span class="dv">0</span>] <span class="ot">=</span> <span class="dv">1</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a>  w<span class="sc">/</span>rs</span>
 <span id="cb3-7"><a href="#cb3-7"></a>}</span>
-<span id="cb3-8"><a href="#cb3-8"></a></span>
-<span id="cb3-9"><a href="#cb3-9"></a><span class="fu">normalize_weights</span>( <span class="fu">st_touches</span>(nc[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,], <span class="at">sparse=</span><span class="cn">FALSE</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="fu">normalize_weights</span>( <span class="fu">st_touches</span>(nc[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,], <span class="at">sparse=</span><span class="cn">FALSE</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12]
  [1,]  0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   0.0   0.0   0.0
@@ -471,10 +458,24 @@ Dr.&nbsp;Colin Rundel
 [12,]  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0   0.5   0.5   0.0</code></pre>
 </div>
 </div>
+</div>
+</section>
+<section id="eda---morans-i" class="slide level2">
+<h2>EDA - Moran’s I</h2>
+<p>If we have observations at <span class="math inline">\(n\)</span> spatial locations <span class="math inline">\((s_1, \ldots s_n)\)</span></p>
+<p><span class="math display">\[ I = \frac{n}{\sum_{i=1}^n \sum_{j=1}^n w_{ij}} \frac{\sum_{i=1}^n \sum_{j=1}^n w_{ij} \big(y(s_i)-\bar{y}\big)\big(y(s_j)-\bar{y}\big)}{\sum_{i=1}^n \big(y(s_i) - \bar{y}\big)^2} \]</span> where <span class="math inline">\(\boldsymbol{w}\)</span> is a spatial weights matrix.</p>
+<div class="fragment">
+<p>Some properties of Moran’s I when there is no spatial autocorrelation / dependence:</p>
+<ul>
+<li><p><span class="math inline">\(E(I) = -1 / (n-1)\)</span></p></li>
+<li><p><span class="math inline">\(Var(I) = (\text{Something ugly but closed form})- E(I)^2\)</span></p></li>
+<li><p><span class="math inline">\(\underset{n\to\infty}{\lim} \frac{I - E(I)}{\sqrt{Var(I)}} \sim N(0,1)\)</span> (via the CLT)</p></li>
+</ul>
+</div>
 </section>
 <section id="nc-sids-morans-i" class="slide level2">
 <h2>NC SIDS &amp; Moran’s I</h2>
-<p>Lets start by using a normalized adjacency matrix for <span class="math inline">\(\boldsymbol{w}\)</span> (shared county borders).</p>
+<p>Lets start by using a normalized spatial weight matrix for <span class="math inline">\(\boldsymbol{w}\)</span> (basedd on shared county borders).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>morans_I <span class="ot">=</span> <span class="cf">function</span>(y, w) {</span>
 <span id="cb5-2"><a href="#cb5-2"></a>  w <span class="ot">=</span> <span class="fu">normalize_weights</span>(w)</span>
@@ -531,14 +532,11 @@ Dr.&nbsp;Colin Rundel
 <span id="cb9-4"><a href="#cb9-4"></a>  n <span class="ot">=</span> <span class="fu">length</span>(y)</span>
 <span id="cb9-5"><a href="#cb9-5"></a>  y_i <span class="ot">=</span> y <span class="sc">%*%</span> <span class="fu">t</span>(<span class="fu">rep</span>(<span class="dv">1</span>,n))</span>
 <span id="cb9-6"><a href="#cb9-6"></a>  y_j <span class="ot">=</span> <span class="fu">t</span>(y_i)</span>
-<span id="cb9-7"><a href="#cb9-7"></a>  num <span class="ot">=</span> <span class="fu">sum</span>(w <span class="sc">*</span> (y_i<span class="sc">-</span>y_j)<span class="sc">^</span><span class="dv">2</span>)  </span>
-<span id="cb9-8"><a href="#cb9-8"></a>  denom <span class="ot">=</span> <span class="fu">sum</span>( (y <span class="sc">-</span> <span class="fu">mean</span>(y))<span class="sc">^</span><span class="dv">2</span> )</span>
-<span id="cb9-9"><a href="#cb9-9"></a>  ((n<span class="dv">-1</span>)<span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">sum</span>(w))) <span class="sc">*</span> (num<span class="sc">/</span>denom)</span>
-<span id="cb9-10"><a href="#cb9-10"></a>}</span>
-<span id="cb9-11"><a href="#cb9-11"></a></span>
-<span id="cb9-12"><a href="#cb9-12"></a>w <span class="ot">=</span> <span class="dv">1</span><span class="sc">*</span><span class="fu">st_touches</span>(nc, <span class="at">sparse=</span><span class="cn">FALSE</span>)</span>
-<span id="cb9-13"><a href="#cb9-13"></a></span>
-<span id="cb9-14"><a href="#cb9-14"></a><span class="fu">gearys_C</span>(<span class="at">y =</span> nc<span class="sc">$</span>SID74, <span class="at">w =</span> w)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-7"><a href="#cb9-7"></a>  ((n<span class="dv">-1</span>)<span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">sum</span>(w))) <span class="sc">*</span> (<span class="fu">sum</span>(w <span class="sc">*</span> (y_i<span class="sc">-</span>y_j)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> <span class="fu">sum</span>( (y <span class="sc">-</span> <span class="fu">mean</span>(y))<span class="sc">^</span><span class="dv">2</span> ))</span>
+<span id="cb9-8"><a href="#cb9-8"></a>}</span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a>w <span class="ot">=</span> <span class="dv">1</span><span class="sc">*</span><span class="fu">st_touches</span>(nc, <span class="at">sparse=</span><span class="cn">FALSE</span>)</span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="fu">gearys_C</span>(<span class="at">y =</span> nc<span class="sc">$</span>SID74, <span class="at">w =</span> w)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.8438767</code></pre>
 </div>
@@ -560,6 +558,7 @@ Dr.&nbsp;Colin Rundel
 </section>
 <section id="section-1" class="slide level2">
 <h2></h2>
+<p>Here we are defining adjacency based on the centroid being within a given distance,</p>
 
 <img data-src="Lec19_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="section-2" class="slide level2">
@@ -573,9 +572,9 @@ Dr.&nbsp;Colin Rundel
 </section>
 <section id="ar-models---time" class="slide level2">
 <h2>AR Models - Time</h2>
-<p>Lets just focus on the simplest case, an <span class="math inline">\(AR(1)\)</span> process</p>
+<p>Lets return to the simplest case, an <span class="math inline">\(AR(1)\)</span> process</p>
 <p><span class="math display">\[ y_t = \delta + \phi \, y_{t-1} + w_t \]</span></p>
-<p>where <span class="math inline">\(w_t \sim \mathcal{N}(0,\sigma^2_w)\)</span> and <span class="math inline">\(|\phi| &lt; 1\)</span>, then</p>
+<p>where <span class="math inline">\(w_t \sim N(0,\sigma^2_w)\)</span> and <span class="math inline">\(|\phi| &lt; 1\)</span>, then</p>
 <p><span class="math display">\[
 \begin{aligned}
 E(y_t) &amp;= \frac{\delta}{1-\phi} \\
@@ -592,7 +591,7 @@ Var(y_t) &amp;= \frac{\sigma^2}{1-\phi} \\
 \begin{pmatrix}
 y_1 \\ y_2 \\ \vdots \\ y_n
 \end{pmatrix}
-\sim \mathcal{N} \begin{pmatrix}
+\sim N \begin{pmatrix}
 \frac{\delta}{1-\phi} \begin{pmatrix}1\\ 1\\ \vdots\\ 1\end{pmatrix},~
 \frac{\sigma^2}{1-\phi}
 \begin{pmatrix}
@@ -607,8 +606,8 @@ y_1 \\ y_2 \\ \vdots \\ y_n
 <p>In writing down the likelihood we also saw that an <span class="math inline">\(AR(1)\)</span> is 1st order Markovian,</p>
 <p><span class="math display">\[ \begin{aligned}
 f(y_1, \ldots, y_n)
-  &amp;= f(y_1) \, f(y_2 | y_1) \,  f(y_3|y_2,y_1) \,\cdots\, f(y_n|y_{n-1},y_{n-2},\ldots,y_1) \\
-  &amp;= f(y_1) \, f(y_2 | y_1) \,  f(y_3|y_2) \,\cdots\, f(y_n|y_{n-1})
+  &amp;= f(y_1) \, f(y_2 \mid y_1) \,  f(y_3 \mid y_2,y_1) \,\cdots\, f(y_n|y_{n-1},y_{n-2},\ldots,y_1) \\
+  &amp;= f(y_1) \, f(y_2 \mid y_1) \,  f(y_3 \mid y_2) \,\cdots\, f(y_n \mid y_{n-1})
 \end{aligned} \]</span></p>
 </div>
 </section>
@@ -618,9 +617,9 @@ f(y_1, \ldots, y_n)
 <div class="center">
 <p>vs.</p>
 </div>
-<p><span class="math display">\[ y_t | y_{t-1} \sim \mathcal{N}(\delta + \phi \, y_{t-1},~\sigma^2) \]</span></p>
+<p><span class="math display">\[ y_t\mid y_{t-1} \sim N(\delta + \phi \, y_{t-1},~\sigma^2) \]</span></p>
 <div class="fragment">
-<p>In the case of time, both of these definitions result in the same multivariate distribution for <span class="math inline">\(\boldsymbol{y}\)</span>.</p>
+<p>In the case of time, both of these definitions result in the same multivariate distribution for <span class="math inline">\(\boldsymbol{y}\)</span> given on the previous slide.</p>
 </div>
 </section>
 <section id="ar-in-space" class="slide level2">
@@ -632,8 +631,8 @@ f(y_1, \ldots, y_n)
 <p><span class="math display">\[
 \begin{aligned}
 f\big(y(s_1), \ldots, y(s_{10})\big)
-  &amp;= f\big(y(s_1)\big) \, f\big(y(s_2) | y(s_1)\big) \, \cdots \, f\big(y(s_{10} | y(s_{9}),y(s_{8}),\ldots,y(s_1)\big)  \\
-  &amp;= f\big(y(s_{10})\big) \, f\big(y(s_9) | y(s_{10})\big) \, \cdots \, f\big(y(s_{1} | y(s_{2}),y(s_{3}),\ldots,y(s_{10})\big)  \\
+  &amp;= f\big(y(s_1)\big) \, f\big(y(s_2) \mid y(s_1)\big) \, \cdots \, f\big(y(s_{10}\mid y(s_{9}),y(s_{8}),\ldots,y(s_1)\big)  \\
+  &amp;= f\big(y(s_{10})\big) \, f\big(y(s_9) \mid y(s_{10})\big) \, \cdots \, f\big(y(s_{1}\mid y(s_{2}),y(s_{3}),\ldots,y(s_{10})\big)  \\
   &amp;= ~?
 \end{aligned}
 \]</span></p>
@@ -652,20 +651,18 @@ f\big(y(s_1), \ldots, y(s_{10})\big)
 <p>Here we will consider a simple average of neighboring observations, just like with the temporal AR model we have two options in terms of defining the autoregressive process,</p>
 <div class="fragment">
 <ul>
-<li>Simultaneous Autogressve (SAR)</li>
+<li>Simultaneous Autogressve (SAR) <span class="math display">\[ y(s) = \delta + \phi \frac{1}{|N(s)|}\sum_{s' \in N(s)} y(s') + N(0,\sigma^2) \]</span></li>
 </ul>
-<p><span class="math display">\[ y(s) = \delta + \phi \frac{1}{|N(s)|}\sum_{s' \in N(s)} y(s') + \mathcal{N}(0,\sigma^2) \]</span></p>
 </div>
 <div class="fragment">
 <ul>
-<li>Conditional Autoregressive (CAR)</li>
+<li>Conditional Autoregressive (CAR) <span class="math display">\[ y(s) \mid y(-s) \sim N\left(\delta + \phi \frac{1}{|N(s)|}\sum_{s' \in N(s)} y(s'),~ \sigma^2 \right) \]</span></li>
 </ul>
-<p><span class="math display">\[ y(s)|\boldsymbol{y}(-s) \sim \mathcal{N}\left(\delta + \phi \frac{1}{|N(s)|}\sum_{s' \in N(s)} y(s'),~ \sigma^2 \right) \]</span></p>
 </div>
 </section>
 <section id="simultaneous-autogressve-sar" class="slide level2">
 <h2>Simultaneous Autogressve (SAR)</h2>
-<p>Using <span class="math display">\[ y(s) = \phi \frac{1}{|N(s)|}\sum_{s' \in N(s)} y(s') + \mathcal{N}(0,\sigma^2) \]</span> we want to find the distribution of <span class="math inline">\(\boldsymbol{y} = \Big(y(s_1),\, y(s_2),\,\ldots,\,y(s_n)\Big)^t\)</span>.</p>
+<p>Using <span class="math display">\[ y(s) = \phi \frac{1}{|N(s)|}\sum_{s' \in N(s)} y(s') + N(0,\sigma^2) \]</span> we want to find the distribution of <span class="math inline">\(\boldsymbol{y} = \Big(y(s_1),\, y(s_2),\,\ldots,\,y(s_n)\Big)^t\)</span>.</p>
 </section>
 <section id="section-3" class="slide level2">
 <h2></h2>
@@ -674,7 +671,7 @@ f\big(y(s_1), \ldots, y(s_{10})\big)
 1/|N(s_i)| &amp; \text{if $j \in N(s_i)$} \\
 0        &amp; \text{otherwise}
 \end{cases}
-\]</span> then we can write <span class="math inline">\(\boldsymbol{y}\)</span> as follows, <span class="math display">\[ \boldsymbol{y} = \phi \, \boldsymbol{W} \, \boldsymbol{y} + \boldsymbol{\epsilon} \]</span> where <span class="math display">\[ \boldsymbol{\epsilon} \sim \mathcal{N}(0,\sigma^2 \, \boldsymbol{I}) \]</span></p>
+\]</span> then we can write <span class="math inline">\(\boldsymbol{y}\)</span> as follows, <span class="math display">\[ \boldsymbol{y} = \phi \, \boldsymbol{W} \, \boldsymbol{y} + \boldsymbol{\epsilon} \]</span> where <span class="math display">\[ \boldsymbol{\epsilon} \sim N(0,\sigma^2 \, \boldsymbol{I}) \]</span></p>
 </section>
 <section id="a-toy-example" class="slide level2">
 <h2>A toy example</h2>
@@ -698,7 +695,7 @@ Var(\boldsymbol{y})
   &= \sigma^2 \left((I-\phi \, \boldsymbol{W})^{-1}\right) \left((I-\phi \, \boldsymbol{W})^{-1}\right)^{t} \\
 \end{aligned}$$
 
-$$ \boldsymbol{y} \sim \mathcal{N}((I-\phi \, \boldsymbol{W})^{-1} \boldsymbol{\delta},~\sigma^2 \left((I-\phi \, \boldsymbol{W})^{-1}\right) \left((I-\phi \, \boldsymbol{W})^{-1}\right)^{t})$$
+$$ \boldsymbol{y} \sim N((I-\phi \, \boldsymbol{W})^{-1} \boldsymbol{\delta},~\sigma^2 \left((I-\phi \, \boldsymbol{W})^{-1}\right) \left((I-\phi \, \boldsymbol{W})^{-1}\right)^{t})$$
 -->
 </section>
 <section id="conditional-autogressve-car" class="slide level2">
@@ -717,34 +714,51 @@ $$ \boldsymbol{y} \sim \mathcal{N}((I-\phi \, \boldsymbol{W})^{-1} \boldsymbol{\
 <p><span class="math display">\[
 \begin{aligned}
 \frac{p(\boldsymbol{y})}{p(\boldsymbol{x})}
-  &amp;= \prod_{i=1}^n \frac{p(y_i ~|~ y_1,\ldots,y_{i-1},x_{i+1},\ldots,x_n)}{p(x_i ~|~ y_1,\ldots,y_{i-1},x_{i+1},\ldots,x_n)} \\
-  &amp;= \prod_{i=1}^n \frac{p(y_i ~|~ x_1,\ldots,x_{i-1},y_{i+1},\ldots,y_n)}{p(x_i ~|~ x_1,\ldots,x_{i-1},y_{i+1},\ldots,y_n)} \\
+  &amp;= \prod_{i=1}^n \frac{p(y_i \mid  y_1,\ldots,y_{i-1},x_{i+1},\ldots,x_n)}{p(x_i \mid y_1,\ldots,y_{i-1},x_{i+1},\ldots,x_n)} \\
+  &amp;= \prod_{i=1}^n \frac{p(y_i \mid x_1,\ldots,x_{i-1},y_{i+1},\ldots,y_n)}{p(x_i \mid x_1,\ldots,x_{i-1},y_{i+1},\ldots,y_n)} \\
 \end{aligned}
 \]</span></p>
 </section>
 <section id="a-simplified-example" class="slide level2">
 <h2>A simplified example</h2>
 <p>Let <span class="math inline">\(\boldsymbol{y} = (y_1,y_2)\)</span> and <span class="math inline">\(\boldsymbol{x} = (x_1,x_2)\)</span> then we can derive Brook’s Lemma for this case,</p>
+<div class="small">
 <p><span class="math display">\[
 \begin{aligned}
-p (y_1,y_2)  &amp;= p(y_1 | y_2) p(y_2) \\
-    &amp;= p(y_1 | y_2) \frac{p(y_2|x_1)}{p(x_1|y_2)} p(x_1)
-    = \frac{p(y_1 | y_2)}{p(x_1 | y_2)} p(y_2|x_1) \, p(x_1) \\
-    &amp; = \frac{p(y_1 | y_2)}{p(x_1 | y_2)} p(y_2|x_1) \, p(x_1)   \left(\frac{p(x_2|x_1)}{p(x_2|x_1)}\right) \\
-    &amp; = \frac{p(y_1 | y_2)}{p(x_1 | y_2)} \frac{p(y_2|x_1)}{p(x_2|x_1)} \, p(x_1,x_2) \\
-  \\
-  \frac{p (y_1,y_2) }{p(x_1,x_2)}
-    &amp; = \frac{p(y_1 | y_2)}{p(x_1 | y_2)} \frac{p(y_2|x_1)}{p(x_2|x_1)}
+p (y_1,y_2)  &amp;= p(y_1 \mid y_2) p(y_2) \\
+    &amp;= p(y_1 \mid y_2) \frac{p(y_2  \mid  x_1)}{p(x_1 \mid y_2)} p(x_1) \\
+    &amp; = \frac{p(y_1 \mid y_2)}{p(x_1 \mid y_2)} p(y_2  \mid  x_1) \, p(x_1) \\
+    &amp; = \frac{p(y_1 \mid y_2)}{p(x_1 \mid y_2)} p(y_2  \mid  x_1) \, p(x_1)   \left(\frac{p(x_2  \mid  x_1)}{p(x_2  \mid  x_1)}\right) \\
+    &amp; = \frac{p(y_1 \mid y_2)}{p(x_1 \mid y_2)} \frac{p(y_2  \mid  x_1)}{p(x_2  \mid  x_1)} \, p(x_1,x_2) \\
 \end{aligned}
 \]</span></p>
-<!--
-$$ 
+</div>
+<div class="fragment">
+<p><br></p>
+<p>This is just a derivation of Brook’s lemma for <span class="math inline">\(\boldsymbol{y} = (y_1,y_2)\)</span> and <span class="math inline">\(\boldsymbol{x} = (x_1,x_2)\)</span>.</p>
+</div>
+</section>
+<section id="section-4" class="slide level2">
+<h2></h2>
+<p><span class="math display">\[
+\begin{aligned}
+p (y_1,y_2)
+    &amp; = \frac{p(y_1 \mid y_2)}{p(x_1 \mid y_2)} \frac{p(y_2  \mid  x_1)}{p(x_2  \mid  x_1)} \, p(x_1,x_2) \\
+  \\
+  \frac{p (y_1,y_2) }{p(x_1,x_2)}
+    &amp; = \frac{p(y_1 \mid y_2)}{p(x_1 \mid y_2)} \frac{p(y_2  \mid  x_1)}{p(x_2  \mid  x_1)}
+\end{aligned}
+\]</span></p>
+<div class="fragment">
+<p><br></p>
+<p>From which we can generalize for <span class="math inline">\(n=3\)</span>,</p>
+<p><span class="math display">\[
 \begin{aligned}
 \frac{p(y_1,y_2,y_3)}{p(x_1,x_2,x_3)}
-  = \frac{p(y_1|y_2,y_3)}{P(x_1|y_2,y_3)} \frac{p(y_2|x_1,y_3)}{p(x_2|x_1,y_3} \frac{p(y_3|x_1,x_2)}{p(x_3|x_1,x_2)}
-\end{aligned} 
-$$
--->
+  = \frac{p(y_1 \mid y_2,y_3)}{p(x_1 \mid y_2,y_3)} \frac{p(y_2 \mid x_1,y_3)}{p(x_2 \mid x_1,y_3} \frac{p(y_3 \mid x_1,x_2)}{p(x_3 \mid x_1,x_2)}
+\end{aligned}
+\]</span> and so on.</p>
+</div>
 </section>
 <section id="utility" class="slide level2">
 <h2>Utility?</h2>
@@ -752,33 +766,43 @@ $$
 <p><span class="math display">\[
 \begin{aligned}
 \frac{p (y_1,y_2) }{p(x_1,x_2)}
-    &amp;= \frac{p (y_1,y_2) }{p(y_1=0,y_2=0)}  \\
-  \\
-  p(y_1,y_2) &amp;= \frac{p(y_1 | y_2)}{p(y_1=0 | y_2)} \frac{p(y_2|y_1=0)}{p(y_2=0|y_1=0)} ~ p(y_1=0,y_2=0) \\
-  \\
-  p(y_1,y_2)
-    &amp;\propto \frac{p(y_1 | y_2) ~ p(y_2|y_1=0) }{ p(y_1=0 | y_2)} \\
-    &amp;\propto \frac{p(y_2 | y_1) ~ p(y_1|y_2=0) }{ p(y_2=0 | y_1)}
+    &amp;= \frac{p (y_1,y_2) }{p(y_1=0,y_2=0)}
 \end{aligned}
 \]</span></p>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{aligned}
+  p(y_1,y_2) &amp;= \frac{p(y_1 \mid y_2)}{p(y_1=0 \mid y_2)} \frac{p(y_2  \mid  y_1=0)}{p(y_2=0 \mid y_1=0)} ~ p(y_1=0,y_2=0)
+\end{aligned}
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{aligned}
+  p(y_1,y_2)
+    &amp;\propto \frac{p(y_1 \mid y_2) ~ p(y_2  \mid  y_1=0) }{ p(y_1=0 \mid y_2)} \\
+    &amp;\propto \frac{p(y_2 \mid y_1) ~ p(y_1 \mid y_2=0) }{ p(y_2=0 \mid y_1)}
+\end{aligned}
+\]</span></p>
+</div>
 </section>
 <section id="as-applied-to-a-simple-car" class="slide level2">
 <h2>As applied to a <strong>simple</strong> CAR</h2>
 
 <img data-src="Lec19_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch quarto-figure-center"><p><span class="math display">\[
 \begin{aligned}
-y(s_1) | y(s_2) \sim \mathcal{N}(\phi W_{12}\, y(s_2), \sigma^2) \\
-y(s_2) | y(s_1) \sim \mathcal{N}(\phi W_{21}\, y(s_1), \sigma^2)
+y(s_1)\mid y(s_2) \sim N(\phi W_{12}\, y(s_2),\, \sigma^2) \\
+y(s_2)\mid y(s_1) \sim N(\phi W_{21}\, y(s_1),\, \sigma^2)
 \end{aligned}
 \]</span></p>
 </section>
-<section id="section-4" class="slide level2">
+<section id="section-5" class="slide level2">
 <h2></h2>
-<div class="small">
+<div class="medium">
 <p><span class="math display">\[
 \begin{aligned}
   p\big(y(s_1),y(s_2)\big)
-    &amp;\propto \frac{p\big(y(s_1) | y(s_2)\big) ~   p\big(y(s_2)|y(s_1)=0\big)}{p\big(y(s_1)=0|y(s_2)\big)}\\
+    &amp;\propto \frac{p\big(y(s_1) \mid y(s_2)\big) ~   p\big(y(s_2) \mid y(s_1)=0\big)}{p\big(y(s_1)=0  \mid y(s_2)\big)}\\
     &amp;\propto
       \frac{
         \exp\left(-\frac{1}{2\sigma^2}\left(y(s_1)-\phi \, W_{12} \,   y(s_2)\right)^2\right)
@@ -822,7 +846,7 @@ y(s_2) | y(s_1) \sim \mathcal{N}(\phi W_{21}\, y(s_1), \sigma^2)
 <div class="fragment">
 <p>we can then conclude that for <span class="math inline">\(\boldsymbol{y} = (y(s_1),~y(s_2))^t\)</span>,</p>
 <p><span class="math display">\[
-\boldsymbol{y} \sim \mathcal{N}\left(
+\boldsymbol{y} \sim N\left(
 \boldsymbol{0}, ~
 \sigma^2 (\boldsymbol{I} - \phi \, \boldsymbol{W})^{-1}
 \right)
@@ -837,8 +861,8 @@ y(s_2) | y(s_1) \sim \mathcal{N}(\phi W_{21}\, y(s_1), \sigma^2)
 <p><span class="math display">\[
 \begin{aligned}
 \frac{p(\boldsymbol{y})}{p(\boldsymbol{0})}
-    &amp;= \prod_{i=1}^n \frac{p(y_i|y_1,\ldots,y_{i-1},0_{i+1},\ldots,0_{n})}{p(0_i|y_1,\ldots,y_{i-1},0_{i+1},\ldots,0_{n})} \\
-  &amp;= \prod_{i=1}^n
+  &amp;= \prod_{i=1}^n \frac{p(y_i \mid y_1,\ldots,y_{i-1},0_{i+1},\ldots,0_{n})}{p(0_i \mid y_1,\ldots,y_{i-1},0_{i+1},\ldots,0_{n})}
+  = \prod_{i=1}^n
     \frac{
       \exp\left(-\frac{1}{2\sigma^2} \left(y_i - \phi \sum_{j&lt;i} W_{ij} \, y_j - \phi \sum_{j&gt;i} 0_j \right)^2 \right)
     }{
@@ -857,18 +881,18 @@ y(s_2) | y(s_1) \sim \mathcal{N}(\phi W_{21}\, y(s_1), \sigma^2)
 <ul>
 <li>Simultaneous Autogressve (SAR)</li>
 </ul>
-<p><span class="math display">\[ y(s) = \phi \sum_{s'} W_{s\,s'} \, y(s') + \epsilon \]</span></p>
-<p><span class="math display">\[ \boldsymbol{y} \sim \mathcal{N}(0,~\sigma^2 \, ((\boldsymbol{I}-\phi \boldsymbol{W})^{-1}) ((\boldsymbol{I}-\phi \boldsymbol{W})^{-1})^t )\]</span></p>
+<p><span class="math display">\[ y(s) = \phi \sum_{s'} W_{s\;s'} \, y(s') + \epsilon \]</span></p>
+<p><span class="math display">\[ \boldsymbol{y} \sim N(0,~\sigma^2 \, ((\boldsymbol{I}-\phi \boldsymbol{W})^{-1}) ((\boldsymbol{I}-\phi \boldsymbol{W})^{-1})^t )\]</span></p>
 <ul>
 <li>Conditional Autoregressive (CAR)</li>
 </ul>
-<p><span class="math display">\[ y(s)|\boldsymbol{y}(-s) \sim \mathcal{N}\left(\sum_{s'} W_{s\,s'} \, y(s'),~ \sigma^2 \right) \]</span></p>
-<p><span class="math display">\[ \boldsymbol{y} \sim \mathcal{N}(0,~\sigma^2 \, (\boldsymbol{I}-\phi \boldsymbol{W})^{-1})\]</span></p>
+<p><span class="math display">\[ y(s) \mid y(-s) \sim N\left(\sum_{s'} W_{s\;s'} \, y(s'),~ \sigma^2 \right) \]</span></p>
+<p><span class="math display">\[ \boldsymbol{y} \sim N(0,~\sigma^2 \, (\boldsymbol{I}-\phi \boldsymbol{W})^{-1})\]</span></p>
 </section>
-<section id="generalization" class="slide level2">
-<h2>Generalization</h2>
+<section id="generalizations" class="slide level2">
+<h2>Generalizations</h2>
 <ul>
-<li><p>Adopting different weight matrices, <span class="math inline">\(\boldsymbol{W}\)</span></p>
+<li><p>Adopting different weight matrices <span class="math inline">\((\boldsymbol{W})\)</span></p>
 <ul>
 <li><p>Between SAR and CAR model we move to a generic weight matrix definition (beyond average of nearest neighbors)</p></li>
 <li><p>In time we varied <span class="math inline">\(p\)</span> in the <span class="math inline">\(AR(p)\)</span> model, in space we adjust the weight matrix.</p></li>
@@ -888,7 +912,7 @@ y(s_2) | y(s_1) \sim \mathcal{N}(\phi W_{21}\, y(s_1), \sigma^2)
 </section>
 <section id="some-specific-generalizations" class="slide level2">
 <h2>Some specific generalizations</h2>
-<p>Generally speaking we will want to work with a scaled / normalized version of the weight matrix, <span class="math display">\[ \frac{W_{ij}}{W_{i\boldsymbol{\cdot}}}  \]</span></p>
+<p>Generally speaking we want to work with a scaled / normalized version of the weight matrix, <span class="math display">\[ W_{ij}/W_{i\boldsymbol{\cdot}}  \]</span></p>
 <p>When <span class="math inline">\(W\)</span> is derived from an adjacency matrix, <span class="math inline">\(\boldsymbol{A}\)</span>, we can express this as <span class="math display">\[ \boldsymbol{W} = \boldsymbol{D}^{-1} \boldsymbol{A} \]</span> where <span class="math inline">\(\boldsymbol{D}^{-1} = \text{diag}(1/|N(s_i)|)\)</span>.</p>
 <p>We can also allow <span class="math inline">\(\sigma^2\)</span> to vary between locations, we can define this as <span class="math inline">\(\boldsymbol{D}_{\sigma^2} = \text{diag}(\sigma^2_i)\)</span> and most often we use <span class="math display">\[ \boldsymbol{D}_{\sigma^2}^{-1} = \text{diag}\left(\frac{\sigma^2}{|N(s_i)|}\right) =  \sigma^2 \boldsymbol{D}^{-1}.  \]</span></p>
 </section>
@@ -898,7 +922,7 @@ y(s_2) | y(s_1) \sim \mathcal{N}(\phi W_{21}\, y(s_1), \sigma^2)
 <li>Formula Model <span class="math display">\[
 y(s_i) = X_{i\cdot}\beta + \phi \sum_{j=1}^n D^{-1}_{jj} \, A_{ij} \, \big(y(s_j) - X_{j\cdot}\beta\big) + \epsilon_i
 \]</span> <span class="math display">\[
-\boldsymbol{\epsilon} \sim \mathcal{N}(\boldsymbol{0},\,\boldsymbol{D}_{\sigma^2}^{-1}) =  \mathcal{N}(\boldsymbol{0},\, \sigma^2 \boldsymbol{D}^{-1})
+\boldsymbol{\epsilon} \sim N(\boldsymbol{0},\,\boldsymbol{D}_{\sigma^2}^{-1}) =  N(\boldsymbol{0},\, \sigma^2 \boldsymbol{D}^{-1})
 \]</span></li>
 </ul>
 <div class="fragment">
@@ -910,19 +934,21 @@ y(s_i) = X_{i\cdot}\beta + \phi \sum_{j=1}^n D^{-1}_{jj} \, A_{ij} \, \big(y(s_j
 </div>
 <div class="fragment">
 <p><span class="math display">\[
-\boldsymbol{y} \sim \mathcal{N}\left(\boldsymbol{X}\boldsymbol{\beta}, (\boldsymbol{I} - \phi \boldsymbol{D}^{-1} \boldsymbol{A})^{-1} \sigma^2 \boldsymbol{D}^{-1} \big((\boldsymbol{I} - \phi \boldsymbol{D}^{-1} \boldsymbol{A})^{-1}\big)^t \right)
+\boldsymbol{y} \sim N\left(\boldsymbol{X}\boldsymbol{\beta}, (\boldsymbol{I} - \phi \boldsymbol{D}^{-1} \boldsymbol{A})^{-1} \sigma^2 \boldsymbol{D}^{-1} \big((\boldsymbol{I} - \phi \boldsymbol{D}^{-1} \boldsymbol{A})^{-1}\big)^t \right)
 \]</span></p>
 </div>
 </section>
 <section id="revised-car-model" class="slide level2">
 <h2>Revised CAR Model</h2>
 <ul>
-<li><p>Conditional Model <span class="math display">\[ y(s_i)|\boldsymbol{y}_{-s_i} \sim \mathcal{N}\left(X_{i\cdot}\beta + \phi\sum_{j=1}^n \frac{W_{ij}}{D_{ii}} ~ \big(y(s_j)-X_{j\cdot}\beta\big),~ \sigma^2 D^{-1}_{ii} \right) \]</span></p></li>
-<li><p>Joint Model</p></li>
+<li>Conditional Model <span class="math display">\[ y(s_i) \mid y_{-s_i} \sim N\left(X_{i\cdot}\beta + \phi\sum_{j=1}^n \frac{W_{ij}}{D_{ii}} ~ \big(y(s_j)-X_{j\cdot}\beta\big),~ \sigma^2 D^{-1}_{ii} \right) \]</span></li>
 </ul>
 <div class="fragment">
+<ul>
+<li>Joint Model</li>
+</ul>
 <p><span class="math display">\[
-\boldsymbol{y} \sim \mathcal{N}(\boldsymbol{X}\boldsymbol{\beta},~\Sigma_{CAR})
+\boldsymbol{y} \sim N(\boldsymbol{X}\boldsymbol{\beta},~\Sigma_{CAR})
 \]</span></p>
 </div>
 <div class="fragment">
@@ -998,7 +1024,7 @@ y(s_i) = X_{i\cdot}\beta + \phi \sum_{j=1}^n D^{-1}_{jj} \, A_{ij} \, \big(y(s_j
 </div>
 </div>
 </section>
-<section id="section-5" class="slide level2">
+<section id="section-6" class="slide level2">
 <h2></h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
@@ -1060,7 +1086,7 @@ y(s_i) = X_{i\cdot}\beta + \phi \sum_{j=1}^n D^{-1}_{jj} \, A_{ij} \, \big(y(s_j
 </div>
 </div>
 </section>
-<section id="section-6" class="slide level2">
+<section id="section-7" class="slide level2">
 <h2></h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
@@ -1086,10 +1112,11 @@ y(s_i) = X_{i\cdot}\beta + \phi \sum_{j=1}^n D^{-1}_{jj} \, A_{ij} \, \big(y(s_j
 <section id="conclusions" class="slide level2">
 <h2>Conclusions</h2>
 <p>Generally speaking just like the AR(1) model for time series we require that <span class="math inline">\(|\phi| &lt; 1\)</span> for the CAR model to be proper.</p>
-<p>These results for <span class="math inline">\(\phi\)</span> also apply in the context where <span class="math inline">\(\sigma^2_i\)</span> is constant across locations (i.e.&nbsp;<span class="math inline">\(\boldsymbol{\Sigma} = \big(\sigma^2 \, (\boldsymbol{I}-\phi \boldsymbol{D}^{-1}\boldsymbol{A})\big)^{-1}\)</span>)</p>
+<p>These results for <span class="math inline">\(\phi\)</span> also apply in the context where <span class="math inline">\(\sigma^2_i\)</span> is constant across locations, i.e.&nbsp; <span class="math display">\[
+\boldsymbol{\Sigma} = \big(\sigma^2 \, (\boldsymbol{I}-\phi \boldsymbol{D}^{-1}\boldsymbol{A})\big)^{-1}
+\]</span></p>
 <div class="fragment">
-<p><br></p>
-<p>As a side note, the special case where <span class="math inline">\(\phi=1\)</span> is known as an intrinsic autoregressive (IAR) model and they are popular as an <em>improper</em> prior for spatial random effects. An additional sum constraint is necessary for identifiability (<span class="math inline">\(\sum_{i=1}^n y(s_i) = 0\)</span>).</p>
+<p>As a side note, the special case where <span class="math inline">\(\phi=1\)</span> is known as an intrinsic autoregressive (IAR) model and they are popular as an <em>improper</em> prior for spatial random effects. An additional sum constraint is necessary for identifiability <span class="math display">\[\sum_{i=1}^n y(s_i) = 0\]</span></p>
 <div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>
