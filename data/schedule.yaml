@@ -206,7 +206,7 @@ schedule:
   day: 2
   lecture: Models for areal data
   slides: Lec19
-  screencast: 
+  screencast: https://youtu.be/HINA6iVDxEM
   readings:
   - text: Banerjee, Carlin, Gelfand Ch. 4
   notes: <a href="notes/Lec 19 - Notes.pdf">Lec 19 Notes</a>
@@ -214,8 +214,11 @@ schedule:
 - week: 11
   day: 4
   lecture: Fitting CAR and SAR models
-  slides: 
+  slides: Lec20
   screencast: 
+  readings:
+  - text: On the relationship between conditional (CAR) and simultaneous (SAR) autoregressive models
+    url: https://mhooten.github.io/publications/VerHoef_etal_SpatStat_2018.pdf
   
 - week: 12
   day: 2
