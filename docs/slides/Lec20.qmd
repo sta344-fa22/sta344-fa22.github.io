@@ -527,29 +527,6 @@ spdep::moran.test(nc$sar_sqrt_resid, listW)
 
 # CAR & SAR with brms
 
-## Brief Aside - CAR & SAR precision matrices
-
-$$ 
-\Sigma_{SAR} = (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t
-$$
-
-. . .
-
-$$
-\begin{aligned}
-\Sigma^{-1}_{SAR} 
-  &= \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t \right)^{-1} \\
-  &= \left( \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t\right)^{-1} \frac{1}{\sigma^2} \, \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
-  &= \frac{1}{\sigma^2} \, (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^t ~ \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
-\end{aligned}
-$$
-
-. . .
-
-$$
-\Sigma^{-1}_{CAR} =  \frac{1}{\sigma^2} \, (\boldsymbol{D}- \phi \boldsymbol{A})
-$$
-
 ## brms CAR
 
 ```{r}
@@ -668,3 +645,26 @@ ggplot(p, aes(x=truth, y=Estimate)) +
   geom_errorbar(aes(ymin=Q2.5, ymax=Q97.5), alpha=0.25) +
   coord_fixed()
 ```
+
+## Brief Aside - CAR & SAR precision matrices
+
+$$ 
+\Sigma_{SAR} = (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t
+$$
+
+. . .
+
+$$
+\begin{aligned}
+\Sigma^{-1}_{SAR} 
+  &= \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t \right)^{-1} \\
+  &= \left( \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t\right)^{-1} \frac{1}{\sigma^2} \, \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
+  &= \frac{1}{\sigma^2} \, (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^t ~ \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
+\end{aligned}
+$$
+
+. . .
+
+$$
+\Sigma^{-1}_{CAR} =  \frac{1}{\sigma^2} \, (\boldsymbol{D}- \phi \boldsymbol{A})
+$$

@@ -7,7 +7,7 @@
 <link href="Lec20_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec20_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec20_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.2.267">
+  <meta name="generator" content="quarto-1.2.269">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>Fitting CAR and SAR Models</title>
@@ -964,27 +964,6 @@ Moran I statistic       Expectation
 <h1>CAR &amp; SAR with brms</h1>
 
 </section>
-<section id="brief-aside---car-sar-precision-matrices" class="slide level2">
-<h2>Brief Aside - CAR &amp; SAR precision matrices</h2>
-<p><span class="math display">\[
-\Sigma_{SAR} = (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t
-\]</span></p>
-<div class="fragment">
-<p><span class="math display">\[
-\begin{aligned}
-\Sigma^{-1}_{SAR}
-  &amp;= \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t \right)^{-1} \\
-  &amp;= \left( \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t\right)^{-1} \frac{1}{\sigma^2} \, \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
-  &amp;= \frac{1}{\sigma^2} \, (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^t ~ \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
-\end{aligned}
-\]</span></p>
-</div>
-<div class="fragment">
-<p><span class="math display">\[
-\Sigma^{-1}_{CAR} =  \frac{1}{\sigma^2} \, (\boldsymbol{D}- \phi \boldsymbol{A})
-\]</span></p>
-</div>
-</section>
 <section id="brms-car" class="slide level2">
 <h2>brms CAR</h2>
 <div class="cell" data-layout-align="center">
@@ -1000,11 +979,11 @@ Moran I statistic       Expectation
 Chain 3 finished in 11.0 seconds.
 Chain 2 finished in 11.7 seconds.
 Chain 4 finished in 12.4 seconds.
-Chain 1 finished in 13.1 seconds.
+Chain 1 finished in 12.7 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 12.0 seconds.
-Total execution time: 13.1 seconds.</code></pre>
+Mean chain execution time: 11.9 seconds.
+Total execution time: 12.7 seconds.</code></pre>
 </div>
 </div>
 </section>
@@ -1082,11 +1061,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 Chain 4 finished in 2.8 seconds.
 Chain 3 finished in 2.9 seconds.
 Chain 1 finished in 2.9 seconds.
-Chain 2 finished in 2.8 seconds.
+Chain 2 finished in 2.9 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 2.8 seconds.
-Total execution time: 3.2 seconds.</code></pre>
+Mean chain execution time: 2.9 seconds.
+Total execution time: 3.3 seconds.</code></pre>
 </div>
 </div>
 </section>
@@ -1147,8 +1126,29 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <span id="cb58-5"><a href="#cb58-5"></a>  <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-48-1.png" width="960" class="r-stretch quarto-figure-center"><div class="footer footer-default">
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-48-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="brief-aside---car-sar-precision-matrices" class="slide level2">
+<h2>Brief Aside - CAR &amp; SAR precision matrices</h2>
+<p><span class="math display">\[
+\Sigma_{SAR} = (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t
+\]</span></p>
+<div class="fragment">
+<p><span class="math display">\[
+\begin{aligned}
+\Sigma^{-1}_{SAR}
+  &amp;= \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1} \sigma^2 \, \boldsymbol{D}^{-1} \left((\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t \right)^{-1} \\
+  &amp;= \left( \left( (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^{-1}\right)^t\right)^{-1} \frac{1}{\sigma^2} \, \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
+  &amp;= \frac{1}{\sigma^2} \, (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A})^t ~ \boldsymbol{D} ~ (\boldsymbol{I}-\phi \boldsymbol{D}^{-1} \, \boldsymbol{A}) \\
+\end{aligned}
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
+\Sigma^{-1}_{CAR} =  \frac{1}{\sigma^2} \, (\boldsymbol{D}- \phi \boldsymbol{A})
+\]</span></p>
+<div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
+</div>
 </div>
 </section></section>
     </div>
