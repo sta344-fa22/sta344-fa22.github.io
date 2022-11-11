@@ -219,6 +219,7 @@ schedule:
   readings:
   - text: On the relationship between conditional (CAR) and simultaneous (SAR) autoregressive models
     url: https://mhooten.github.io/publications/VerHoef_etal_SpatStat_2018.pdf
+  notes: <a href="slides/Lec20_notes.R">Lec 20 Notes</a>
   
 - week: 12
   day: 2
