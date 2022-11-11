@@ -694,18 +694,64 @@ Moran I statistic       Expectation
 </div>
 </div>
 </section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<div class="columns small">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>car_resid, listW, <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  nc$car_resid  
+weights: listW    
+
+Moran I statistic standard deviate =
+-1.7952, p-value = 0.07261
+alternative hypothesis: two.sided
+sample estimates:
+Moran I statistic       Expectation 
+     -0.117449316      -0.010101010 
+         Variance 
+      0.003575538 </code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>sar_resid, listW, <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Moran I test under randomisation
+
+data:  nc$sar_resid  
+weights: listW    
+
+Moran I statistic standard deviate =
+0.17958, p-value = 0.8575
+alternative hypothesis: two.sided
+sample estimates:
+Moran I statistic       Expectation 
+     0.0006769074     -0.0101010101 
+         Variance 
+     0.0036020941 </code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="predicted-vs-observed" class="slide level2">
 <h2>Predicted vs Observed</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="whats-wrong" class="slide level2">
 <h2>What’s wrong?</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="comparing-car-vs-sar." class="slide level2">
 <h2>Comparing CAR vs SAR.</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
 <section>
 <section id="transforming-the-data" class="title-slide slide level1 center">
 <h1>Transforming the data</h1>
@@ -721,34 +767,34 @@ FT = \sqrt{1000} \left( \sqrt{\frac{SID74}{BIR74}} + \sqrt{\frac{SID74+1}{BIR74}
 
 </div>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="other-possibilities" class="slide level2">
 <h2>Other possibilities</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>nc <span class="ot">=</span> <span class="fu">mutate</span>(nc, </span>
-<span id="cb21-2"><a href="#cb21-2"></a>  <span class="at">sqrt =</span> <span class="fu">sqrt</span>(<span class="dv">1000</span><span class="sc">*</span>(SID74<span class="sc">+</span><span class="dv">1</span>)<span class="sc">/</span>BIR74),</span>
-<span id="cb21-3"><a href="#cb21-3"></a>  <span class="at">log  =</span> <span class="fu">log</span>(<span class="dv">1000</span><span class="sc">*</span>(SID74<span class="sc">+</span><span class="dv">1</span>)<span class="sc">/</span>BIR74),</span>
-<span id="cb21-4"><a href="#cb21-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>nc <span class="ot">=</span> <span class="fu">mutate</span>(nc, </span>
+<span id="cb25-2"><a href="#cb25-2"></a>  <span class="at">sqrt =</span> <span class="fu">sqrt</span>(<span class="dv">1000</span><span class="sc">*</span>(SID74<span class="sc">+</span><span class="dv">1</span>)<span class="sc">/</span>BIR74),</span>
+<span id="cb25-3"><a href="#cb25-3"></a>  <span class="at">log  =</span> <span class="fu">log</span>(<span class="dv">1000</span><span class="sc">*</span>(SID74<span class="sc">+</span><span class="dv">1</span>)<span class="sc">/</span>BIR74),</span>
+<span id="cb25-4"><a href="#cb25-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="ft-transformation" class="slide level2">
 <h2>FT transformation</h2>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">ggplot</span>(nc) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>FT))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">ggplot</span>(nc) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>FT))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec20_files/figure-revealjs/unnamed-chunk-23-1.png" width="960"></p>
+<p><img data-src="Lec20_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>FT, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>FT, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Moran I test under randomisation
@@ -774,18 +820,18 @@ Moran I statistic       Expectation
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">ggplot</span>(nc) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>sqrt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">ggplot</span>(nc) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>sqrt))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec20_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
+<p><img data-src="Lec20_files/figure-revealjs/unnamed-chunk-27-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>sqrt, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>sqrt, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Moran I test under randomisation
@@ -811,18 +857,18 @@ Moran I statistic       Expectation
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">ggplot</span>(nc) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">ggplot</span>(nc) <span class="sc">+</span> <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill=</span>log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="Lec20_files/figure-revealjs/unnamed-chunk-27-1.png" width="960"></p>
+<p><img data-src="Lec20_files/figure-revealjs/unnamed-chunk-29-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>log, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>log, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Moran I test under randomisation
@@ -847,19 +893,19 @@ Moran I statistic       Expectation
 <h2>CAR Models</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>nc_car_ft   <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> FT <span class="sc">~</span> <span class="dv">1</span>,   <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"CAR"</span>) </span>
-<span id="cb31-2"><a href="#cb31-2"></a>nc_car_sqrt <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> sqrt <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"CAR"</span>)</span>
-<span id="cb31-3"><a href="#cb31-3"></a>nc_car_log  <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> log <span class="sc">~</span> <span class="dv">1</span>,  <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"CAR"</span>)</span>
-<span id="cb31-4"><a href="#cb31-4"></a></span>
-<span id="cb31-5"><a href="#cb31-5"></a><span class="fu">AIC</span>(nc_car_ft)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>nc_car_ft   <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> FT <span class="sc">~</span> <span class="dv">1</span>,   <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"CAR"</span>) </span>
+<span id="cb35-2"><a href="#cb35-2"></a>nc_car_sqrt <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> sqrt <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"CAR"</span>)</span>
+<span id="cb35-3"><a href="#cb35-3"></a>nc_car_log  <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> log <span class="sc">~</span> <span class="dv">1</span>,  <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"CAR"</span>)</span>
+<span id="cb35-4"><a href="#cb35-4"></a></span>
+<span id="cb35-5"><a href="#cb35-5"></a><span class="fu">AIC</span>(nc_car_ft)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 192.1781</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">AIC</span>(nc_car_sqrt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">AIC</span>(nc_car_sqrt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 100.8898</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">AIC</span>(nc_car_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">AIC</span>(nc_car_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 134.644</code></pre>
 </div>
@@ -870,19 +916,19 @@ Moran I statistic       Expectation
 <h2>SAR Model</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>nc_sar_ft   <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> FT <span class="sc">~</span> <span class="dv">1</span>,   <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"SAR"</span>) </span>
-<span id="cb37-2"><a href="#cb37-2"></a>nc_sar_sqrt <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> sqrt <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"SAR"</span>)</span>
-<span id="cb37-3"><a href="#cb37-3"></a>nc_sar_log  <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> log <span class="sc">~</span> <span class="dv">1</span>,  <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"SAR"</span>)</span>
-<span id="cb37-4"><a href="#cb37-4"></a></span>
-<span id="cb37-5"><a href="#cb37-5"></a><span class="fu">AIC</span>(nc_sar_ft)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>nc_sar_ft   <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> FT <span class="sc">~</span> <span class="dv">1</span>,   <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"SAR"</span>) </span>
+<span id="cb41-2"><a href="#cb41-2"></a>nc_sar_sqrt <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> sqrt <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"SAR"</span>)</span>
+<span id="cb41-3"><a href="#cb41-3"></a>nc_sar_log  <span class="ot">=</span> spatialreg<span class="sc">::</span><span class="fu">spautolm</span>(<span class="at">formula =</span> log <span class="sc">~</span> <span class="dv">1</span>,  <span class="at">data =</span> nc, <span class="at">listw =</span> listW, <span class="at">family =</span> <span class="st">"SAR"</span>)</span>
+<span id="cb41-4"><a href="#cb41-4"></a></span>
+<span id="cb41-5"><a href="#cb41-5"></a><span class="fu">AIC</span>(nc_sar_ft)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 191.9918</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">AIC</span>(nc_sar_sqrt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="fu">AIC</span>(nc_sar_sqrt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 102.717</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">AIC</span>(nc_sar_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">AIC</span>(nc_sar_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 137.4095</code></pre>
 </div>
@@ -892,33 +938,33 @@ Moran I statistic       Expectation
 <section id="car-predictions" class="slide level2">
 <h2>CAR predictions</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-31-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="sar-predictions" class="slide level2">
 <h2>SAR predictions</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-32-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-34-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="car-residuals" class="slide level2">
 <h2>CAR residuals</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-35-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="sar-predictions-1" class="slide level2">
 <h2>SAR predictions</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-34-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="car-residual-distributions" class="slide level2">
 <h2>CAR residual distributions</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-35-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-37-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="sar-residual-distributions" class="slide level2">
 <h2>SAR residual distributions</h2>
 
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-38-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="residual-spatial-autocorrelation" class="slide level2">
 <h2>Residual spatial autocorrelation</h2>
 <div class="columns small">
 <div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>car_sqrt_resid, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>car_sqrt_resid, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Moran I test under randomisation
@@ -938,7 +984,7 @@ Moran I statistic       Expectation
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>sar_sqrt_resid, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>spdep<span class="sc">::</span><span class="fu">moran.test</span>(nc<span class="sc">$</span>sar_sqrt_resid, listW)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Moran I test under randomisation
@@ -967,12 +1013,12 @@ Moran I statistic       Expectation
 <section id="brms-car" class="slide level2">
 <h2>brms CAR</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>b_car <span class="ot">=</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb47-2"><a href="#cb47-2"></a>    <span class="dv">1000</span><span class="sc">*</span>SID74<span class="sc">/</span>BIR74 <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">car</span>(A), <span class="at">data=</span>nc, <span class="at">data2=</span><span class="fu">list</span>(<span class="at">A=</span>A),</span>
-<span id="cb47-3"><a href="#cb47-3"></a>    <span class="at">adapt_delta =</span> <span class="fl">0.95</span>,</span>
-<span id="cb47-4"><a href="#cb47-4"></a>    <span class="at">silent=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter=</span><span class="dv">20000</span>,</span>
-<span id="cb47-5"><a href="#cb47-5"></a>    <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">backend =</span> <span class="st">"cmdstanr"</span></span>
-<span id="cb47-6"><a href="#cb47-6"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>b_car <span class="ot">=</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb51-2"><a href="#cb51-2"></a>    <span class="dv">1000</span><span class="sc">*</span>SID74<span class="sc">/</span>BIR74 <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">car</span>(A), <span class="at">data=</span>nc, <span class="at">data2=</span><span class="fu">list</span>(<span class="at">A=</span>A),</span>
+<span id="cb51-3"><a href="#cb51-3"></a>    <span class="at">adapt_delta =</span> <span class="fl">0.95</span>,</span>
+<span id="cb51-4"><a href="#cb51-4"></a>    <span class="at">silent=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter=</span><span class="dv">20000</span>,</span>
+<span id="cb51-5"><a href="#cb51-5"></a>    <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">backend =</span> <span class="st">"cmdstanr"</span></span>
+<span id="cb51-6"><a href="#cb51-6"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
@@ -982,15 +1028,15 @@ Chain 4 finished in 12.4 seconds.
 Chain 1 finished in 12.7 seconds.
 
 All 4 chains finished successfully.
-Mean chain execution time: 11.9 seconds.
-Total execution time: 12.7 seconds.</code></pre>
+Mean chain execution time: 12.0 seconds.
+Total execution time: 12.8 seconds.</code></pre>
 </div>
 </div>
 </section>
-<section id="section-1" class="slide level2">
+<section id="section-2" class="slide level2">
 <h2></h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>b_car</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>b_car</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1028,51 +1074,51 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="diagnostics" class="slide level2">
 <h2>Diagnostics</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="fu">plot</span>(b_car)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-41-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="predictions-1" class="slide level2">
-<h2>Predictions</h2>
-
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-42-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="observed-vs-predicted" class="slide level2">
-<h2>Observed vs predicted</h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">ggplot</span>(p, <span class="fu">aes</span>(<span class="at">x=</span>truth, <span class="at">y=</span>Estimate)) <span class="sc">+</span></span>
-<span id="cb52-2"><a href="#cb52-2"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
-<span id="cb52-3"><a href="#cb52-3"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb52-4"><a href="#cb52-4"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>Q2<span class="fl">.5</span>, <span class="at">ymax=</span>Q97<span class="fl">.5</span>), <span class="at">alpha=</span><span class="fl">0.25</span>) <span class="sc">+</span></span>
-<span id="cb52-5"><a href="#cb52-5"></a>  <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">plot</span>(b_car)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="Lec20_files/figure-revealjs/unnamed-chunk-43-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="predictions-1" class="slide level2">
+<h2>Predictions</h2>
+
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-44-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="observed-vs-predicted" class="slide level2">
+<h2>Observed vs predicted</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="fu">ggplot</span>(p, <span class="fu">aes</span>(<span class="at">x=</span>truth, <span class="at">y=</span>Estimate)) <span class="sc">+</span></span>
+<span id="cb56-2"><a href="#cb56-2"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb56-3"><a href="#cb56-3"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb56-4"><a href="#cb56-4"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>Q2<span class="fl">.5</span>, <span class="at">ymax=</span>Q97<span class="fl">.5</span>), <span class="at">alpha=</span><span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb56-5"><a href="#cb56-5"></a>  <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-45-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="brms-sar" class="slide level2">
 <h2>brms SAR</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>b_sar <span class="ot">=</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
-<span id="cb53-2"><a href="#cb53-2"></a>    <span class="dv">1000</span><span class="sc">*</span>SID74<span class="sc">/</span>BIR74 <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">sar</span>(listW), <span class="at">data=</span>nc, <span class="at">data2=</span><span class="fu">list</span>(<span class="at">listW=</span>listW),</span>
-<span id="cb53-3"><a href="#cb53-3"></a>    <span class="at">silent=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter=</span><span class="dv">4000</span>,</span>
-<span id="cb53-4"><a href="#cb53-4"></a>    <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">backend =</span> <span class="st">"cmdstanr"</span></span>
-<span id="cb53-5"><a href="#cb53-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a>b_sar <span class="ot">=</span> brms<span class="sc">::</span><span class="fu">brm</span>(</span>
+<span id="cb57-2"><a href="#cb57-2"></a>    <span class="dv">1000</span><span class="sc">*</span>SID74<span class="sc">/</span>BIR74 <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">sar</span>(listW), <span class="at">data=</span>nc, <span class="at">data2=</span><span class="fu">list</span>(<span class="at">listW=</span>listW),</span>
+<span id="cb57-3"><a href="#cb57-3"></a>    <span class="at">silent=</span><span class="dv">2</span>, <span class="at">refresh=</span><span class="dv">0</span>, <span class="at">iter=</span><span class="dv">4000</span>,</span>
+<span id="cb57-4"><a href="#cb57-4"></a>    <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">backend =</span> <span class="st">"cmdstanr"</span></span>
+<span id="cb57-5"><a href="#cb57-5"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Running MCMC with 4 parallel chains...
 
-Chain 4 finished in 2.8 seconds.
 Chain 3 finished in 2.9 seconds.
+Chain 4 finished in 2.8 seconds.
 Chain 1 finished in 2.9 seconds.
-Chain 2 finished in 2.9 seconds.
+Chain 2 finished in 2.8 seconds.
 
 All 4 chains finished successfully.
 Mean chain execution time: 2.9 seconds.
-Total execution time: 3.3 seconds.</code></pre>
+Total execution time: 3.2 seconds.</code></pre>
 </div>
 </div>
 </section>
-<section id="section-2" class="slide level2">
+<section id="section-3" class="slide level2">
 <h2></h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a>b_sar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a>b_sar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1108,25 +1154,25 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <section id="diagnostics-1" class="slide level2">
 <h2>Diagnostics</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">plot</span>(b_sar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-46-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="predictions-2" class="slide level2">
-<h2>Predictions</h2>
-
-<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-47-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="observed-vs-predicted-1" class="slide level2">
-<h2>Observed vs predicted</h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">ggplot</span>(p, <span class="fu">aes</span>(<span class="at">x=</span>truth, <span class="at">y=</span>Estimate)) <span class="sc">+</span></span>
-<span id="cb58-2"><a href="#cb58-2"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
-<span id="cb58-3"><a href="#cb58-3"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb58-4"><a href="#cb58-4"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>Q2<span class="fl">.5</span>, <span class="at">ymax=</span>Q97<span class="fl">.5</span>), <span class="at">alpha=</span><span class="fl">0.25</span>) <span class="sc">+</span></span>
-<span id="cb58-5"><a href="#cb58-5"></a>  <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">plot</span>(b_sar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="Lec20_files/figure-revealjs/unnamed-chunk-48-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="predictions-2" class="slide level2">
+<h2>Predictions</h2>
+
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-49-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="observed-vs-predicted-1" class="slide level2">
+<h2>Observed vs predicted</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="fu">ggplot</span>(p, <span class="fu">aes</span>(<span class="at">x=</span>truth, <span class="at">y=</span>Estimate)) <span class="sc">+</span></span>
+<span id="cb62-2"><a href="#cb62-2"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb62-3"><a href="#cb62-3"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb62-4"><a href="#cb62-4"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>Q2<span class="fl">.5</span>, <span class="at">ymax=</span>Q97<span class="fl">.5</span>), <span class="at">alpha=</span><span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb62-5"><a href="#cb62-5"></a>  <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec20_files/figure-revealjs/unnamed-chunk-50-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="brief-aside---car-sar-precision-matrices" class="slide level2">
 <h2>Brief Aside - CAR &amp; SAR precision matrices</h2>
 <p><span class="math display">\[

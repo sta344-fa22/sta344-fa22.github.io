@@ -205,13 +205,35 @@ spdep::moran.test(nc$sar_resid, listW)
 :::
 ::::
 
+##
+
+:::: {.columns .small}
+::: {.column width='50%'}
+```{r}
+spdep::moran.test(nc$car_resid, listW, alternative = "two.sided")
+```
+:::
+
+::: {.column width='50%'}
+```{r}
+spdep::moran.test(nc$sar_resid, listW, alternative = "two.sided")
+```
+:::
+::::
+
+
 
 
 ## Predicted vs Observed
 
 ```{r echo=FALSE}
-( ggplot(data = nc) + geom_abline(intercept=0, slope=1, color="lightgrey") + geom_point(aes(x=1000*SID74/BIR74, y=car_pred)) ) / 
-( ggplot(data = nc) + geom_abline(intercept=0, slope=1, color="lightgrey") + geom_point(aes(x=1000*SID74/BIR74, y=sar_pred)) ) 
+( 
+  ggplot(data = nc) + geom_abline(intercept=0, slope=1, color="grey") + 
+    geom_point(aes(x=1000*SID74/BIR74, y=car_pred))
+) / ( 
+  ggplot(data = nc) + geom_abline(intercept=0, slope=1, color="grey") + 
+    geom_point(aes(x=1000*SID74/BIR74, y=sar_pred))
+) 
 ```
 
 
@@ -225,20 +247,21 @@ nc %>%
   mutate(name = as_factor(name)) %>%
   ggplot(aes(x = value, fill = name)) +
     geom_histogram(bins=15) +
-    facet_wrap(~name, scales = "free_x")
+    facet_wrap(~name, scales = "free_x") +
+  guides(fill = "none")
 ```
 
 ## Comparing CAR vs SAR.
 
 ```{r echo=FALSE}
-(ggplot(nc, aes(x=car_pred, y=sar_pred)) +
-  geom_point() +
-  geom_abline(intercept=0,slope=1) +
-  labs(title = "Predictions")
+( ggplot(nc, aes(x=car_pred, y=sar_pred)) +
+    geom_abline(intercept=0,slope=1, color="grey") +
+    geom_point() +
+    labs(title = "Predictions")
 ) / (
 ggplot(nc, aes(x=car_resid, y=sar_resid)) +
+  geom_abline(intercept=0,slope=1, color="grey") +
   geom_point() +
-  geom_abline(intercept=0,slope=1) +
   labs(title = "Residuals")
 )
 ```
