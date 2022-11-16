@@ -12,6 +12,7 @@ lip_cancer = st_as_sf(Scottish.shapefile) %>%
 
 rm(lips, Scottish.shapefile)
 
+st_crs(lip_cancer) = st_crs(lip_cancer)
 
-save(lip_cancer, file="scottish_lip_cancer.Rdata")
-  
+saveRDS(lip_cancer, file=here::here("data/lip_cancer.rds"))
+

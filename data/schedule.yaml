@@ -215,7 +215,7 @@ schedule:
   day: 4
   lecture: Fitting CAR and SAR models
   slides: Lec20
-  screencast: 
+  screencast: https://youtu.be/s9u2J0Oukmk
   readings:
   - text: On the relationship between conditional (CAR) and simultaneous (SAR) autoregressive models
     url: https://mhooten.github.io/publications/VerHoef_etal_SpatStat_2018.pdf
@@ -224,7 +224,7 @@ schedule:
 - week: 12
   day: 2
   lecture: GLMs for areal data + Point referenced data (pt. 1)
-  slides: 
+  slides: Lec21
   
 - week: 12
   day: 4
