@@ -225,11 +225,12 @@ schedule:
   day: 2
   lecture: GLMs for areal data + Point referenced data (pt. 1)
   slides: Lec21
+  screencast: https://youtu.be/tr1aore9tM4
   
 - week: 12
   day: 4
   lecture: Point referenced data (pt. 2)
-  slides: 
+  slides: Lec22
   screencast: 
 
 - week: 13

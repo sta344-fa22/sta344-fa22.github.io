@@ -6,3 +6,4 @@ prev_uoe/*
 *.icloud
 test/
 wip/
+*.rds
