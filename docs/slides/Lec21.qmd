@@ -480,11 +480,11 @@ csn
 
 ## Aside - Splines
 
-![](imgs/LEc21/spline1.png){fig-align="center" width="80%"}
+![](imgs/Lec21/spline1.png){fig-align="center" width="80%"}
 
 ##
 
-![](imgs/LEc21/spline2.png){fig-align="center" width="100%"}
+![](imgs/Lec21/spline2.png){fig-align="center" width="100%"}
 
 
 ## Splines in 1d - Smoothing Splines

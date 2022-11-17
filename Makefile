@@ -7,7 +7,11 @@ SLIDE_PDF_FILES  := $(subst qmd,pdf,$(SLIDE_QMD_FILES))
 build: $(SLIDE_HTML_FILES) $(SLIDE_PDF_FILES)
 	hugo
 	rm -rf docs/slides/prev
-
+	rm -rf docs/slides/*.rds
+	rm -rf docs/slides/*.Rdata
+	rm -rf docs/*_cache
+	rm -rf docs/wip
+	
 all: pdf build
 
 html: $(SLIDE_HTML_FILES)
