@@ -7,3 +7,4 @@ prev_uoe/*
 test/
 wip/
 *.rds
+*.Rdata
