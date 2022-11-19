@@ -7,7 +7,7 @@
 <link href="Lec22_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec22_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec22_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.8">
+  <meta name="generator" content="quarto-1.3.11">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>Point referenced data (pt.&nbsp;2)</title>
@@ -389,7 +389,7 @@
 
 <section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Point referenced data (pt.&nbsp;2)</h1>
-  <p class="subtitle">Lecture 21</p>
+  <p class="subtitle">Lecture 22</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -413,11 +413,12 @@ Dr.&nbsp;Colin Rundel
 <h2>Data</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>loaloa <span class="ot">=</span> <span class="fu">tbl_df</span>(PrevMap<span class="sc">::</span>loaloa) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-2"><a href="#cb1-2"></a>  <span class="fu">setNames</span>(., <span class="fu">tolower</span>(<span class="fu">names</span>(.))) <span class="sc">%&gt;%</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>  <span class="fu">rename</span>(<span class="at">elev=</span>elevation)</span>
-<span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a>loaloa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>loaloa <span class="ot">=</span> PrevMap<span class="sc">::</span>loaloa <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>  <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="fu">setNames</span>(., <span class="fu">tolower</span>(<span class="fu">names</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>  <span class="fu">rename</span>(<span class="at">elev=</span>elevation)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>loaloa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 197 × 11
      row villcode longi…¹ latit…² no_exam no_inf  elev mean9…³ max9901
@@ -602,43 +603,62 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <h2>Fit - Testing</h2>
 
 <img data-src="Lec22_files/figure-revealjs/unnamed-chunk-13-1.png" class="r-stretch quarto-figure-center"></section>
+<section id="fit---rmse" class="slide level2">
+<h2>Fit - RMSE</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Training</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>yardstick<span class="sc">::</span><span class="fu">rmse_vec</span>(loaloa<span class="sc">$</span>no_inf<span class="sc">/</span>loaloa<span class="sc">$</span>no_exam, loaloa<span class="sc">$</span>glm_pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.11176</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># Testing</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>yardstick<span class="sc">::</span><span class="fu">rmse_vec</span>(loaloa_test<span class="sc">$</span>no_inf<span class="sc">/</span>loaloa_test<span class="sc">$</span>no_exam, loaloa_test<span class="sc">$</span>glm_pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1192507</code></pre>
+</div>
+</div>
+</section>
 <section id="spatial-structure" class="slide level2">
 <h2>Spatial Structure?</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>geoR<span class="sc">::</span><span class="fu">variog</span>(<span class="at">coords =</span> <span class="fu">cbind</span>(loaloa<span class="sc">$</span>longitude, loaloa<span class="sc">$</span>latitude), </span>
-<span id="cb10-2"><a href="#cb10-2"></a>       <span class="at">data =</span> loaloa<span class="sc">$</span>prop <span class="sc">-</span> loaloa<span class="sc">$</span>glm_pred,</span>
-<span id="cb10-3"><a href="#cb10-3"></a>       <span class="at">uvec =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">4</span>, <span class="at">length.out =</span> <span class="dv">50</span>)) <span class="sc">%&gt;%</span> <span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>geoR<span class="sc">::</span><span class="fu">variog</span>(<span class="at">coords =</span> <span class="fu">cbind</span>(loaloa<span class="sc">$</span>longitude, loaloa<span class="sc">$</span>latitude), </span>
+<span id="cb14-2"><a href="#cb14-2"></a>       <span class="at">data =</span> loaloa<span class="sc">$</span>prop <span class="sc">-</span> loaloa<span class="sc">$</span>glm_pred,</span>
+<span id="cb14-3"><a href="#cb14-3"></a>       <span class="at">uvec =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">4</span>, <span class="at">length.out =</span> <span class="dv">50</span>)) <span class="sc">%&gt;%</span> <span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>variog: computing omnidirectional variogram</code></pre>
 </div>
 
 </div>
-<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="gpglm-model" class="slide level2">
 <h2><code>gpglm</code> model</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>ll_gp <span class="ot">=</span> <span class="fu">gpglm</span>(</span>
-<span id="cb12-2"><a href="#cb12-2"></a>  no_inf <span class="sc">~</span> elev<span class="sc">:</span>elev_f <span class="sc">+</span> max9901<span class="sc">:</span>max_f <span class="sc">+</span> stdev9901, </span>
-<span id="cb12-3"><a href="#cb12-3"></a>  <span class="at">data =</span> loaloa, <span class="at">family=</span><span class="st">"binomial"</span>, <span class="at">weights=</span>loaloa<span class="sc">$</span>no_exam,</span>
-<span id="cb12-4"><a href="#cb12-4"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
-<span id="cb12-5"><a href="#cb12-5"></a>  <span class="at">cov_model=</span><span class="st">"exponential"</span>,</span>
-<span id="cb12-6"><a href="#cb12-6"></a>  <span class="at">starting =</span> <span class="fu">list</span>(</span>
-<span id="cb12-7"><a href="#cb12-7"></a>    <span class="at">beta=</span><span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">7</span>), <span class="at">phi=</span><span class="dv">3</span>, <span class="at">sigma.sq=</span><span class="dv">1</span>, <span class="at">w=</span><span class="dv">0</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a>  ),</span>
-<span id="cb12-9"><a href="#cb12-9"></a>  <span class="at">priors =</span> <span class="fu">list</span>(<span class="at">phi.unif=</span><span class="fu">c</span>(<span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">3</span><span class="sc">/</span><span class="fl">0.1</span>), <span class="at">sigma.sq.ig=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)),</span>
-<span id="cb12-10"><a href="#cb12-10"></a>  <span class="at">tuning =</span> <span class="fu">list</span>(</span>
-<span id="cb12-11"><a href="#cb12-11"></a>    <span class="st">"beta"</span><span class="ot">=</span><span class="fu">c</span>(<span class="fl">0.05</span>,<span class="fl">0.3</span>,<span class="fl">0.0001</span>,<span class="fl">0.0003</span>,<span class="fl">0.0005</span>,<span class="fl">0.1</span>,<span class="fl">0.07</span>), </span>
-<span id="cb12-12"><a href="#cb12-12"></a>    <span class="st">"phi"</span><span class="ot">=</span><span class="fl">0.6</span>, <span class="st">"sigma.sq"</span><span class="ot">=</span><span class="fl">0.3</span>, <span class="st">"w"</span><span class="ot">=</span><span class="fl">0.1</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a>  ),</span>
-<span id="cb12-14"><a href="#cb12-14"></a>  <span class="at">n_batch =</span> <span class="dv">500</span>,</span>
-<span id="cb12-15"><a href="#cb12-15"></a>  <span class="at">batch_len =</span> <span class="dv">50</span>,</span>
-<span id="cb12-16"><a href="#cb12-16"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb12-17"><a href="#cb12-17"></a>  <span class="at">n_report =</span> <span class="dv">10</span></span>
-<span id="cb12-18"><a href="#cb12-18"></a>)</span>
-<span id="cb12-19"><a href="#cb12-19"></a></span>
-<span id="cb12-20"><a href="#cb12-20"></a></span>
-<span id="cb12-21"><a href="#cb12-21"></a><span class="fu">saveRDS</span>(ll_gp, <span class="at">file=</span><span class="st">"Lec22_loaloa.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>ll_gp <span class="ot">=</span> <span class="fu">gpglm</span>(</span>
+<span id="cb16-2"><a href="#cb16-2"></a>  no_inf <span class="sc">~</span> <span class="fu">scale</span>(elev)<span class="sc">:</span>elev_f <span class="sc">+</span> <span class="fu">scale</span>(max9901)<span class="sc">:</span>max_f <span class="sc">+</span> <span class="fu">scale</span>(stdev9901), </span>
+<span id="cb16-3"><a href="#cb16-3"></a>  <span class="at">data =</span> loaloa, <span class="at">family=</span><span class="st">"binomial"</span>, <span class="at">weights=</span>loaloa<span class="sc">$</span>no_exam,</span>
+<span id="cb16-4"><a href="#cb16-4"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb16-5"><a href="#cb16-5"></a>  <span class="at">cov_model=</span><span class="st">"exponential"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6"></a>  <span class="at">starting =</span> <span class="fu">list</span>(</span>
+<span id="cb16-7"><a href="#cb16-7"></a>    <span class="at">beta=</span><span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">7</span>), </span>
+<span id="cb16-8"><a href="#cb16-8"></a>    <span class="at">phi=</span><span class="dv">3</span>, <span class="at">sigma.sq=</span><span class="dv">1</span>, <span class="at">w=</span><span class="dv">0</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a>  ),</span>
+<span id="cb16-10"><a href="#cb16-10"></a>  <span class="at">priors =</span> <span class="fu">list</span>(</span>
+<span id="cb16-11"><a href="#cb16-11"></a>    <span class="at">beta.Normal=</span><span class="fu">list</span>(<span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">7</span>), <span class="fu">rep</span>(<span class="dv">10</span>,<span class="dv">7</span>)),</span>
+<span id="cb16-12"><a href="#cb16-12"></a>    <span class="at">phi.unif=</span><span class="fu">c</span>(<span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">3</span><span class="sc">/</span><span class="fl">0.25</span>), <span class="at">sigma.sq.ig=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb16-13"><a href="#cb16-13"></a>  ),</span>
+<span id="cb16-14"><a href="#cb16-14"></a>  <span class="at">tuning =</span> <span class="fu">list</span>(</span>
+<span id="cb16-15"><a href="#cb16-15"></a>    <span class="st">"beta"</span><span class="ot">=</span><span class="fu">rep</span>(<span class="fl">0.1</span>, <span class="dv">7</span>),</span>
+<span id="cb16-16"><a href="#cb16-16"></a>    <span class="st">"phi"</span><span class="ot">=</span><span class="fl">0.6</span>, <span class="st">"sigma.sq"</span><span class="ot">=</span><span class="fl">0.3</span>, <span class="st">"w"</span><span class="ot">=</span><span class="fl">0.1</span></span>
+<span id="cb16-17"><a href="#cb16-17"></a>  ),</span>
+<span id="cb16-18"><a href="#cb16-18"></a>  <span class="at">n_batch =</span> <span class="dv">400</span>,</span>
+<span id="cb16-19"><a href="#cb16-19"></a>  <span class="at">batch_len =</span> <span class="dv">50</span>,</span>
+<span id="cb16-20"><a href="#cb16-20"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-21"><a href="#cb16-21"></a>  <span class="at">n_report =</span> <span class="dv">10</span>,</span>
+<span id="cb16-22"><a href="#cb16-22"></a>  <span class="at">chains=</span><span class="dv">4</span></span>
+<span id="cb16-23"><a href="#cb16-23"></a>)</span>
+<span id="cb16-24"><a href="#cb16-24"></a></span>
+<span id="cb16-25"><a href="#cb16-25"></a><span class="fu">saveRDS</span>(ll_gp, <span class="at">file=</span><span class="st">"Lec22_loaloa.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
@@ -649,22 +669,23 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <h2></h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>ll_gp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>ll_gp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A gpglm model (spBayes spGLM) with 4 chains, 9 variables, and 100000 iterations. 
+<pre><code># A gpglm model (spBayes spGLM) with 4 chains, 9 variables, and 80000 iterations. 
 # A tibble: 9 × 10
-  variable       mean   median      sd     mad       q5      q95  rhat
-  &lt;chr&gt;         &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
-1 (Intercep… -2.21e+0 -2.10e+0 1.56e+0 1.76e+0 -4.55e+0  2.49e-1  1.70
-2 stdev9901  -1.79e+0 -2.09e+0 5.05e+0 5.16e+0 -9.22e+0  8.06e+0  1.39
-3 elev:elev…  2.84e-4  3.04e-4 4.31e-4 4.43e-4 -4.41e-4  9.38e-4  1.08
-4 elev:elev… -5.18e-4 -5.01e-4 4.32e-4 4.35e-4 -1.25e-3  1.66e-4  1.06
-5 elev:elev… -2.14e-3 -2.13e-3 4.53e-4 4.57e-4 -2.90e-3 -1.42e-3  1.05
-6 max9901:m…  5.11e-1  3.58e-1 1.42e+0 1.18e+0 -1.69e+0  3.29e+0  1.57
-7 max9901:m…  7.51e-1  5.85e-1 1.34e+0 1.10e+0 -1.29e+0  3.46e+0  1.59
-8 sigma.sq    1.38e+0  1.29e+0 4.28e-1 3.37e-1  8.69e-1  2.19e+0  1.04
-9 phi         2.49e+0  2.39e+0 8.55e-1 8.06e-1  1.26e+0  4.03e+0  1.04
-# … with 2 more variables: ess_bulk &lt;dbl&gt;, ess_tail &lt;dbl&gt;</code></pre>
+  variable      mean median     sd    mad     q5     q95  rhat ess_b…¹
+  &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept) -1.63  -1.64  0.282  0.254  -2.07  -1.17    1.03    68.4
+2 scale(stde… -0.100 -0.101 0.0943 0.0930 -0.253  0.0587  1.01   451. 
+3 scale(elev…  0.114  0.115 0.164  0.159  -0.156  0.383   1.01   225. 
+4 scale(elev… -0.800 -0.803 0.283  0.278  -1.26  -0.328   1.02   318. 
+5 scale(elev… -1.50  -1.50  0.264  0.261  -1.93  -1.07    1.01   359. 
+6 scale(max9…  0.718  0.717 0.182  0.179   0.419  1.02    1.01   473. 
+7 scale(max9…  0.100  0.100 0.150  0.148  -0.142  0.346   1.01   265. 
+8 sigma.sq     1.04   0.982 0.300  0.237   0.683  1.57    1.01   521. 
+9 phi          3.08   2.95  1.03   0.935   1.63   4.94    1.01   445. 
+# … with 1 more variable: ess_tail &lt;dbl&gt;, and abbreviated variable
+#   name ¹​ess_bulk</code></pre>
 </div>
 </div>
 </div>
@@ -672,76 +693,76 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <section id="diagnostics" class="slide level2">
 <h2>Diagnostics</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">plot</span>(ll_gp, <span class="at">vars=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="section-1" class="slide level2">
-<h2></h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">plot</span>(ll_gp, <span class="at">vars=</span><span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="section-2" class="slide level2">
-<h2></h2>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">plot</span>(ll_gp, <span class="at">vars=</span><span class="dv">7</span><span class="sc">:</span><span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">plot</span>(ll_gp, <span class="at">vars=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="Lec22_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">plot</span>(ll_gp, <span class="at">vars=</span><span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">plot</span>(ll_gp, <span class="at">vars=</span><span class="dv">7</span><span class="sc">:</span><span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="prediction-training" class="slide level2">
 <h2>Prediction (training)</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>ll_gp_pred <span class="ot">=</span> <span class="fu">predict</span>(</span>
-<span id="cb18-2"><a href="#cb18-2"></a>  ll_gp, </span>
-<span id="cb18-3"><a href="#cb18-3"></a>  <span class="at">newdata=</span>loaloa, </span>
-<span id="cb18-4"><a href="#cb18-4"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
-<span id="cb18-5"><a href="#cb18-5"></a>  <span class="at">thin =</span> <span class="dv">25</span>,</span>
-<span id="cb18-6"><a href="#cb18-6"></a>  <span class="at">verbose=</span><span class="cn">FALSE</span></span>
-<span id="cb18-7"><a href="#cb18-7"></a>)</span>
-<span id="cb18-8"><a href="#cb18-8"></a></span>
-<span id="cb18-9"><a href="#cb18-9"></a>ll_gp_pred_y <span class="ot">=</span> tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(ll_gp_pred, y[i]) <span class="sc">%&gt;%</span></span>
-<span id="cb18-10"><a href="#cb18-10"></a>  <span class="fu">group_by</span>(.chain, i) <span class="sc">%&gt;%</span></span>
-<span id="cb18-11"><a href="#cb18-11"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb18-12"><a href="#cb18-12"></a>    <span class="at">post_p =</span> <span class="fu">mean</span>(.value),</span>
-<span id="cb18-13"><a href="#cb18-13"></a>    <span class="at">q025 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.025</span>),</span>
-<span id="cb18-14"><a href="#cb18-14"></a>    <span class="at">q975 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.975</span>)</span>
-<span id="cb18-15"><a href="#cb18-15"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>ll_gp_pred <span class="ot">=</span> <span class="fu">predict</span>(</span>
+<span id="cb22-2"><a href="#cb22-2"></a>  ll_gp, </span>
+<span id="cb22-3"><a href="#cb22-3"></a>  <span class="at">newdata=</span>loaloa, </span>
+<span id="cb22-4"><a href="#cb22-4"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb22-5"><a href="#cb22-5"></a>  <span class="at">thin =</span> <span class="dv">25</span>,</span>
+<span id="cb22-6"><a href="#cb22-6"></a>  <span class="at">verbose=</span><span class="cn">FALSE</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a>)</span>
+<span id="cb22-8"><a href="#cb22-8"></a></span>
+<span id="cb22-9"><a href="#cb22-9"></a>ll_gp_pred_y <span class="ot">=</span> tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(ll_gp_pred, y[i]) <span class="sc">%&gt;%</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a>  <span class="fu">group_by</span>(.chain, i) <span class="sc">%&gt;%</span></span>
+<span id="cb22-11"><a href="#cb22-11"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb22-12"><a href="#cb22-12"></a>    <span class="at">post_p =</span> <span class="fu">mean</span>(.value),</span>
+<span id="cb22-13"><a href="#cb22-13"></a>    <span class="at">q025 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.025</span>),</span>
+<span id="cb22-14"><a href="#cb22-14"></a>    <span class="at">q975 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.975</span>)</span>
+<span id="cb22-15"><a href="#cb22-15"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </section>
 <section id="section-3" class="slide level2">
 <h2></h2>
 
-<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="prediction---testing" class="slide level2">
 <h2>Prediction - Testing</h2>
 <div class="small">
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>ll_gp_test_pred <span class="ot">=</span> <span class="fu">predict</span>(</span>
-<span id="cb19-2"><a href="#cb19-2"></a>  ll_gp, </span>
-<span id="cb19-3"><a href="#cb19-3"></a>  <span class="at">newdata=</span>loaloa_test, </span>
-<span id="cb19-4"><a href="#cb19-4"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
-<span id="cb19-5"><a href="#cb19-5"></a>  <span class="at">thin =</span> <span class="dv">25</span>,</span>
-<span id="cb19-6"><a href="#cb19-6"></a>  <span class="at">verbose=</span><span class="cn">FALSE</span></span>
-<span id="cb19-7"><a href="#cb19-7"></a>)</span>
-<span id="cb19-8"><a href="#cb19-8"></a></span>
-<span id="cb19-9"><a href="#cb19-9"></a>ll_gp_test_pred_y <span class="ot">=</span> tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(ll_gp_test_pred, y[i]) <span class="sc">%&gt;%</span></span>
-<span id="cb19-10"><a href="#cb19-10"></a>  <span class="fu">group_by</span>(.chain, i) <span class="sc">%&gt;%</span></span>
-<span id="cb19-11"><a href="#cb19-11"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb19-12"><a href="#cb19-12"></a>    <span class="at">post_p =</span> <span class="fu">mean</span>(.value),</span>
-<span id="cb19-13"><a href="#cb19-13"></a>    <span class="at">q025 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.025</span>),</span>
-<span id="cb19-14"><a href="#cb19-14"></a>    <span class="at">q975 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.975</span>)</span>
-<span id="cb19-15"><a href="#cb19-15"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>ll_gp_test_pred <span class="ot">=</span> <span class="fu">predict</span>(</span>
+<span id="cb23-2"><a href="#cb23-2"></a>  ll_gp, </span>
+<span id="cb23-3"><a href="#cb23-3"></a>  <span class="at">newdata=</span>loaloa_test, </span>
+<span id="cb23-4"><a href="#cb23-4"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb23-5"><a href="#cb23-5"></a>  <span class="at">thin =</span> <span class="dv">25</span>,</span>
+<span id="cb23-6"><a href="#cb23-6"></a>  <span class="at">verbose=</span><span class="cn">FALSE</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a>)</span>
+<span id="cb23-8"><a href="#cb23-8"></a></span>
+<span id="cb23-9"><a href="#cb23-9"></a>ll_gp_test_pred_y <span class="ot">=</span> tidybayes<span class="sc">::</span><span class="fu">gather_draws</span>(ll_gp_test_pred, y[i]) <span class="sc">%&gt;%</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a>  <span class="fu">group_by</span>(.chain, i) <span class="sc">%&gt;%</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb23-12"><a href="#cb23-12"></a>    <span class="at">post_p =</span> <span class="fu">mean</span>(.value),</span>
+<span id="cb23-13"><a href="#cb23-13"></a>    <span class="at">q025 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.025</span>),</span>
+<span id="cb23-14"><a href="#cb23-14"></a>    <span class="at">q975 =</span> <span class="fu">quantile</span>(.value, <span class="fl">0.975</span>)</span>
+<span id="cb23-15"><a href="#cb23-15"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </section>
 <section id="section-4" class="slide level2">
 <h2></h2>
 
-<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="diggles-predictive-surface" class="slide level2">
 <h2>Diggle’s Predictive Surface</h2>
 
@@ -749,7 +770,7 @@ Number of Fisher Scoring iterations: 5</code></pre>
 <section id="exceedance-probability" class="slide level2">
 <h2>Exceedance Probability</h2>
 
-<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-25-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<img data-src="Lec22_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="exceedance-probability-predictive-surface" class="slide level2">
 <h2>Exceedance Probability Predictive Surface</h2>
 

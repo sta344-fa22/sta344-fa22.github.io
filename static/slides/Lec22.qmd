@@ -1,6 +1,6 @@
 ---
 title: "Point referenced data (pt. 2)"
-subtitle: "Lecture 21"
+subtitle: "Lecture 22"
 author: "Dr. Colin Rundel"
 footer: "Sta 344 - Fall 2022"
 format:
@@ -45,7 +45,8 @@ ggplot2::theme_set(ggplot2::theme_bw())
 
 ::: {.small}
 ```{r}
-loaloa = tbl_df(PrevMap::loaloa) %>% 
+loaloa = PrevMap::loaloa %>%
+  as_tibble() %>% 
   setNames(., tolower(names(.))) %>%
   rename(elev=elevation)
 
@@ -237,6 +238,15 @@ ggplot(loaloa_test, aes(x=no_inf/no_exam, y=glm_pred)) +
   geom_abline(slope = 1, intercept = 0)
 ```
 
+## Fit - RMSE
+
+```{r}
+# Training
+yardstick::rmse_vec(loaloa$no_inf/loaloa$no_exam, loaloa$glm_pred)
+
+# Testing
+yardstick::rmse_vec(loaloa_test$no_inf/loaloa_test$no_exam, loaloa_test$glm_pred)
+```
 
 ## Spatial Structure?
 
@@ -251,22 +261,55 @@ geoR::variog(coords = cbind(loaloa$longitude, loaloa$latitude),
 ::: {.small}
 ```{r eval=FALSE}
 ll_gp = gpglm(
-  no_inf ~ elev:elev_f + max9901:max_f + stdev9901, 
+  no_inf ~ scale(elev):elev_f + scale(max9901):max_f + scale(stdev9901), 
   data = loaloa, family="binomial", weights=loaloa$no_exam,
   coords = c("longitude", "latitude"),
   cov_model="exponential",
   starting = list(
-    beta=rep(0,7), phi=3, sigma.sq=1, w=0
+    beta=rep(0,7), 
+    phi=3, sigma.sq=1, w=0
   ),
-  priors = list(phi.unif=c(3/4, 3/0.1), sigma.sq.ig=c(2, 2)),
+  priors = list(
+    beta.Normal=list(rep(0,7), rep(10,7)),
+    phi.unif=c(3/4, 3/0.25), sigma.sq.ig=c(2, 2)
+  ),
   tuning = list(
-    "beta"=c(0.05,0.3,0.0001,0.0003,0.0005,0.1,0.07), 
+    "beta"=rep(0.1, 7),
     "phi"=0.6, "sigma.sq"=0.3, "w"=0.1
   ),
-  n_batch = 500,
+  n_batch = 400,
   batch_len = 50,
   verbose = TRUE,
-  n_report = 10
+  n_report = 10,
+  chains=4
+)
+
+saveRDS(ll_gp, file="Lec22_loaloa.rds")
+```
+
+```{r eval=FALSE, include=FALSE}
+ll_gp = gpglm(
+  no_inf ~ scale(elev):elev_f + scale(max9901):max_f + scale(stdev9901), 
+  data = loaloa, family="binomial", weights=loaloa$no_exam,
+  coords = c("longitude", "latitude"),
+  cov_model="exponential",
+  starting = list(
+    beta=rep(0,7), 
+    phi=3, sigma.sq=1, w=0
+  ),
+  priors = list(
+    beta.Normal=list(rep(0,7), rep(10,7)),
+    phi.unif=c(3/4, 3/0.25), sigma.sq.ig=c(2, 2)
+  ),
+  tuning = list(
+    "beta"=rep(0.1, 7),
+    "phi"=0.6, "sigma.sq"=0.3, "w"=0.1
+  ),
+  n_batch = 400,
+  batch_len = 50,
+  verbose = TRUE,
+  n_report = 10,
+  chains=4
 )
 
 
