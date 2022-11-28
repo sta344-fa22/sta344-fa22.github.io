@@ -252,7 +252,7 @@ schedule:
 - week: 14
   day: 2
   lecture: Computation and GP Models
-  slides: 
+  slides: Lec23
   notes: "Midterm 2 out"
 
 - week: 14
