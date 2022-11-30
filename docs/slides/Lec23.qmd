@@ -60,7 +60,7 @@ Unless you are lucky (or clever), Gaussian process models are difficult to scale
 
 Want to sample $\boldsymbol{y}$?
 $$
-\boldsymbol{\mu} + {\text{Chol}(\boldsymbol{\Sigma})} \times \boldsymbol{Z} \text{ with } Z_i \sim \mathcal{N}(0,1) \qquad \qquad \color{redhl}{\mathcal{O}\left(n^3\right)}
+\boldsymbol{\mu} + \color{red}{\text{Chol}(\boldsymbol{\Sigma})} \times \boldsymbol{Z} \text{ with } Z_i \sim \mathcal{N}(0,1) \qquad \qquad \color{red}{\mathcal{O}\left({n^3}\right)}
 $$
   
 . . .
@@ -68,21 +68,21 @@ $$
 
 Evaluate the (log) likelihood? 
 $$
--\frac{1}{2} \log {|\Sigma|} - \frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu})' {\boldsymbol{\Sigma}^{-1}} (\boldsymbol{x}-\boldsymbol{\mu}) - \frac{n}{2}\log 2\pi \qquad \qquad \color{redhl}{\mathcal{O}\left(n^3\right)}
+-\frac{1}{2} \log {\color{red}{|\Sigma|}} - \frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu})'\; \color{red}{\boldsymbol{\Sigma}^{-1}} \; (\boldsymbol{x}-\boldsymbol{\mu}) - \frac{n}{2}\log 2\pi \qquad \qquad \color{red}{\mathcal{O}\left(n^3\right)}
 $$
 
 . . .
 
 Update covariance parameter?
 $$
-{\{\Sigma\}_{ij}} = \sigma^2 \exp(-\{d\}_{ij}\phi) + \sigma^2_n \, 1_{i=j} \qquad \qquad \color{yellowhl}{\mathcal{O}\left(n^2\right)}
+\color{orange}{\{\Sigma\}_{ij}} = \sigma^2 \exp(-\{d\}_{ij}\phi) + \sigma^2_n \, 1_{i=j} \qquad \qquad \color{orange}{\mathcal{O}\left(n^2\right)}
 $$
 
 
 
 ## A simple guide to computational complexity
 
-<br/><br/>
+<br/>
 
 ::: {.center .large}
 $\mathcal{O}\left(n\right)$ - Linear complexity 
@@ -94,7 +94,7 @@ $\mathcal{O}\left(n\right)$ - Linear complexity
 . . .
 
 ::: {.center .large}
-$\mathcal{O}\left(n^2\right)$ - Quadratic complexity
+$\color{orange}{\mathcal{O}\left(n^2\right)}$ - Quadratic complexity
 
 *Pray*
 :::
@@ -103,7 +103,7 @@ $\mathcal{O}\left(n^2\right)$ - Quadratic complexity
 . . .
 
 ::: {.center .large}
-$\mathcal{O}\left(n^3\right)$ - Cubic complexity
+$\color{red}{\mathcal{O}\left(n^3\right)}$ - Cubic complexity
 
 *Give up*
 :::
@@ -131,10 +131,10 @@ $$ \boldsymbol{y}_{p} \sim \mathcal{N}\left(\mu_p + \Sigma_{po} \Sigma_o^{-1}(y_
 
 | Step            | CPU (secs) |
 |--------------------|------------|
-| 1. Calc. $\Sigma_p$, $\Sigma_{po}$, $\Sigma_{p}$                           | 1.080 |
-| 2. Calc. $\text{chol}(\Sigma_p - \Sigma_{po} \Sigma_{o}^{-1} \Sigma_{op})$ | 0.467 |
-| 3. Calc. $\mu_{p|o} + \text{chol}(\Sigma_{p|o}) \times Z$                  | 0.049 |
-| 4. Calc. Allele Prob                                                       | 0.129 |
+| 1. Calc $\Sigma_p$, $\Sigma_{po}$, $\Sigma_{o}$                           | 1.080 |
+| 2. Calc $\text{chol}(\Sigma_p - \Sigma_{po} \Sigma_{o}^{-1} \Sigma_{op})$ | 0.467 |
+| 3. Calc $\mu_{p|o} + \text{chol}(\Sigma_{p|o}) \times Z$                  | 0.049 |
+| 4. Calc Allele Prob                                                       | 0.129 |
 |    Total                                                                   | 1.732 |
 
 :::
@@ -157,11 +157,18 @@ Total run time for 1000 posterior predictive draws:
 
 :::
 
+. . .
+
+<br/>
+
 Total run time for 1000 posterior predictive draws: 
 
 * CPU (28.9 min)
 * CPU+GPU (7.8 min)
 
+::: {.aside}
+Benchmarks based on decade old consumer hardware
+:::
 
 ## Cholesky CPU vs GPU (P100)
 
@@ -173,6 +180,10 @@ decomp %>%
     geom_point() +
   ylab("time (secs)")
 ```
+
+::: {.aside}
+Benchmarks based on ~5 year old server hardware
+:::
 
 ##
 
@@ -197,7 +208,7 @@ decomp %>%
     scale_y_log10()
 ```
 
-## Aside (1) - Matrix Multiplication
+## Aside (1) - Matrix Multiplication (P100)
 
 ```{r echo=FALSE, message=FALSE}
 mat_mult = readr::read_csv("data/mat_mult.csv")
@@ -233,8 +244,8 @@ size = data_frame(
   mutate(size_gb = n^2 * 64/8 / 10^9)
 
 ggplot(size, aes(x=n, y=size_gb)) +
-  geom_line() +
-  geom_hline(yintercept = c(4,8,16), color="red") +
+  geom_line(size=1.5) +
+  geom_hline(yintercept = c(4,8,16), color="red", alpha=0.5, linetype="dashed") +
   labs(y="Cov Martrix Size (GB)")
 ```
 
@@ -282,7 +293,7 @@ $$
 \underset{n \times m}{M} = \underset{n \times n}{U}\,\underset{n \times m}{\text{diag}(S)}\,\underset{m \times m}{V^{\,t}} 
 $$
 
-where $U$ are called the left singular vectors, $V$ the right singular vectors, and $S$ the singular values. Usually the singular values and vectors are ordered such that the singular values are in descending order. 
+where $U$ are the left singular vectors, $V$ the right singular vectors, and $S$ the singular values. Usually the singular values and vectors are ordered such that the singular values are in descending order. 
 
 . . .
 
@@ -349,6 +360,7 @@ $$
 
 ## Rank 2 approximation
 
+::: {.small}
 $$ 
 \begin{aligned}
 \tilde M
@@ -375,6 +387,23 @@ $$
 \end{pmatrix}
 \end{aligned} 
 $$
+:::
+
+. . .
+
+::: {.small}
+$$ 
+\begin{aligned}
+M 
+&= \begin{pmatrix}
+  1.000 & 0.500 & 0.333 & 0.250 \\ 
+  0.500 & 0.333 & 0.250 & 0.200 \\ 
+  0.333 & 0.250 & 0.200 & 0.167 \\ 
+  0.250 & 0.200 & 0.167 & 0.143 \\ 
+\end{pmatrix}
+\end{aligned}
+$$
+:::
 
 
 
@@ -397,7 +426,9 @@ $$
 $$ \lVert M-\tilde M\rVert_F = 0.00674 $$
 
 
-## Strong dependence (large eff. range):
+## Strong dependence
+
+For a covariance matrix with a large effective range,
 
 ```{r echo=FALSE, fig.height=4}
 d = runif(2*50) %>% matrix(ncol=2) %>% dist() %>% as.matrix()
@@ -421,7 +452,9 @@ plot(res$rank, res$frob, type='b', xlab="Rank", ylab="Error (Frob. norm)", main=
 
 
 
-## Weak dependence (short eff. range):
+## Weak dependence
+
+For a covariance matrix with a large effective range,
 
 ```{r echo=FALSE, fig.height=4}
 d = runif(2*50) %>% matrix(ncol=2) %>% dist() %>% as.matrix()
@@ -506,12 +539,12 @@ y(\boldsymbol{s}) = x(\boldsymbol{s}) \, \boldsymbol{\beta} + w(\boldsymbol{s}) 
 $$
 
 $$
-w(\boldsymbol{s}) \sim \mathcal{N}(0,~\boldsymbol{\Sigma}(\boldsymbol{s})), \quad \boldsymbol{\Sigma}(\boldsymbol{s},\boldsymbol{s}')=\sigma\,\rho(\boldsymbol{s},\boldsymbol{s}'|\theta)
+w(\boldsymbol{s}) \sim \mathcal{N}(0,~\boldsymbol{\Sigma}(\boldsymbol{s})), \quad \boldsymbol{\Sigma}(\boldsymbol{s},\boldsymbol{s}')=\sigma^2\;\rho(\boldsymbol{s},\boldsymbol{s}'|\theta)
 $$
 
-if we can replace $\boldsymbol{\Sigma}(\boldsymbol{s})$ with a low rank approximation of the form $\boldsymbol{\Sigma}(\boldsymbol{s}) \approx \boldsymbol{U}\,\boldsymbol{S}\,\boldsymbol{V}^t$ where 
+if we can replace $\boldsymbol{\Sigma}(\boldsymbol{s})$ with a low rank approximation of the form $\boldsymbol{\Sigma}(\boldsymbol{s}) \approx \boldsymbol{U}\,\boldsymbol{S}\,\boldsymbol{U}^t$ where 
 
-* $\boldsymbol{U}$ and $\boldsymbol{V}$ are $n \times k$, 
+* $\boldsymbol{U}$ is $n \times k$, 
 
 * $\boldsymbol{S}$ is $k \times k$, and
 
@@ -714,6 +747,8 @@ ggplot(res, aes(x=time, y=error, color=knots, shape=model)) +
 
 ## Parameter Estimates
 
+<br/><br/>
+
 ```{r echo=FALSE, fig.height=3}
 post_mean = purrr::map(models, ~ .$p.theta.samples %>% post_summary() %>% select(param, post_mean) %>% tibble::deframe()) %>% 
   purrr::transpose() %>% 
@@ -848,7 +883,7 @@ Both predictive process and random matrix low rank approximations are good candi
 
 
 
-## Comparison $n=15,000$, $k=\{100,\ldots,4900\}$
+## Comparison $n=15,000,\;k=\{100,\ldots,4900\}$
 
 ```{r fig.height=4, echo=FALSE}
 load("data/res3.Rdata")

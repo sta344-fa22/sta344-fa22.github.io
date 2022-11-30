@@ -7,7 +7,7 @@
 <link href="Lec23_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="Lec23_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Lec23_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.24">
+  <meta name="generator" content="quarto-1.3.34">
 
   <meta name="author" content="Dr.&nbsp;Colin Rundel">
   <title>Computational Methods for GPs</title>
@@ -346,23 +346,23 @@ Dr.&nbsp;Colin Rundel
 <p>Unless you are lucky (or clever), Gaussian process models are difficult to scale to large problems. For a Gaussian process <span class="math inline">\(\underset{n \times 1}{\boldsymbol{y}} \sim \mathcal{N}(\boldsymbol{\mu},\boldsymbol{\Sigma})\)</span>:</p>
 <div class="fragment">
 <p>Want to sample <span class="math inline">\(\boldsymbol{y}\)</span>? <span class="math display">\[
-\boldsymbol{\mu} + {\text{Chol}(\boldsymbol{\Sigma})} \times \boldsymbol{Z} \text{ with } Z_i \sim \mathcal{N}(0,1) \qquad \qquad \color{redhl}{\mathcal{O}\left(n^3\right)}
+\boldsymbol{\mu} + \color{red}{\text{Chol}(\boldsymbol{\Sigma})} \times \boldsymbol{Z} \text{ with } Z_i \sim \mathcal{N}(0,1) \qquad \qquad \color{red}{\mathcal{O}\left({n^3}\right)}
 \]</span></p>
 </div>
 <div class="fragment">
 <p>Evaluate the (log) likelihood? <span class="math display">\[
--\frac{1}{2} \log {|\Sigma|} - \frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu})' {\boldsymbol{\Sigma}^{-1}} (\boldsymbol{x}-\boldsymbol{\mu}) - \frac{n}{2}\log 2\pi \qquad \qquad \color{redhl}{\mathcal{O}\left(n^3\right)}
+-\frac{1}{2} \log {\color{red}{|\Sigma|}} - \frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu})'\; \color{red}{\boldsymbol{\Sigma}^{-1}} \; (\boldsymbol{x}-\boldsymbol{\mu}) - \frac{n}{2}\log 2\pi \qquad \qquad \color{red}{\mathcal{O}\left(n^3\right)}
 \]</span></p>
 </div>
 <div class="fragment">
 <p>Update covariance parameter? <span class="math display">\[
-{\{\Sigma\}_{ij}} = \sigma^2 \exp(-\{d\}_{ij}\phi) + \sigma^2_n \, 1_{i=j} \qquad \qquad \color{yellowhl}{\mathcal{O}\left(n^2\right)}
+\color{orange}{\{\Sigma\}_{ij}} = \sigma^2 \exp(-\{d\}_{ij}\phi) + \sigma^2_n \, 1_{i=j} \qquad \qquad \color{orange}{\mathcal{O}\left(n^2\right)}
 \]</span></p>
 </div>
 </section>
 <section id="a-simple-guide-to-computational-complexity" class="slide level2">
 <h2>A simple guide to computational complexity</h2>
-<p><br><br></p>
+<p><br></p>
 <div class="center large">
 <p><span class="math inline">\(\mathcal{O}\left(n\right)\)</span> - Linear complexity</p>
 <p><em>Go for it!</em></p>
@@ -370,14 +370,14 @@ Dr.&nbsp;Colin Rundel
 <p><br></p>
 <div class="fragment">
 <div class="center large">
-<p><span class="math inline">\(\mathcal{O}\left(n^2\right)\)</span> - Quadratic complexity</p>
+<p><span class="math inline">\(\color{orange}{\mathcal{O}\left(n^2\right)}\)</span> - Quadratic complexity</p>
 <p><em>Pray</em></p>
 </div>
 <p><br></p>
 </div>
 <div class="fragment">
 <div class="center large">
-<p><span class="math inline">\(\mathcal{O}\left(n^3\right)\)</span> - Cubic complexity</p>
+<p><span class="math inline">\(\color{red}{\mathcal{O}\left(n^3\right)}\)</span> - Cubic complexity</p>
 <p><em>Give up</em></p>
 </div>
 </div>
@@ -404,19 +404,19 @@ Dr.&nbsp;Colin Rundel
 </thead>
 <tbody>
 <tr class="odd">
-<td>1. Calc. <span class="math inline">\(\Sigma_p\)</span>, <span class="math inline">\(\Sigma_{po}\)</span>, <span class="math inline">\(\Sigma_{p}\)</span></td>
+<td>1. Calc <span class="math inline">\(\Sigma_p\)</span>, <span class="math inline">\(\Sigma_{po}\)</span>, <span class="math inline">\(\Sigma_{o}\)</span></td>
 <td>1.080</td>
 </tr>
 <tr class="even">
-<td>2. Calc. <span class="math inline">\(\text{chol}(\Sigma_p - \Sigma_{po} \Sigma_{o}^{-1} \Sigma_{op})\)</span></td>
+<td>2. Calc <span class="math inline">\(\text{chol}(\Sigma_p - \Sigma_{po} \Sigma_{o}^{-1} \Sigma_{op})\)</span></td>
 <td>0.467</td>
 </tr>
 <tr class="odd">
-<td>3. Calc. <span class="math inline">\(\mu_{p|o} + \text{chol}(\Sigma_{p|o}) \times Z\)</span></td>
+<td>3. Calc <span class="math inline">\(\mu_{p|o} + \text{chol}(\Sigma_{p|o}) \times Z\)</span></td>
 <td>0.049</td>
 </tr>
 <tr class="even">
-<td>4. Calc. Allele Prob</td>
+<td>4. Calc Allele Prob</td>
 <td>0.129</td>
 </tr>
 <tr class="odd">
@@ -484,16 +484,33 @@ Dr.&nbsp;Colin Rundel
 </tbody>
 </table>
 </div>
+<div class="fragment">
+<p><br></p>
 <p>Total run time for 1000 posterior predictive draws:</p>
 <ul>
 <li>CPU (28.9 min)</li>
 <li>CPU+GPU (7.8 min)</li>
 </ul>
-</section>
+
+</div>
+<aside><div>
+<p>Benchmarks based on decade old consumer hardware</p>
+</div></aside></section>
 <section id="cholesky-cpu-vs-gpu-p100" class="slide level2">
 <h2>Cholesky CPU vs GPU (P100)</h2>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="Lec23_files/figure-revealjs/unnamed-chunk-2-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
 
-<img data-src="Lec23_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch quarto-figure-center"></section>
+<aside><div>
+<p>Benchmarks based on ~5 year old server hardware</p>
+</div></aside></section>
 <section id="section" class="slide level2">
 <h2></h2>
 
@@ -502,8 +519,8 @@ Dr.&nbsp;Colin Rundel
 <h2>Relative Performance</h2>
 
 <img data-src="Lec23_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="aside-1---matrix-multiplication" class="slide level2">
-<h2>Aside (1) - Matrix Multiplication</h2>
+<section id="aside-1---matrix-multiplication-p100" class="slide level2">
+<h2>Aside (1) - Matrix Multiplication (P100)</h2>
 
 <img data-src="Lec23_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="section-1" class="slide level2">
@@ -549,7 +566,7 @@ Dr.&nbsp;Colin Rundel
 <p><span class="math display">\[
 \underset{n \times m}{M} = \underset{n \times n}{U}\,\underset{n \times m}{\text{diag}(S)}\,\underset{m \times m}{V^{\,t}}
 \]</span></p>
-<p>where <span class="math inline">\(U\)</span> are called the left singular vectors, <span class="math inline">\(V\)</span> the right singular vectors, and <span class="math inline">\(S\)</span> the singular values. Usually the singular values and vectors are ordered such that the singular values are in descending order.</p>
+<p>where <span class="math inline">\(U\)</span> are the left singular vectors, <span class="math inline">\(V\)</span> the right singular vectors, and <span class="math inline">\(S\)</span> the singular values. Usually the singular values and vectors are ordered such that the singular values are in descending order.</p>
 <div class="fragment">
 <p>The Eckart–Young theorem states that we can construct an approximatation of <span class="math inline">\(M\)</span> with rank <span class="math inline">\(k\)</span> by setting <span class="math inline">\(\tilde S\)</span> to contain only the <span class="math inline">\(k\)</span> largest singular values and all other values set to zero.</p>
 <p><span class="math display">\[
@@ -591,6 +608,7 @@ S &amp;=
 </section>
 <section id="rank-2-approximation" class="slide level2">
 <h2>Rank 2 approximation</h2>
+<div class="small">
 <p><span class="math display">\[
 \begin{aligned}
 \tilde M
@@ -617,6 +635,22 @@ S &amp;=
 \end{pmatrix}
 \end{aligned}
 \]</span></p>
+</div>
+<div class="fragment">
+<div class="small">
+<p><span class="math display">\[
+\begin{aligned}
+M
+&amp;= \begin{pmatrix}
+  1.000 &amp; 0.500 &amp; 0.333 &amp; 0.250 \\
+  0.500 &amp; 0.333 &amp; 0.250 &amp; 0.200 \\
+  0.333 &amp; 0.250 &amp; 0.200 &amp; 0.167 \\
+  0.250 &amp; 0.200 &amp; 0.167 &amp; 0.143 \\
+\end{pmatrix}
+\end{aligned}
+\]</span></p>
+</div>
+</div>
 </section>
 <section id="approximation-error" class="slide level2">
 <h2>Approximation Error</h2>
@@ -633,12 +667,14 @@ S &amp;=
 <p><span class="math display">\[ \lVert M-\tilde M\rVert_F = 0.00674 \]</span></p>
 </div>
 </section>
-<section id="strong-dependence-large-eff.-range" class="slide level2">
-<h2>Strong dependence (large eff. range):</h2>
+<section id="strong-dependence" class="slide level2">
+<h2>Strong dependence</h2>
+<p>For a covariance matrix with a large effective range,</p>
 
 <img data-src="Lec23_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="weak-dependence-short-eff.-range" class="slide level2">
-<h2>Weak dependence (short eff. range):</h2>
+<section id="weak-dependence" class="slide level2">
+<h2>Weak dependence</h2>
+<p>For a covariance matrix with a large effective range,</p>
 
 <img data-src="Lec23_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="how-does-this-help" class="slide level2">
@@ -691,11 +727,11 @@ S &amp;=
 y(\boldsymbol{s}) = x(\boldsymbol{s}) \, \boldsymbol{\beta} + w(\boldsymbol{s}) + \epsilon, \quad \epsilon \sim N(0,~\tau^2 I)
 \]</span></p>
 <p><span class="math display">\[
-w(\boldsymbol{s}) \sim \mathcal{N}(0,~\boldsymbol{\Sigma}(\boldsymbol{s})), \quad \boldsymbol{\Sigma}(\boldsymbol{s},\boldsymbol{s}')=\sigma\,\rho(\boldsymbol{s},\boldsymbol{s}'|\theta)
+w(\boldsymbol{s}) \sim \mathcal{N}(0,~\boldsymbol{\Sigma}(\boldsymbol{s})), \quad \boldsymbol{\Sigma}(\boldsymbol{s},\boldsymbol{s}')=\sigma^2\;\rho(\boldsymbol{s},\boldsymbol{s}'|\theta)
 \]</span></p>
-<p>if we can replace <span class="math inline">\(\boldsymbol{\Sigma}(\boldsymbol{s})\)</span> with a low rank approximation of the form <span class="math inline">\(\boldsymbol{\Sigma}(\boldsymbol{s}) \approx \boldsymbol{U}\,\boldsymbol{S}\,\boldsymbol{V}^t\)</span> where</p>
+<p>if we can replace <span class="math inline">\(\boldsymbol{\Sigma}(\boldsymbol{s})\)</span> with a low rank approximation of the form <span class="math inline">\(\boldsymbol{\Sigma}(\boldsymbol{s}) \approx \boldsymbol{U}\,\boldsymbol{S}\,\boldsymbol{U}^t\)</span> where</p>
 <ul>
-<li><p><span class="math inline">\(\boldsymbol{U}\)</span> and <span class="math inline">\(\boldsymbol{V}\)</span> are <span class="math inline">\(n \times k\)</span>,</p></li>
+<li><p><span class="math inline">\(\boldsymbol{U}\)</span> is <span class="math inline">\(n \times k\)</span>,</p></li>
 <li><p><span class="math inline">\(\boldsymbol{S}\)</span> is <span class="math inline">\(k \times k\)</span>, and</p></li>
 <li><p><span class="math inline">\(A = \tau^2 I\)</span> or a similar diagonal matrix</p></li>
 </ul>
@@ -765,6 +801,7 @@ w(\boldsymbol{s}) \sim \mathcal{N}(0,~\boldsymbol{\Sigma}(\boldsymbol{s})), \qua
 <img data-src="Lec23_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="parameter-estimates" class="slide level2">
 <h2>Parameter Estimates</h2>
+<p><br><br></p>
 
 <img data-src="Lec23_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
 <section>
