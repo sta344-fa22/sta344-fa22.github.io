@@ -254,11 +254,12 @@ schedule:
   lecture: Computation and GP Models
   slides: Lec23
   notes: "Midterm 2 out"
+  screencast: https://youtu.be/kO3lg0mrPPA
 
 - week: 14
   day: 4
   lecture: Spatio-temporal models
-  slides:
+  slides: Lec24
 
 - week: 15
   day: 2
