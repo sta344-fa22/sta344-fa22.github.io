@@ -33,7 +33,7 @@ set.seed(20221109)
 ggplot2::theme_set(ggplot2::theme_bw())
 
 post_summary = function(m, ci_width=0.95) {
-  d = data_frame(
+  d = tibble(
     post_mean  = apply(m, 2, mean),
     post_med   = apply(m, 2, median),
     post_lower = apply(m, 2, quantile, probs=(1-ci_width)/2),
@@ -73,7 +73,7 @@ ne_temp
 
 
 ::: {.aside}
-Based on Andrew Finley and Sudipto Banerjee's notes from [National Ecological Observatory Network (NEON) Applied Bayesian Regression Workshop, March 7 - 8, 2013](http://blue.for.msu.edu/NEON/SC/) [Module 6](http://blue.for.msu.edu/NEON/SC/exercises/exercise-6/initial-exploration-spDynLM.pdf)
+Based on Andrew Finley and Sudipto Banerjee's notes from [National Ecological Observatory Network (NEON) Applied Bayesian Regression Workshop, March 7 - 8, 2013](https://web.archive.org/web/20190403162040/http://blue.for.msu.edu/NEON/SC/) [Module 6](https://web.archive.org/web/20190403165906/http://blue.for.msu.edu/NEON/SC/exercises/exercise-6/initial-exploration-spDynLM.pdf)
 
 :::
 
@@ -358,7 +358,7 @@ y_hat = m$p.y.samples %>%
 ggplot(y_hat, aes(x=temp, y=post_mean)) +
   geom_point(size=1, alpha=0.5) +
   ylab("posterior mean") +
-  geom_abline(slope = 1, intercept=0, color="black", alpha=0.2, size=2) +
+  geom_abline(slope = 1, intercept=0, color="black", alpha=0.2, linewidth=2) +
   ylim(-20,25) + xlim(-20,25)
 ```
 
@@ -440,7 +440,7 @@ save(m_pred, file="dynlm_pred.Rdata")
 load("dynlm_pred.Rdata")
 ```
 
-## 
+## Predictive performance
 
 ```{r echo=FALSE}
 y_hat_pred = m_pred$p.y.samples %>% 
@@ -453,11 +453,11 @@ y_hat_pred = m_pred$p.y.samples %>%
 
 ggplot(y_hat_pred) +
   geom_point(aes(y=post_mean, x=temp)) +
-  geom_abline(slope = 1, intercept=0, color="black", alpha=0.2, size=2) +
+  geom_abline(slope = 1, intercept=0, color="black", alpha=0.2, linewidth=2) +
   ylim(-15,20) + xlim(-15,20)
 ```
 
-##
+## Predictive surfaces
 
 ```{r echo=FALSE, fig.width=6, fig.align="center", out.width="0.8\\textwidth"}
 r_t1 = r
@@ -478,7 +478,16 @@ par(mfrow=c(2,2), mar=c(1,1,3,4))
 s = raster::stack(r_t1, r_t4, r_t7, r_t10)
 names(s) = c("Jan 2000","Apr 2000","Jul 2000","Oct 2000")
 
-rasterVis::levelplot(s, contour=TRUE)
+library(sp)
+
+obs = ne_temp %>% 
+  select(x,y) %>%
+  mutate(across(c(x,y), ~.x*1000))
+coordinates(obs) = ~x+y
+
+
+rasterVis::levelplot(s, contour=TRUE) +
+  latticeExtra::layer(sp::sp.points(obs, pch=16, col=1, cex=1))
 ```
 
 
@@ -525,7 +534,7 @@ m_oos$p.y.samples %>%
   ) %>%
 ggplot() +
   geom_point(aes(y=post_mean, x=temp, color=type)) +
-  geom_abline(slope = 1, intercept=0, color="black", alpha=0.2, size=2) +
+  geom_abline(slope = 1, intercept=0, color="black", alpha=0.2, linewidth=2) +
   ylim(-15,20) + xlim(-15,20)
 ```
 
@@ -656,8 +665,10 @@ $$
 then the likelihood for $\boldsymbol{w}$ is given by
 
 $$
--\frac{n}{2}\log 2\pi - \frac{1}{2} \log |\boldsymbol{\Sigma_w}| - \frac{1}{2} \boldsymbol{w}^t \boldsymbol{\Sigma_w}^{-1} \boldsymbol{w} \\
-= -\frac{n}{2}\log 2\pi - \frac{1}{2} \log \left[ (\sigma^2)^{n_t \cdot n_s} |\boldsymbol{H_s}|^{n_t} |\boldsymbol{H_t}|^{n_s}\right] - \frac{1}{2\sigma^2} \boldsymbol{w}^t (\boldsymbol{H}_s^{-1} \otimes \boldsymbol{H}_t^{-1}) \boldsymbol{w}
+\begin{aligned}
+&-\frac{n}{2}\log 2\pi - \frac{1}{2} \log |\boldsymbol{\Sigma_w}| - \frac{1}{2} \boldsymbol{w}^t \boldsymbol{\Sigma_w}^{-1} \boldsymbol{w} \\
+= &-\frac{n}{2}\log 2\pi - \frac{1}{2} \log \left[ (\sigma^2)^{n_t \cdot n_s} |\boldsymbol{H_s}|^{n_t} |\boldsymbol{H_t}|^{n_s}\right] - \frac{1}{2\sigma^2} \boldsymbol{w}^t (\boldsymbol{H}_s^{-1} \otimes \boldsymbol{H}_t^{-1}) \boldsymbol{w}
+\end{aligned}
 $$
 
 
@@ -670,10 +681,13 @@ $$
 * Possible alternatives:
 
     * Specialized spatiotemporal covariance functions, i.e.
+    
+::: {.small}
 $$ 
 \gamma(\boldsymbol{s},\boldsymbol{s}', t,t') 
   = \sigma^2 (\lvert t - t'\rvert+1)^{-1} \exp\big(-\lVert\boldsymbol{s}-\boldsymbol{s}'\rVert (\lvert t-t' \rvert + 1)^{-\beta/2}\big)
 $$
+:::
   
     * Mixtures of separable covariances, i.e.
 $$

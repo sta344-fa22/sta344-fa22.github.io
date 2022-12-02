@@ -433,7 +433,7 @@ Dr.&nbsp;Colin Rundel
 </div>
 
 <aside><div>
-<p>Based on Andrew Finley and Sudipto Banerjee’s notes from <a href="http://blue.for.msu.edu/NEON/SC/">National Ecological Observatory Network (NEON) Applied Bayesian Regression Workshop, March 7 - 8, 2013</a> <a href="http://blue.for.msu.edu/NEON/SC/exercises/exercise-6/initial-exploration-spDynLM.pdf">Module 6</a></p>
+<p>Based on Andrew Finley and Sudipto Banerjee’s notes from <a href="https://web.archive.org/web/20190403162040/http://blue.for.msu.edu/NEON/SC/">National Ecological Observatory Network (NEON) Applied Bayesian Regression Workshop, March 7 - 8, 2013</a> <a href="https://web.archive.org/web/20190403165906/http://blue.for.msu.edu/NEON/SC/exercises/exercise-6/initial-exploration-spDynLM.pdf">Module 6</a></p>
 </div></aside></section>
 <section id="section" class="slide level2">
 <h2></h2>
@@ -658,12 +658,12 @@ u_{0}(\boldsymbol{s}) &amp;= 0
 
 </div>
 </section>
-<section id="section-3" class="slide level2">
-<h2></h2>
+<section id="predictive-performance" class="slide level2">
+<h2>Predictive performance</h2>
 
 <img data-src="Lec24_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch quarto-figure-center"></section>
-<section id="section-4" class="slide level2">
-<h2></h2>
+<section id="predictive-surfaces" class="slide level2">
+<h2>Predictive surfaces</h2>
 
 <img data-src="Lec24_files/figure-revealjs/unnamed-chunk-19-1.png" class="r-stretch quarto-figure-center"></section>
 <section id="out-of-sample-validation" class="slide level2">
@@ -697,7 +697,7 @@ u_{0}(\boldsymbol{s}) &amp;= 0
 
 </div>
 </section>
-<section id="section-5" class="slide level2">
+<section id="section-3" class="slide level2">
 <h2></h2>
 
 <img data-src="Lec24_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch quarto-figure-center"></section></section>
@@ -747,7 +747,7 @@ w(\boldsymbol{s},t) = \alpha(t) + \omega(\boldsymbol{s})
 \text{cov}(\boldsymbol{w}(\boldsymbol{s},\boldsymbol{t}), \boldsymbol{w}(\boldsymbol{s}',\boldsymbol{t}')) = \sigma^2 \, \rho_1(\lVert \boldsymbol{s}-\boldsymbol{s}'\rVert;\boldsymbol{\theta}) \, \rho_2(\lvert \boldsymbol{t}-\boldsymbol{t}' \rvert; \boldsymbol{\phi})
 \]</span></p>
 </section>
-<section id="section-6" class="slide level2">
+<section id="section-4" class="slide level2">
 <h2></h2>
 <p>If we define our observations as follows (stacking time locations within spatial locations)</p>
 <p><span class="math display">\[
@@ -806,8 +806,10 @@ a_{m1} \boldsymbol{B} &amp; \cdots &amp; a_{mn} \boldsymbol{B} \\
 \]</span></p>
 <p>then the likelihood for <span class="math inline">\(\boldsymbol{w}\)</span> is given by</p>
 <p><span class="math display">\[
--\frac{n}{2}\log 2\pi - \frac{1}{2} \log |\boldsymbol{\Sigma_w}| - \frac{1}{2} \boldsymbol{w}^t \boldsymbol{\Sigma_w}^{-1} \boldsymbol{w} \\
-= -\frac{n}{2}\log 2\pi - \frac{1}{2} \log \left[ (\sigma^2)^{n_t \cdot n_s} |\boldsymbol{H_s}|^{n_t} |\boldsymbol{H_t}|^{n_s}\right] - \frac{1}{2\sigma^2} \boldsymbol{w}^t (\boldsymbol{H}_s^{-1} \otimes \boldsymbol{H}_t^{-1}) \boldsymbol{w}
+\begin{aligned}
+&amp;-\frac{n}{2}\log 2\pi - \frac{1}{2} \log |\boldsymbol{\Sigma_w}| - \frac{1}{2} \boldsymbol{w}^t \boldsymbol{\Sigma_w}^{-1} \boldsymbol{w} \\
+= &amp;-\frac{n}{2}\log 2\pi - \frac{1}{2} \log \left[ (\sigma^2)^{n_t \cdot n_s} |\boldsymbol{H_s}|^{n_t} |\boldsymbol{H_t}|^{n_s}\right] - \frac{1}{2\sigma^2} \boldsymbol{w}^t (\boldsymbol{H}_s^{-1} \otimes \boldsymbol{H}_t^{-1}) \boldsymbol{w}
+\end{aligned}
 \]</span></p>
 </section>
 <section id="non-seperable-models" class="slide level2">
@@ -817,15 +819,19 @@ a_{m1} \boldsymbol{B} &amp; \cdots &amp; a_{mn} \boldsymbol{B} \\
 <li><p>Cannot treat spatiotemporal covariances as 3d observations</p></li>
 <li><p>Possible alternatives:</p>
 <ul>
-<li><p>Specialized spatiotemporal covariance functions, i.e. <span class="math display">\[
-\gamma(\boldsymbol{s},\boldsymbol{s}', t,t')
-= \sigma^2 (\lvert t - t'\rvert+1)^{-1} \exp\big(-\lVert\boldsymbol{s}-\boldsymbol{s}'\rVert (\lvert t-t' \rvert + 1)^{-\beta/2}\big)
-\]</span></p></li>
-<li><p>Mixtures of separable covariances, i.e. <span class="math display">\[
-w(\boldsymbol{s},t) = w_1(\boldsymbol{s},t) + w_2(\boldsymbol{s},t)
-\]</span></p></li>
+<li>Specialized spatiotemporal covariance functions, i.e.</li>
 </ul></li>
 </ul>
+<div class="small">
+<p><span class="math display">\[
+\gamma(\boldsymbol{s},\boldsymbol{s}', t,t')
+  = \sigma^2 (\lvert t - t'\rvert+1)^{-1} \exp\big(-\lVert\boldsymbol{s}-\boldsymbol{s}'\rVert (\lvert t-t' \rvert + 1)^{-\beta/2}\big)
+\]</span></p>
+</div>
+<pre><code>* Mixtures of separable covariances, i.e.</code></pre>
+<p><span class="math display">\[
+w(\boldsymbol{s},t) = w_1(\boldsymbol{s},t) + w_2(\boldsymbol{s},t)
+\]</span></p>
 <div class="footer footer-default">
 <p>Sta 344 - Fall 2022</p>
 </div>
